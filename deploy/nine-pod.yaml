@@ -1,0 +1,29 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nine-pod-deployment
+  labels:
+    app: nine-pod
+spec:
+  replicas: 9
+  selector:
+    matchLabels:
+      app: nine-pod
+  template:
+    metadata:
+      labels:
+        app: nine-pod
+    spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            app: nine-pod
+      containers:
+      - name: nine-pod
+        image: cuso4/in-cluster
+        ports:
+        - containerPort: 80
+
