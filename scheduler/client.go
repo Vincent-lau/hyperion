@@ -1,23 +1,22 @@
-package client
-
+package scheduler
 
 import (
-	"fmt"
-	"os"
-	"net"
 	"flag"
-	"log"
 	"context"
-	"time"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"example/dist_sched/config"
+	"log"
+	"net"
+	"os"
+	"time"
+
+	"google.golang.org/grpc"
 
 	pb "example/dist_sched/message"
 )
 
 const (
 	defaultName = "world"
+	numSchedulers = 9
 )
 
 var (
@@ -25,41 +24,47 @@ var (
 )
 
 
-func findAddr() []net.IP {
+func findAddr(c chan net.IP) {
+	flag.Parse()
+	found := map[string]bool{}
 	for {
 		ips, err := net.LookupIP(*config.DNS)
 		if err != nil {
 			log.Printf("Could not get IPs: %v\n", err)
-			time.Sleep(time.Second)
+			time.Sleep(time.Second * 5)
 			continue
 		}
 
-		if len(ips) == 9 {
-			for i, ip := range ips {
-				fmt.Printf("addr %d IN A %s\n", i, ip.String())
+		for _, ip := range ips {
+			if found[ip.String()] {
+				continue
+			} else {
+				c <- ip
+				found[ip.String()] = true
 			}
-			return ips
+		}
+		if len(found) == numSchedulers {
+			close(c)
+			break
 		} else {
-			log.Printf("current %v ips, not enough IPs, retrying\n", len(ips))
-			// TODO can use channel instead of sleep
+			log.Printf("Found %d IPs, waiting for %d\n", len(found), numSchedulers-len(found))
 			time.Sleep(time.Second * 5)
 		}
 	}
 
 }
 
-func MyClient() {
-
-	flag.Parse()
-	// Set up a connection to the server.
-	ips := findAddr()
-	for _, v := range ips {
-		conn, err := grpc.Dial(v.String() + ":" + *config.Port, grpc.WithTransportCredentials(insecure.NewCredentials()))
+func MyClient() map[string]*grpc.ClientConn {
+	c := make(map[string]*grpc.ClientConn)
+	addrChan := make(chan net.IP)
+	go findAddr(addrChan)
+	for addr := range addrChan {
+		conn, err := grpc.Dial(addr.String() + ":" + *config.Port, grpc.WithInsecure())
 		if err != nil {
-			fmt.Printf("failed to connect")
-			log.Fatalf("did not connect: %v", err)
+			log.Fatalf("Could not connect to %v: %v\n", addr, err)
 		}
-		defer conn.Close()
+		c[addr.String()] = conn
+
 		c := pb.NewGreeterClient(conn)
 
 		// Contact the server and print out its response.
@@ -77,4 +82,7 @@ func MyClient() {
 		log.Printf("Greeting: %s", r.GetMessage())
 
 	}
+
+	return c
 }
+

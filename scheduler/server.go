@@ -1,9 +1,9 @@
-package server
+package scheduler
 
 import (
+	"flag"
 	"context"
 	"example/dist_sched/config"
-	"flag"
 	"log"
 	"net"
 

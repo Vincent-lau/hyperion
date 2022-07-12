@@ -1,23 +1,16 @@
 package main
 
 import (
-	"example/dist_sched/client"
 	"example/dist_sched/scheduler"
-	"example/dist_sched/server"
 )
 
 func talk() {
-	go server.MyServer()
-	client.MyClient()
-
-}
-
-func sched() {
-	scheduler.Schedule()
+	go scheduler.MyServer()
+	scheduler.MyClient()
 }
 
 
 func main() {
-	talk()
-	sched()
+	scheduler := scheduler.New()
+	scheduler.Schedule()
 }

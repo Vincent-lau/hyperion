@@ -3,28 +3,55 @@ package scheduler
 import (
 	"context"
 	"fmt"
-	"time"
-	"math/rand"
 	"log"
+	"math/rand"
+	"os"
+	"time"
 
+	"google.golang.org/grpc"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
 )
 
+type Scheduler struct {
+	hostname string
+	peers    map[string]*grpc.ClientConn
+}
+
 const (
 	schedulerName = "my-scheduler"
 )
 
+func New() *Scheduler {
+
+	hostname, err := os.Hostname()
+	if err != nil {
+		log.Fatalf("Could not get hostname: %v\n", err)
+	}
+
+  go	MyServer()
+
+	peers := MyClient()
+
+	scheduler := &Scheduler{
+		hostname: hostname,
+		peers:    peers,
+	}
+
+	return scheduler
+
+}
+
 func findNode(clientset *kubernetes.Clientset) (*v1.Node, error) {
-  // TODO add informer to get the list of nodes
+	// TODO add informer to get the list of nodes
 	nodes, _ := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	return &nodes.Items[rand.Intn(len(nodes.Items))], nil
 
 }
 
-func Schedule() {
+func (sched *Scheduler) Schedule() {
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -84,5 +111,4 @@ func Schedule() {
 		time.Sleep(10 * time.Second)
 	}
 
-	
 }
