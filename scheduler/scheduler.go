@@ -1,4 +1,4 @@
-package rand_sched
+package scheduler
 
 import (
 	"context"
@@ -14,12 +14,11 @@ import (
 )
 
 const (
-	schedulerName = "rand-scheduler"
+	schedulerName = "my-scheduler"
 )
 
-
 func findNode(clientset *kubernetes.Clientset) (*v1.Node, error) {
-
+  // TODO add informer to get the list of nodes
 	nodes, _ := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
 	return &nodes.Items[rand.Intn(len(nodes.Items))], nil
 

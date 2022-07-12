@@ -1,6 +1,5 @@
 package config
 
-
 import (
 
 	"flag"
@@ -8,6 +7,6 @@ import (
 
 var (
 	Port = flag.String("port", "50051", "The server port")
-	DNS = flag.String("dns", "nine-pod-headless.default.svc.cluster.local", "DNS server")
+	DNS = flag.String("dns", "scheduler-headless.kube-system.svc.cluster.local", "DNS server")
 )
 

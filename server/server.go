@@ -36,16 +36,3 @@ func (s *server) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloRe
 	log.Printf("Received: %v from %v", in.GetName(), in.GetHostname())
 	return &pb.HelloReply{Message: "Hello " + in.GetName() + in.GetHostname()}, nil
 }
-
-// func main() {
-
-// 	ips, err := net.LookupIP("nine-pod-headless.default.svc.cluster.local")
-// 	if err != nil {
-// 		fmt.Fprintf(os.Stderr, "Could not get IPs: %v\n", err)
-// 		os.Exit(1)
-// 	}
-// 	for i, ip := range ips {
-// 		fmt.Printf("addr %d IN A %s\n", i, ip.String())
-// 	}
-
-// }

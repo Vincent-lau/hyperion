@@ -26,16 +26,25 @@ var (
 
 
 func findAddr() []net.IP {
+	for {
+		ips, err := net.LookupIP(*config.DNS)
+		if err != nil {
+			log.Printf("Could not get IPs: %v\n", err)
+			time.Sleep(time.Second)
+			continue
+		}
 
-	ips, err := net.LookupIP(*config.DNS)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not get IPs: %v\n", err)
-		os.Exit(1)
+		if len(ips) == 9 {
+			for i, ip := range ips {
+				fmt.Printf("addr %d IN A %s\n", i, ip.String())
+			}
+			return ips
+		} else {
+			log.Printf("current %v ips, not enough IPs, retrying\n", len(ips))
+			// TODO can use channel instead of sleep
+			time.Sleep(time.Second * 5)
+		}
 	}
-	for i, ip := range ips {
-		fmt.Printf("addr %d IN A %s\n", i, ip.String())
-	}
-	return ips
 
 }
 
@@ -64,6 +73,7 @@ func MyClient() {
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)
 		}
+
 		log.Printf("Greeting: %s", r.GetMessage())
 
 	}
