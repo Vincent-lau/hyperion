@@ -8,6 +8,7 @@ spec:
   selector:
     component: scheduler
     tier: control-plane
+    version: third
   ports:
     - protocol: TCP
       port: 80

@@ -63,7 +63,7 @@ spec:
       labels:
         component: scheduler
         tier: control-plane
-        version: second
+        version: third
     spec:
       topologySpreadConstraints:
       - maxSkew: 1
@@ -78,20 +78,8 @@ spec:
       containers:
       - command:
         - /usr/local/bin/kube-scheduler
-        - --config=/etc/kubernetes/my-scheduler/my-scheduler-config.yaml
         image: cuso4/my-sched
-        livenessProbe:
-          httpGet:
-            path: /healthz
-            port: 10259
-            scheme: HTTPS
-          initialDelaySeconds: 15
         name: kube-second-scheduler
-        readinessProbe:
-          httpGet:
-            path: /healthz
-            port: 10259
-            scheme: HTTPS
         resources:
           requests:
             cpu: '0.1'

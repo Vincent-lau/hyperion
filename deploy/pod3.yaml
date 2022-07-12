@@ -6,7 +6,7 @@ metadata:
     name: multischeduler-example
   
 spec:
-  schedulerName: rand-scheduler
+  schedulerName: my-scheduler
   
   containers:
   - name: pod-with-second-annotation-container

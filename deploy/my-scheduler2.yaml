@@ -1,16 +1,16 @@
 apiVersion: v1
 kind: ServiceAccount
 metadata:
-  name: rand-scheduler
+  name: my-scheduler
   namespace: kube-system
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: rand-scheduler-as-kube-scheduler
+  name: my-scheduler-as-kube-scheduler
 subjects:
 - kind: ServiceAccount
-  name: rand-scheduler
+  name: my-scheduler
   namespace: kube-system
 roleRef:
   kind: ClusterRole
@@ -20,10 +20,10 @@ roleRef:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: rand-scheduler-as-volume-scheduler
+  name: my-scheduler-as-volume-scheduler
 subjects:
 - kind: ServiceAccount
-  name: rand-scheduler
+  name: my-scheduler
   namespace: kube-system
 roleRef:
   kind: ClusterRole
@@ -33,14 +33,14 @@ roleRef:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: rand-scheduler-config
+  name: my-scheduler-config
   namespace: kube-system
 data:
-  rand-scheduler-config.yaml: |
+  my-scheduler-config.yaml: |
     apiVersion: kubescheduler.config.k8s.io/v1beta2
     kind: KubeSchedulerConfiguration
     profiles:
-      - schedulerName: rand-scheduler
+      - schedulerName: my-scheduler
     leaderElection:
       leaderElect: false
 ---
@@ -50,28 +50,48 @@ metadata:
   labels:
     component: scheduler
     tier: control-plane
-  name: rand-scheduler
+  name: my-scheduler
   namespace: kube-system
 spec:
   selector:
     matchLabels:
       component: scheduler
       tier: control-plane
-  replicas: 1
+  replicas: 9
   template:
     metadata:
       labels:
         component: scheduler
         tier: control-plane
-        version: third
+        version: second
     spec:
-      serviceAccountName: rand-scheduler
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: DoNotSchedule
+        labelSelector:
+          matchLabels:
+            component: scheduler
+            tier: control-plane
+            version: second
+      serviceAccountName: my-scheduler
       containers:
       - command:
         - /usr/local/bin/kube-scheduler
-        - --config=/etc/kubernetes/rand-scheduler/rand-scheduler-config.yaml
-        image: cuso4/rand-sched
-        name: kube-rand-scheduler
+        - --config=/etc/kubernetes/my-scheduler/my-scheduler-config.yaml
+        image: cuso4/my-sched
+        livenessProbe:
+          httpGet:
+            path: /healthz
+            port: 10259
+            scheme: HTTPS
+          initialDelaySeconds: 15
+        name: kube-second-scheduler
+        readinessProbe:
+          httpGet:
+            path: /healthz
+            port: 10259
+            scheme: HTTPS
         resources:
           requests:
             cpu: '0.1'
@@ -79,11 +99,11 @@ spec:
           privileged: false
         volumeMounts:
           - name: config-volume
-            mountPath: /etc/kubernetes/rand-scheduler
+            mountPath: /etc/kubernetes/my-scheduler
       restartPolicy: Always
       hostNetwork: false
       hostPID: false
       volumes:
         - name: config-volume
           configMap:
-            name: rand-scheduler-config
+            name: my-scheduler-config
