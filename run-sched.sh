@@ -1,9 +1,9 @@
 #!/bin/zsh
 
 go build -o ./app/main main/main.go && \
-docker build -t rand-sched . && \
-docker tag rand-sched cuso4/rand-sched && \
-docker push cuso4/rand-sched && \
-kubectl delete -f deploy/rand-scheduler.yaml && \
-kubectl apply -f deploy/rand-scheduler.yaml
+docker build -t my-sched . && \
+docker tag my-sched cuso4/my-sched && \
+docker push cuso4/my-sched && \
+kubectl delete -f deploy/my-scheduler.yaml && \
+kubectl apply -f deploy/my-scheduler.yaml
 
