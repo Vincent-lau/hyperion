@@ -9,6 +9,7 @@
 *.dylib
 app/main
 main/main
+*.pb.go
 
 # Test binary, built with `go test -c`
 *.test
