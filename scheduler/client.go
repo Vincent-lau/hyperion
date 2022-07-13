@@ -54,8 +54,9 @@ func findAddr(c chan net.IP) {
 
 }
 
-func MyClient() map[string]*grpc.ClientConn {
-	c := make(map[string]*grpc.ClientConn)
+func MyClient() (map[string]*grpc.ClientConn, map[string]pb.MaxConsensusClient) {
+	conns := make(map[string]*grpc.ClientConn)
+	stubs := make(map[string]pb.MaxConsensusClient)
 	addrChan := make(chan net.IP)
 	go findAddr(addrChan)
 	for addr := range addrChan {
@@ -63,9 +64,9 @@ func MyClient() map[string]*grpc.ClientConn {
 		if err != nil {
 			log.Fatalf("Could not connect to %v: %v\n", addr, err)
 		}
-		c[addr.String()] = conn
+		conns[addr.String()] = conn
 
-		c := pb.NewGreeterClient(conn)
+		stub := pb.NewGreeterClient(conn)
 
 		// Contact the server and print out its response.
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
@@ -74,15 +75,14 @@ func MyClient() map[string]*grpc.ClientConn {
 		if err != nil {
 			log.Fatalf("Could not get hostname: %v", err)
 		}
-		r, err := c.SayHello(ctx, &pb.HelloRequest{Name: *name, Hostname: host})
+		_, err = stub.SayHello(ctx, &pb.HelloRequest{Name: *name, Hostname: host})
 		if err != nil {
 			log.Fatalf("could not greet: %v", err)
 		}
 
-		log.Printf("Greeting: %s", r.GetMessage())
-
+		stubs[addr.String()] = pb.NewMaxConsensusClient(conn)
 	}
 
-	return c
+	return conns,stubs
 }
 

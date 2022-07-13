@@ -8,6 +8,8 @@ import (
 	"os"
 	"time"
 
+	pb "example/dist_sched/message"
+
 	"google.golang.org/grpc"
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -17,31 +19,47 @@ import (
 
 type Scheduler struct {
 	hostname string
-	peers    map[string]*grpc.ClientConn
+	conns    map[string]*grpc.ClientConn // connected peers
+	stubs    map[string]pb.MaxConsensusClient
+	curMax   int
+	done     bool
+
+	pb.UnimplementedGreeterServer
+	pb.UnimplementedMaxConsensusServer
 }
 
 const (
 	schedulerName = "my-scheduler"
 )
 
-func New() *Scheduler {
+func New(n int) *Scheduler {
 
 	hostname, err := os.Hostname()
 	if err != nil {
 		log.Fatalf("Could not get hostname: %v\n", err)
 	}
 
-  go	MyServer()
+	go MyServer()
 
-	peers := MyClient()
+	conns, stubs := MyClient()
 
 	scheduler := &Scheduler{
 		hostname: hostname,
-		peers:    peers,
+		conns:    conns,
+		stubs:    stubs,
+		curMax:   n,
 	}
 
 	return scheduler
 
+}
+
+func (sched *Scheduler) Done() bool {
+	return sched.done
+}
+
+func (sched *Scheduler) GetCurMax() int {
+	return sched.curMax
 }
 
 func findNode(clientset *kubernetes.Clientset) (*v1.Node, error) {
@@ -51,7 +69,7 @@ func findNode(clientset *kubernetes.Clientset) (*v1.Node, error) {
 
 }
 
-func (sched *Scheduler) Schedule() {
+func (sched *Scheduler) PlacePod() {
 	// creates the in-cluster config
 	config, err := rest.InClusterConfig()
 	if err != nil {
@@ -105,6 +123,28 @@ func (sched *Scheduler) Schedule() {
 			}, metav1.CreateOptions{})
 
 			log.Printf("binding pod %v to node %v\n", p.Name, toBind.Name)
+
+			timestamp := time.Now().UTC()
+			clientset.CoreV1().Events(p.Namespace).Create(context.TODO(), &v1.Event{
+				Count:          1,
+				Message:        "binding pod to node",
+				Reason:         "Scheduled",
+				LastTimestamp:  metav1.NewTime(timestamp),
+				FirstTimestamp: metav1.NewTime(timestamp),
+				Type:           "Normal",
+				Source: v1.EventSource{
+					Component: schedulerName,
+				},
+				InvolvedObject: v1.ObjectReference{
+					Kind:      "Pod",
+					Name:      p.Name,
+					Namespace: p.Namespace,
+					UID:       p.UID,
+				},
+				ObjectMeta: metav1.ObjectMeta{
+					GenerateName: p.Name + "-",
+				},
+			}, metav1.CreateOptions{})
 
 		}
 

@@ -2,6 +2,9 @@ package main
 
 import (
 	"example/dist_sched/scheduler"
+	"math/rand"
+	"log"
+	"time"
 )
 
 func talk() {
@@ -11,6 +14,9 @@ func talk() {
 
 
 func main() {
-	scheduler := scheduler.New()
-	scheduler.Schedule()
+	rand.Seed(time.Now().UnixNano())
+	n := rand.Intn(10)
+	log.Printf("n = %d\n", n)
+	scheduler := scheduler.New(n)
+	scheduler.Consensus()
 }
