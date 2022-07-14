@@ -8,24 +8,29 @@ import (
 	"time"
 )
 
-func (sched *Scheduler) MsgExchg() {
 
-	// TODO parallel request
-	// TODO parallel may require mutex
+func (sched *Scheduler) sendOne(name string, stub pb.MaxConsensusClient) {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	defer cancel()
+	r, err := stub.ExchgMax(ctx, &pb.NumRequest{Num: int64(sched.curMax)})
+	log.Printf("Received response from %v: %v\n", name, r.GetNum())
+
+	sched.curMax = int(math.Max(float64(sched.curMax), float64(r.GetNum())))
+
+	if err != nil {
+		log.Fatalf("could not exchange msg: %v", err)
+	}
+
+}
+
+func (sched *Scheduler) MsgExchg() {
+	// TODO need synchronization here
 
 	for name, stub := range sched.stubs {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-		r, err := stub.ExchgMax(ctx, &pb.NumRequest{Num: int64(sched.curMax)})
-		log.Printf("rpcing to %v\n", name)
-		log.Printf("Received response from %v: %v\n", name, r.GetNum())
-
-		sched.curMax = int(math.Max(float64(sched.curMax), float64(r.GetNum())))
-
-		if err != nil {
-			log.Fatalf("could not exchange msg: %v", err)
-		}
-
+		go sched.sendOne(name, stub)
 	}
 
 }
@@ -54,9 +59,7 @@ func (sched *Scheduler) Consensus() {
 	log.Printf("consensus done! Max number is %v\n", sched.curMax)
 
 	for {
-
 		time.Sleep(time.Second * 10)
-
 	}
 
 }

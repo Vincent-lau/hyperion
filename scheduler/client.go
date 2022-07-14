@@ -60,6 +60,9 @@ func MyClient() (map[string]*grpc.ClientConn, map[string]pb.MaxConsensusClient) 
 	addrChan := make(chan net.IP)
 	go findAddr(addrChan)
 	for addr := range addrChan {
+
+		// TODO conection keep alive?
+
 		conn, err := grpc.Dial(addr.String() + ":" + *config.Port, grpc.WithInsecure())
 		if err != nil {
 			log.Fatalf("Could not connect to %v: %v\n", addr, err)

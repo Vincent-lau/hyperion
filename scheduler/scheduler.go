@@ -7,6 +7,7 @@ import (
 	"math/rand"
 	"os"
 	"time"
+	"sync"
 
 	pb "example/dist_sched/message"
 
@@ -18,6 +19,7 @@ import (
 )
 
 type Scheduler struct {
+	mu       sync.Mutex
 	hostname string
 	conns    map[string]*grpc.ClientConn // connected peers
 	stubs    map[string]pb.MaxConsensusClient
