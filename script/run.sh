@@ -1,11 +1,6 @@
 #!/bin/sh
 
 
-# compile the protobuf
-protoc --go_out=. --go_opt=paths=source_relative \
-    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-    message/message.proto
-
 
 GOOS=linux go build -o ./app/main main/main.go
 docker build -t in-cluster .
