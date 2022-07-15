@@ -9,52 +9,81 @@ import (
 )
 
 
-func (sched *Scheduler) sendOne(name string, stub pb.MaxConsensusClient) {
+func (sched *Scheduler) getOne(name string, stub pb.MaxConsensusClient, replyChan chan *pb.NumReply) {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	r, err := stub.ExchgMax(ctx, &pb.NumRequest{Num: int64(sched.curMax)})
-	log.Printf("Received response from %v: %v\n", name, r.GetNum())
 
-	sched.curMax = int(math.Max(float64(sched.curMax), float64(r.GetNum())))
+	sched.mu.Unlock()
+	r, err := stub.GetMax(ctx, &pb.EmptyRequest{})
+	replyChan <- r
+	sched.mu.Lock()
 
 	if err != nil {
 		log.Fatalf("could not exchange msg: %v", err)
 	}
 
+	log.Printf("Received response from %v: %v\n", name, r.GetNum())
+
 }
 
-func (sched *Scheduler) MsgExchg() {
-	// TODO need synchronization here
+func (sched *Scheduler) MsgExchg() []*pb.NumReply {
+	replyChan := make(chan *pb.NumReply)
 
 	for name, stub := range sched.stubs {
-		go sched.sendOne(name, stub)
+		go sched.getOne(name, stub, replyChan)
 	}
+
+	var s []*pb.NumReply
+	for r := range replyChan {
+		s = append(s, r)
+		log.Printf("current len of s is %v and in neighbour is %v \n", len(s), sched.inNeighbour)
+		if len(s) == sched.inNeighbour {
+			break
+		}
+	}
+	return s
 
 }
 
 func (sched *Scheduler) CheckCvg() bool {
-	if sched.Done() {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
+	if sched.it > 10 {
+		sched.done = true
 		return true
 	} else {
-		sched.done = true
 		return false
 	}
 }
 
-func (sched *Scheduler) LocalComp() {
+func (sched *Scheduler) LocalComp(reply []*pb.NumReply) {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
+	for _, r := range reply {
+		if r.GetIt() < int32(sched.it) {
+			log.Printf("%v counter vs current counter %v too old, ignore\n", r.GetIt(), sched.it)
+		} else {
+			sched.curMax = int(math.Max(float64(sched.curMax), float64(r.GetNum())))
+		}
+	}
 
 	log.Println("awesome computation done!")
 
 }
 
 func (sched *Scheduler) Consensus() {
-
 	for !sched.CheckCvg() {
-		sched.MsgExchg()
-		sched.LocalComp()
+		sched.mu.Lock()
+		sched.it++
+		sched.mu.Unlock()
+
+		reply := sched.MsgExchg()
+		sched.LocalComp(reply)
 	}
 	log.Printf("consensus done! Max number is %v\n", sched.curMax)
 

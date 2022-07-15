@@ -1,21 +1,22 @@
 package scheduler
 
 import (
-	"flag"
 	"context"
 	"example/dist_sched/config"
+	"flag"
 	"log"
 	"net"
 	"os"
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
 
 	pb "example/dist_sched/message"
 )
 
 const (
-	defaultName = "world"
+	defaultName   = "world"
 	numSchedulers = 9
 )
 
@@ -23,10 +24,10 @@ var (
 	name = flag.String("name", defaultName, "Name to greet")
 )
 
-
-func findAddr(c chan net.IP) {
+func findAddr() []net.IP {
 	flag.Parse()
 	found := map[string]bool{}
+	var s []net.IP
 	for {
 		ips, err := net.LookupIP(*config.DNS)
 		if err != nil {
@@ -39,13 +40,12 @@ func findAddr(c chan net.IP) {
 			if found[ip.String()] {
 				continue
 			} else {
-				c <- ip
+				s = append(s, ip)
 				found[ip.String()] = true
 			}
 		}
 		if len(found) == numSchedulers {
-			close(c)
-			break
+			return s
 		} else {
 			log.Printf("Found %d IPs, waiting for %d\n", len(found), numSchedulers-len(found))
 			time.Sleep(time.Second * 5)
@@ -54,20 +54,16 @@ func findAddr(c chan net.IP) {
 
 }
 
-func MyClient() (map[string]*grpc.ClientConn, map[string]pb.MaxConsensusClient) {
-	conns := make(map[string]*grpc.ClientConn)
-	stubs := make(map[string]pb.MaxConsensusClient)
-	addrChan := make(chan net.IP)
-	go findAddr(addrChan)
-	for addr := range addrChan {
+func (sched *Scheduler) MyClient() {
+	addrSlice := findAddr()
 
-		// TODO conection keep alive?
-
-		conn, err := grpc.Dial(addr.String() + ":" + *config.Port, grpc.WithInsecure())
+	for _, addr := range addrSlice {
+		conn, err := grpc.Dial(addr.String()+":"+*config.Port, grpc.WithInsecure(),
+			grpc.WithKeepaliveParams(keepalive.ClientParameters{}))
 		if err != nil {
 			log.Fatalf("Could not connect to %v: %v\n", addr, err)
 		}
-		conns[addr.String()] = conn
+		sched.conns[addr.String()] = conn
 
 		stub := pb.NewGreeterClient(conn)
 
@@ -83,9 +79,7 @@ func MyClient() (map[string]*grpc.ClientConn, map[string]pb.MaxConsensusClient) 
 			log.Fatalf("could not greet: %v", err)
 		}
 
-		stubs[addr.String()] = pb.NewMaxConsensusClient(conn)
+		sched.stubs[addr.String()] = pb.NewMaxConsensusClient(conn)
 	}
 
-	return conns,stubs
 }
-

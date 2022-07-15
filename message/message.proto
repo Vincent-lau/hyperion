@@ -27,16 +27,34 @@ service Greeter {
 
 
 service MaxConsensus {
-  rpc ExchgMax (NumRequest) returns (NumReply) {}
+  rpc GetMax (EmptyRequest) returns (NumReply) {}
+}
 
+service RatioConsensus {
+  rpc GetValue (EmptyRequest) returns (ValueReply) {}
+}
+
+
+message EmptyRequest {
+}
+
+message ValueReply {
+  int32 it = 1;
+  double p = 2; // p_lj
+  double y = 3; // y_j
+  double z = 4; // z_j
+  double mm = 5; // M_j
+  double m = 6; // m_j
 }
 
 message NumRequest {
   int64 num = 1;
+  int32 it = 2;
 }
 
 message NumReply {
   int64 num = 1;
+  int32 it = 2;
 }
 
 

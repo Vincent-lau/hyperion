@@ -6,8 +6,8 @@ import (
 	"log"
 	"math/rand"
 	"os"
-	"time"
 	"sync"
+	"time"
 
 	pb "example/dist_sched/message"
 
@@ -19,12 +19,14 @@ import (
 )
 
 type Scheduler struct {
-	mu       sync.Mutex
-	hostname string
-	conns    map[string]*grpc.ClientConn // connected peers
-	stubs    map[string]pb.MaxConsensusClient
-	curMax   int
-	done     bool
+	mu          sync.Mutex
+	hostname    string
+	conns       map[string]*grpc.ClientConn      // connected peers
+	stubs       map[string]pb.MaxConsensusClient // number of outneighbours
+	inNeighbour int                              // number of in neighbours
+	curMax      int
+	it          int
+	done        bool
 
 	pb.UnimplementedGreeterServer
 	pb.UnimplementedMaxConsensusServer
@@ -41,18 +43,19 @@ func New(n int) *Scheduler {
 		log.Fatalf("Could not get hostname: %v\n", err)
 	}
 
-	go MyServer()
-
-	conns, stubs := MyClient()
-
-	scheduler := &Scheduler{
-		hostname: hostname,
-		conns:    conns,
-		stubs:    stubs,
-		curMax:   n,
+	sched := &Scheduler{
+		hostname:    hostname,
+		conns: 	     make(map[string]*grpc.ClientConn),
+		stubs:       make(map[string]pb.MaxConsensusClient),
+		curMax:      n,
+		it:          0,
+		done:        false,
 	}
 
-	return scheduler
+	go sched.MyServer()
+	sched.MyClient()
+
+	return sched
 
 }
 

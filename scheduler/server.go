@@ -1,9 +1,9 @@
 package scheduler
 
 import (
-	"flag"
 	"context"
 	"example/dist_sched/config"
+	"flag"
 	"log"
 	"net"
 
@@ -12,15 +12,16 @@ import (
 	pb "example/dist_sched/message"
 )
 
-func MyServer() {
+func (sched *Scheduler) MyServer() {
 	flag.Parse()
-	lis, err := net.Listen("tcp", ":" + *config.Port)
+	lis, err := net.Listen("tcp", ":"+*config.Port)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
+
 	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, &Scheduler{})
-	pb.RegisterMaxConsensusServer(s, &Scheduler{})
+	pb.RegisterGreeterServer(s, sched)
+	pb.RegisterMaxConsensusServer(s, sched)
 
 	log.Printf("server listening at %v", lis.Addr())
 	if err := s.Serve(lis); err != nil {
@@ -30,11 +31,18 @@ func MyServer() {
 
 // SayHello implements helloworld.GreeterServer
 func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
+	sched.inNeighbour++
+
 	log.Printf("Received: %v from %v", in.GetName(), in.GetHostname())
 	return &pb.HelloReply{Message: "Hello " + in.GetName() + in.GetHostname()}, nil
 }
 
-func (sched *Scheduler) ExchgMax(ctx context.Context, in *pb.NumRequest) (*pb.NumReply, error) {
-	log.Printf("Received: %v", in.GetNum())
-	return &pb.NumReply{Num: int64(sched.curMax)}, nil
+func (sched *Scheduler) GetMax(ctx context.Context, in *pb.EmptyRequest) (*pb.NumReply, error) {
+
+	return &pb.NumReply{Num: int64(sched.curMax), It: int32(sched.it)}, nil
 }
+
+
