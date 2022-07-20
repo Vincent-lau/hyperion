@@ -4,12 +4,12 @@ metadata:
   name: controller-svc
   namespace: kube-system
 spec:
+  clusterIP: None
   selector:
-    component: controller
+    component: scheduler
     tier: control-plane
+    name: my-controller
   ports:
     - protocol: TCP
       port: 80
       targetPort: 3000
-
-

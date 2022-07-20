@@ -6,6 +6,7 @@ metadata:
   labels:
     component: scheduler
     tier: control-plane
+    name: my-controller
 spec:
   tolerations:
     - key: "node-role.kubernetes.io/master"
