@@ -57,7 +57,7 @@ spec:
     matchLabels:
       component: scheduler
       tier: control-plane
-  replicas: 9
+  replicas: 5
   template:
     metadata:
       labels:
@@ -84,7 +84,7 @@ spec:
           requests:
             cpu: '0.1'
         securityContext:
-          privileged: false
+          privileged: true
         volumeMounts:
           - name: config-volume
             mountPath: /etc/kubernetes/my-scheduler
