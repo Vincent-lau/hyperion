@@ -10,6 +10,8 @@
 app/main
 main/main
 *.pb.go
+ctl
+sched
 
 # Test binary, built with `go test -c`
 *.test
