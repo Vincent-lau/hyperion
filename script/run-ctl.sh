@@ -1,6 +1,6 @@
 #!/bin/zsh
 
-echo "deploying controller"
+echo "=====================deploying controller=================="
 
 go build -race -o ./cmd/controller/ctl cmd/controller/main.go && \
 docker build -t my-ctl cmd/controller && \
