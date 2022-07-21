@@ -14,57 +14,85 @@
 
 syntax = "proto3";
 
-option go_package = "example/dist_sched/helloworld";
+option go_package = "example/dist_sched/message";
 
 
 package message;
 
-// The greeting service definition.
-service Greeter {
-  // Sends a greeting
-  rpc SayHello (HelloRequest) returns (HelloReply) {}
-}
-
-
-service MaxConsensus {
-  rpc GetMax (EmptyRequest) returns (NumReply) {}
-}
 
 service RatioConsensus {
-  rpc GetValue (EmptyRequest) returns (ValueReply) {}
+  rpc SayHello (HelloRequest) returns (HelloReply) {}
+  rpc sendConData (ConDataRequest) returns (EmptyReply) {}
+}
+
+service SchedReg {
+  rpc Reg(RegRequest) returns (RegReply) {}
+  rpc GetNeighbours(NeighboursRequest) returns (NeighboursReply) {}
+  rpc FinSetup(SetupRequest) returns (SetupReply) {}
+  // rpc Advance(EmptyRequest) returns (AdvanceReply) {}
+}
+
+message RegRequest {
+  string name = 1;
+  string ip = 2;
+}
+
+message RegReply {
+  int32 you = 1;
+}
+
+message NeighboursRequest {
+  int32 me = 1;
+}
+
+message NeighboursReply {
+  repeated string neigh = 1;
+}
+
+message SetupRequest {
+  int32 me = 1;
+}
+
+message SetupReply {
+  bool finished = 1;
 }
 
 
 message EmptyRequest {
 }
 
-message ValueReply {
-  int32 it = 1;
-  double p = 2; // p_lj
-  double y = 3; // y_j
-  double z = 4; // z_j
-  double mm = 5; // M_j
-  double m = 6; // m_j
+message EmptyReply {
 }
 
-message NumRequest {
-  int64 num = 1;
-  int32 it = 2;
+message ConDataRequest {
+  int32 k = 1;
+  string name = 2;
+  ConData data = 3;
 }
 
-message NumReply {
-  int64 num = 1;
-  int32 it = 2;
+
+message ConDataReply {
+  int32 k = 1;
+  string name = 2;
+  ConData data = 3;
 }
+
+message ConData {
+  double p = 3; // p_lj
+  double y = 4; // y_j
+  double z = 5; // z_j
+  double mm = 6; // M_j
+  double m = 7; // m_j
+}
+
 
 
 // The request message containing the user's name.
 message HelloRequest {
   string name = 1;
-  string hostname = 2;
 }
 
 // The response message containing the greetings
 message HelloReply {
-  string message = 1;
+  string name = 1;
 }

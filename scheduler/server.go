@@ -3,30 +3,35 @@ package scheduler
 import (
 	"context"
 	"example/dist_sched/config"
-	"flag"
-	"log"
 	"net"
+
+	log "github.com/sirupsen/logrus"
+	"golang.org/x/exp/slices"
 
 	"google.golang.org/grpc"
 
 	pb "example/dist_sched/message"
 )
 
-func (sched *Scheduler) MyServer() {
-	flag.Parse()
-	lis, err := net.Listen("tcp", ":"+*config.Port)
+func (sched *Scheduler) AsServer() {
+	// TODO is tcp fast enough?
+	lis, err := net.Listen("tcp", ":"+*config.SchedPort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
 	s := grpc.NewServer()
-	pb.RegisterGreeterServer(s, sched)
-	pb.RegisterMaxConsensusServer(s, sched)
+	pb.RegisterRatioConsensusServer(s, sched)
 
 	log.Printf("server listening at %v", lis.Addr())
-	if err := s.Serve(lis); err != nil {
-		log.Fatalf("failed to serve: %v", err)
-	}
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Fatalf("failed to serve")
+		}
+	}()
+
 }
 
 // SayHello implements helloworld.GreeterServer
@@ -34,15 +39,46 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
-	sched.inNeighbour++
+	if !slices.Contains(sched.inConns, in.GetName()) {
+		sched.inNeighbours++
+		sched.inConns = append(sched.inConns, in.GetName())
+	}
 
-	log.Printf("Received: %v from %v", in.GetName(), in.GetHostname())
-	return &pb.HelloReply{Message: "Hello " + in.GetName() + in.GetHostname()}, nil
+	log.Printf("Received hello from %v", in.GetName())
+	return &pb.HelloReply{Name: sched.hostname}, nil
 }
 
-func (sched *Scheduler) GetMax(ctx context.Context, in *pb.EmptyRequest) (*pb.NumReply, error) {
+func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) (*pb.EmptyReply, error) {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
 
-	return &pb.NumReply{Num: int64(sched.curMax), It: int32(sched.it)}, nil
+	k := int(in.GetK())
+	if _, ok := sched.conData[k]; !ok {
+		sched.conData[k] = make(map[string]*pb.ConData)
+	}
+	sched.conData[k][in.GetName()] = in.GetData()
+
+	log.WithFields(log.Fields{
+		"from":               in.GetName(),
+		"scheduler k":        sched.k,
+		"received k":         in.GetK(),
+		"data":               in.GetData(),
+		"expecting total":    sched.inNeighbours,
+		"currently received": len(sched.CurData()) - 1,
+	}).Info("Received data")
+
+	if len(sched.CurData())-1 == sched.inNeighbours {
+		// received from all inbound neighbours
+		sched.cond.Broadcast()
+	}
+
+	// data := pb.ConData{
+	// 	Y:  myData.GetY(),
+	// 	Z:  myData.GetZ(),
+	// 	Mm: myData.GetMm(),
+	// 	M:  myData.GetM(),
+	// 	P:  myData.GetP(),
+	// }
+
+	return &pb.EmptyReply{}, nil
 }
-
-
