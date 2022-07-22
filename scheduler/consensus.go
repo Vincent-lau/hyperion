@@ -39,7 +39,7 @@ func (sched *Scheduler) CheckCvg() bool {
 
 				log.Info("waiting for other schedulers to reach convergence")
 
-				sched.stopCond.Wait()
+				sched.cond.Wait()
 			}
 		}
 
@@ -88,26 +88,41 @@ func (sched *Scheduler) sendOne(name string, stub pb.RatioConsensusClient, done 
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-	defer cancel()
+	for {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
 
-	log.WithFields(log.Fields{
-		"to":   name,
-		"k":    sched.k,
-		"data": sched.MyData(),
-	}).Info("sending data in sendOne")
-
-	_, err := stub.SendConData(ctx, &pb.ConDataRequest{
-		K:    int32(sched.k),
-		Name: sched.hostname,
-		Data: sched.MyData()})
-
-	if err != nil {
 		log.WithFields(log.Fields{
-			"error":              err,
-			"sending request to": name,
-			"iteration":          sched.k,
-		}).Fatal("error send conData")
+			"to":   name,
+			"k":    sched.k,
+			"data": sched.MyData(),
+		}).Info("sending data in sendOne")
+
+		data := &pb.ConDataRequest{
+			K:    int32(sched.k),
+			Name: sched.hostname,
+			Data: sched.MyData(),
+		}
+
+
+		sched.mu.Unlock()
+		_, err := stub.SendConData(ctx,data)
+		sched.mu.Lock()
+
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error":              err,
+				"sending request to": name,
+				"iteration":          sched.k,
+			}).Warn("error send conData")
+
+			sched.mu.Unlock()
+			time.Sleep(time.Second * 2)
+			sched.mu.Lock()
+
+		} else {
+			break
+		}
 	}
 
 	done <- 1

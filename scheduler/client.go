@@ -62,6 +62,8 @@ func findCtlAddr() net.IP {
 }
 
 func (sched *Scheduler) regWithCtl() {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
 
 	host, err := os.Hostname()
 	myIP := getOutboundIP()
@@ -74,18 +76,22 @@ func (sched *Scheduler) regWithCtl() {
 
 	var r *pb.RegReply
 	for {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second * 2)
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 		defer cancel()
+		sched.mu.Unlock()
 		r, err = sched.ctlStub.Reg(ctx, &pb.RegRequest{
 			Name: host,
 			Ip:   myIP.String(),
 		})
+		sched.mu.Lock()
 
 		if err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
 			}).Info("Could not register with controller")
+			sched.mu.Unlock()
 			time.Sleep(time.Second)
+			sched.mu.Lock()
 		} else {
 			break
 		}
@@ -99,17 +105,25 @@ func (sched *Scheduler) regWithCtl() {
 }
 
 func (sched *Scheduler) getNeighbours() []string {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
+		sched.mu.Unlock()
 		r, err := sched.ctlStub.GetNeighbours(ctx, &pb.NeighboursRequest{
 			Me: int32(sched.me),
 		})
+		sched.mu.Lock()
 		if err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
 			}).Info("could not get neighbours")
+
+			sched.mu.Unlock()
 			time.Sleep(time.Second)
+			sched.mu.Lock()
 		} else {
 			log.WithFields(log.Fields{
 				"neighbours": r.GetNeigh(),
@@ -120,9 +134,13 @@ func (sched *Scheduler) getNeighbours() []string {
 }
 
 func (sched *Scheduler) connectNeigh(neighbours []string) {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
 	for _, n := range neighbours {
 		conn, err := grpc.Dial(n+":"+*config.SchedPort, grpc.WithInsecure(),
 			grpc.WithKeepaliveParams(keepalive.ClientParameters{}))
+
 		if err != nil {
 			log.WithFields(log.Fields{
 				"neighbour address": n,
@@ -136,14 +154,21 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 		for {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 			defer cancel()
+			sched.mu.Unlock()
 			r, err = stub.SayHello(ctx, &pb.HelloRequest{Name: sched.hostname})
+			sched.mu.Lock()
 			if err != nil {
 				log.WithFields(log.Fields{
 					"neighbour addr": n,
-					"error": err,
+					"error":          err,
 				}).Warn("could not greet")
+				sched.mu.Unlock()
 				time.Sleep(time.Second * 3)
+				sched.mu.Lock()
 			} else {
+				log.WithFields(log.Fields{
+					"to": r.GetName(),
+				}).Info("greeted")
 				break
 			}
 		}
@@ -156,32 +181,40 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 	log.WithFields(log.Fields{
 		"number of out neighbours": sched.outNeighbours,
 	}).Info("connected to all neighbours")
-
 }
 
 func (sched *Scheduler) waitForFinish() {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
+		sched.mu.Unlock()
 		r, err := sched.ctlStub.FinSetup(ctx, &pb.SetupRequest{
 			Me: int32(sched.me),
+			InNeighbours: int64(sched.inNeighbours),
 		})
+		sched.mu.Lock()
+
 		if err != nil || !r.GetFinished() {
 			log.WithFields(log.Fields{
-				"error":     err,
-				"finished":  r.GetFinished(),
+				"error":    err,
+				"finished": r.GetFinished(),
 			}).Info("not finished yet")
-			time.Sleep(time.Second * 3)
-		} else {
+			sched.mu.Unlock()
+			time.Sleep(time.Second * 2)
 			sched.mu.Lock()
+
+		} else {
 			log.WithFields(log.Fields{
 				"in nieghbours": sched.inNeighbours,
+				"controller reply": r.GetFinished(),
 			}).Info("all schedulers are connected")
-			sched.mu.Unlock()
-
 			break
 		}
 	}
+
 }
 
 // func findAddr() []net.IP {

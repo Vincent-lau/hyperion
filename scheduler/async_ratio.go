@@ -13,6 +13,8 @@ import (
 
 func (sched *Scheduler) InitMyConData() {
 
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
 
 	if _, ok := sched.conData[0]; !ok {
 		sched.conData[0] = make(map[string]*pb.ConData)
