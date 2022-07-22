@@ -154,7 +154,7 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 	sched.outNeighbours = len(sched.outConns)
 
 	log.WithFields(log.Fields{
-		"number of neighbours": sched.outNeighbours,
+		"number of out neighbours": sched.outNeighbours,
 	}).Info("connected to all neighbours")
 
 }
@@ -173,9 +173,12 @@ func (sched *Scheduler) waitForFinish() {
 			}).Info("not finished yet")
 			time.Sleep(time.Second * 3)
 		} else {
+			sched.mu.Lock()
 			log.WithFields(log.Fields{
 				"in nieghbours": sched.inNeighbours,
-			}).Info("all schedulers are done")
+			}).Info("all schedulers are connected")
+			sched.mu.Unlock()
+
 			break
 		}
 	}

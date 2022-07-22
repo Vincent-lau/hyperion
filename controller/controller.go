@@ -105,6 +105,9 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 	defer ctl.mu.Unlock()
 
 	ctl.readySched[int(in.GetMe())] = true
+	log.WithFields(log.Fields{
+		"scheduler ready": in.GetMe(),
+	}).Info("scheduler ready")
 
 	if len(ctl.readySched) == *config.NumSchedulers {
 		log.WithFields(log.Fields{
