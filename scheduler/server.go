@@ -72,6 +72,11 @@ func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) 
 		sched.cond.Broadcast()
 	}
 
+	if sched.timeToCheck() && int(in.GetK()) > sched.k {
+		// received an update from a non-terminating node
+		sched.stopCond.Broadcast()	
+	}
+
 	// data := pb.ConData{
 	// 	Y:  myData.GetY(),
 	// 	Z:  myData.GetZ(),

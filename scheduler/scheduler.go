@@ -30,8 +30,9 @@ type Scheduler struct {
 	done    bool
 
 	// used by central controller
-	me      int
-	ctlStub pb.SchedRegClient
+	me       int
+	ctlStub  pb.SchedRegClient
+	stopCond *sync.Cond
 
 	// implementing the gRPC server
 	pb.UnimplementedRatioConsensusServer
@@ -61,6 +62,7 @@ func New() *Scheduler {
 		done:    false,
 	}
 	sched.cond = sync.NewCond(&sched.mu)
+	sched.stopCond = sync.NewCond(&sched.mu)
 
 	sched.AsServer()
 	time.Sleep(time.Second)

@@ -10,29 +10,56 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+func (sched *Scheduler) timeToCheck() bool {
+	return sched.k%*config.Diameter == 0 && sched.k != 0
+}
+
 func (sched *Scheduler) CheckCvg() bool {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
 	if sched.done {
-		return true
+
+		for {
+			if len(sched.conData[sched.k+1]) > 1 {
+				// we have received a response from another node, so continue the consensus
+				// and we have already put our data in the k+1 in LocalComp
+				sched.k++
+
+				log.WithFields(log.Fields{
+					"current k": sched.k,
+					"my data":   sched.MyData(),
+				}).Info("Have reached convergence but exiting due to other schedulers not terminating")
+
+				sched.done = false
+				break
+			} else {
+				// TODO need some kind of controller notification in case all have terminated
+				// otherwise wait forever when all terminated
+
+				log.Info("waiting for other schedulers to reach convergence")
+
+				sched.stopCond.Wait()
+			}
+		}
+
 	}
 
 	log.Println("checking convergence...")
 	curData := sched.MyData()
-	if sched.k%*config.Diameter == 0 && sched.k != 0 {
+	if sched.timeToCheck() {
 		if math.Abs(curData.GetMm()-curData.GetM()) < *config.Tolerance {
 			sched.done = true
 
 			log.WithFields(log.Fields{
 				"name":      sched.hostname,
 				"iteration": sched.k,
-			}).Info("convergence reached!")
+				"data":      sched.MyData(),
+				"ratio":     sched.MyData().GetY() / sched.MyData().GetZ(),
+			}).Info("convergence reached for this node!")
 		}
 
-
 		mu := curData.GetY() / curData.GetZ()
-
 
 		log.WithFields(log.Fields{
 			"Mm":   curData.GetMm(),
@@ -42,7 +69,7 @@ func (sched *Scheduler) CheckCvg() bool {
 			"Z":    curData.GetZ(),
 			"mu":   mu,
 			"done": sched.done,
-		}).Info("updating M and m")
+		}).Info("so updating M and m")
 
 		sched.conData[sched.k][sched.hostname] = &pb.ConData{
 			P:  curData.GetP(),
@@ -80,18 +107,11 @@ func (sched *Scheduler) sendOne(name string, stub pb.RatioConsensusClient, done 
 			"error":              err,
 			"sending request to": name,
 			"iteration":          sched.k,
-		}).Fatal("error requesting conData")
+		}).Fatal("error send conData")
 	}
 
 	done <- 1
 
-	// log.WithFields(log.Fields{
-	// 	"content": r,
-	// }).Info("Received response")
-
-	// if int(r.GetK()) == sched.k {
-	// 	sched.conData[r.GetName()] = r.GetData()
-	// }
 }
 
 func (sched *Scheduler) MsgXchg() {
@@ -105,7 +125,7 @@ func (sched *Scheduler) MsgXchg() {
 	}
 
 	log.WithFields(log.Fields{
-		"from": sched.outConns,
+		"to": sched.outConns,
 	}).Info("waiting for goroutine to finish sendOne")
 
 	sched.mu.Unlock()
@@ -174,11 +194,11 @@ func (sched *Scheduler) LocalComp() {
 	}
 
 	log.WithFields(log.Fields{
-		"to": sched.k + 1,
+		"to":           sched.k + 1,
 		"updated data": sched.conData[sched.k+1][sched.hostname],
 	}).Info("awesome computation done, advancing iteration counter")
 
-	if (!sched.done) {
+	if !sched.done {
 		sched.k++
 	}
 
@@ -195,8 +215,8 @@ func (sched *Scheduler) Consensus() {
 	}
 
 	log.WithFields(log.Fields{
-		"iteration": sched.k,
-		"data":      sched.MyData(),
+		"iteration":         sched.k,
+		"data":              sched.MyData(),
 		"average consensus": sched.MyData().GetY() / sched.MyData().GetZ(),
 	}).Info("consensus done!")
 }
