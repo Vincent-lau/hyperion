@@ -9,6 +9,7 @@ import (
 	"golang.org/x/exp/slices"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/keepalive"
 
 	pb "example/dist_sched/message"
 )
@@ -20,7 +21,9 @@ func (sched *Scheduler) AsServer() {
 		log.Fatalf("failed to listen: %v", err)
 	}
 
-	s := grpc.NewServer()
+	s := grpc.NewServer(
+		grpc.KeepaliveParams(keepalive.ServerParameters{}),
+		grpc.KeepaliveEnforcementPolicy(keepalive.EnforcementPolicy{}))
 	pb.RegisterRatioConsensusServer(s, sched)
 
 	log.Printf("server listening at %v", lis.Addr())
@@ -74,16 +77,8 @@ func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) 
 
 	if sched.timeToCheck() && int(in.GetK()) > sched.k {
 		// received an update from a non-terminating node
-		sched.stopCond.Broadcast()	
+		sched.cond.Broadcast()
 	}
-
-	// data := pb.ConData{
-	// 	Y:  myData.GetY(),
-	// 	Z:  myData.GetZ(),
-	// 	Mm: myData.GetMm(),
-	// 	M:  myData.GetM(),
-	// 	P:  myData.GetP(),
-	// }
 
 	return &pb.EmptyReply{}, nil
 }
