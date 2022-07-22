@@ -104,19 +104,31 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 	ctl.mu.Lock()
 	defer ctl.mu.Unlock()
 
-	ctl.readySched[int(in.GetMe())] = true
-	log.WithFields(log.Fields{
-		"scheduler ready": in.GetMe(),
-	}).Info("scheduler ready")
+	/*  we check:
+	1. all schedulers are ready
+	2. the scheduler has been connected by all its in neighbours
+	*/
+	allReady := len(ctl.readySched) == *config.NumSchedulers
+	allConnected := int(in.GetInNeighbours()) == len(config.RNetwork[int(in.GetMe())])
 
-	if len(ctl.readySched) == *config.NumSchedulers {
-		log.WithFields(log.Fields{
-			"schedulers": ctl.readySched,
-		}).Info("finished setup")
+	if allConnected {
+		ctl.readySched[int(in.GetMe())] = true
 	}
 
+	log.WithFields(log.Fields{
+		"scheduler ready":  in.GetMe(),
+		"scheduler status": ctl.readySched,
+	}).Info("scheduler ready")
+
+
+	log.WithFields(log.Fields{
+		"controller reply": allReady,
+		"to":               in.GetMe(),
+		"in neighbours":    in.GetInNeighbours(),
+	}).Info("controller reply")
+
 	return &pb.SetupReply{
-		Finished: len(ctl.readySched) == *config.NumSchedulers,
+		Finished: allReady,
 	}, nil
 
 }
