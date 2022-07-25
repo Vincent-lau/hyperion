@@ -15,7 +15,8 @@ import (
 )
 
 func (sched *Scheduler) AsServer() {
-	// TODO is tcp fast enough?
+	 // grpc will multiplex the connection over a single TCP connection
+	 // so tcp is fine here
 	lis, err := net.Listen("tcp", ":"+*config.SchedPort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)

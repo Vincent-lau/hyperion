@@ -25,7 +25,6 @@ type Scheduler struct {
 
 	k int
 
-	// TODO array of struct or struct of array
 	conData map[int]map[string]*pb.ConData
 	done    bool
 
