@@ -1,3 +1,4 @@
 FROM debian
 WORKDIR /app
-COPY . .
+COPY ./bin/ctl /app
+COPY ./config/data /app/data
