@@ -6,7 +6,7 @@ metadata:
 spec:
   clusterIP: None
   selector:
-    component: scheduler
+    component: controller
     tier: control-plane
     name: my-controller
   ports:

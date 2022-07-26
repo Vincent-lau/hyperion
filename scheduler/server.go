@@ -2,6 +2,7 @@ package scheduler
 
 import (
 	"context"
+	"errors"
 	"example/dist_sched/config"
 	"net"
 
@@ -12,11 +13,41 @@ import (
 	"google.golang.org/grpc/keepalive"
 
 	pb "example/dist_sched/message"
+
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
+func (sched *Scheduler) HealthSrv() {
+	lis, err := net.Listen("tcp", ":"+*config.LivenessPort)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Fatalf("failed to serve health server")
+	}
+
+	s := grpc.NewServer()
+	grpc_health_v1.RegisterHealthServer(s, sched)
+
+	log.WithFields(log.Fields{
+		"at": lis.Addr(),
+	}).Info("health server listening")
+
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Fatalf("failed to serve health server")
+		}
+	}()
+
+}
+
 func (sched *Scheduler) AsServer() {
-	 // grpc will multiplex the connection over a single TCP connection
-	 // so tcp is fine here
+
+	sched.HealthSrv()
+
+	// grpc will multiplex the connection over a single TCP connection
+	// so tcp is fine here
 	lis, err := net.Listen("tcp", ":"+*config.SchedPort)
 	if err != nil {
 		log.Fatalf("failed to listen: %v", err)
@@ -82,4 +113,12 @@ func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) 
 	}
 
 	return &pb.EmptyReply{}, nil
+}
+
+func (sched *Scheduler) Check(ctx context.Context, in *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {
+	return &grpc_health_v1.HealthCheckResponse{Status: grpc_health_v1.HealthCheckResponse_SERVING}, nil
+}
+
+func (sched *Scheduler) Watch(in *grpc_health_v1.HealthCheckRequest, stream grpc_health_v1.Health_WatchServer) error {
+	return errors.New("not implemented")
 }

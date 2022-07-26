@@ -45,7 +45,7 @@ data:
       leaderElect: false
 ---
 apiVersion: apps/v1
-kind: DaemonSet
+kind: Deployment
 metadata:
   labels:
     component: scheduler
@@ -57,6 +57,7 @@ spec:
     matchLabels:
       component: scheduler
       tier: control-plane
+  replicas: 9
   template:
     metadata:
       labels:

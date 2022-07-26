@@ -6,6 +6,7 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
+	"google.golang.org/grpc/health/grpc_health_v1"
 
 	pb "example/dist_sched/message"
 )
@@ -34,6 +35,8 @@ type Scheduler struct {
 
 	// implementing the gRPC server
 	pb.UnimplementedRatioConsensusServer
+
+	grpc_health_v1.UnimplementedHealthServer
 }
 
 const (

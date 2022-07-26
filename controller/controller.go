@@ -12,6 +12,7 @@ import (
 	"google.golang.org/grpc"
 
 	"golang.org/x/exp/slices"
+	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
 type Controller struct {
@@ -22,9 +23,11 @@ type Controller struct {
 	network    [][]int
 
 	pb.UnimplementedSchedRegServer
+	grpc_health_v1.UnimplementedHealthServer
 }
 
 func (ctl *Controller) AsServer() {
+	ctl.HealthSrv()
 
 	lis, err := net.Listen("tcp", ":"+*config.CtlPort)
 	if err != nil {
@@ -120,7 +123,6 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 		"scheduler status": ctl.readySched,
 	}).Info("scheduler ready")
 
-
 	log.WithFields(log.Fields{
 		"controller reply": allReady,
 		"to":               in.GetMe(),
@@ -130,5 +132,40 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 	return &pb.SetupReply{
 		Finished: allReady,
 	}, nil
+
+}
+
+func (ctl *Controller) Check(ctx context.Context, in *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {
+
+	return &grpc_health_v1.HealthCheckResponse{Status: grpc_health_v1.HealthCheckResponse_SERVING}, nil
+}
+
+func (ctl *Controller) Watch(in *grpc_health_v1.HealthCheckRequest, stream grpc_health_v1.Health_WatchServer) error {
+	return errors.New("not implemented")
+}
+
+func (ctl *Controller) HealthSrv() {
+
+	lis, err := net.Listen("tcp", ":"+*config.LivenessPort)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Fatalf("failed to serve health server")
+	}
+
+	s := grpc.NewServer()
+	grpc_health_v1.RegisterHealthServer(s, ctl)
+
+	log.WithFields(log.Fields{
+		"at": lis.Addr(),
+	}).Info("health server listening")
+
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Fatalf("failed to serve health server")
+		}
+	}()
 
 }
