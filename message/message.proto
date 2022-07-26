@@ -84,6 +84,7 @@ message ConData {
   double z = 5; // z_j
   double mm = 6; // M_j
   double m = 7; // m_j
+  bool flag = 8;
 }
 
 

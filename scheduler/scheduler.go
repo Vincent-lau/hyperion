@@ -24,14 +24,14 @@ type Scheduler struct {
 	outNeighbours int
 	stubs         map[string]pb.RatioConsensusClient // stubs of outNeighbours
 
-	k int
+	k    int
+	done bool // this indicates termination, which is different from flag
 
 	conData map[int]map[string]*pb.ConData
-	done    bool
 
 	// used by central controller
-	me       int
-	ctlStub  pb.SchedRegClient
+	me      int
+	ctlStub pb.SchedRegClient
 
 	// implementing the gRPC server
 	pb.UnimplementedRatioConsensusServer
@@ -60,7 +60,6 @@ func New() *Scheduler {
 		k:             0,
 
 		conData: make(map[int]map[string]*pb.ConData),
-		done:    false,
 	}
 	sched.cond = sync.NewCond(&sched.mu)
 
@@ -72,8 +71,4 @@ func New() *Scheduler {
 
 	return sched
 
-}
-
-func (sched *Scheduler) Done() bool {
-	return sched.done
 }

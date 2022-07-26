@@ -19,65 +19,67 @@ func (sched *Scheduler) CheckCvg() bool {
 	defer sched.mu.Unlock()
 
 	if sched.done {
-
-		for {
-			if len(sched.conData[sched.k+1]) > 1 {
-				// we have received a response from another node, so continue the consensus
-				// and we have already put our data in the k+1 in LocalComp
-				sched.k++
-
-				log.WithFields(log.Fields{
-					"current k": sched.k,
-					"my data":   sched.MyData(),
-				}).Info("Have reached convergence but exiting due to other schedulers not terminating")
-
-				sched.done = false
-				break
-			} else {
-				// TODO need some kind of controller notification in case all have terminated
-				// otherwise wait forever when all terminated
-
-				log.Info("waiting for other schedulers to reach convergence")
-
-				sched.cond.Wait()
-			}
-		}
-
+		return true
 	}
 
 	log.Println("checking convergence...")
-	curData := sched.MyData()
-	if sched.timeToCheck() {
-		if math.Abs(curData.GetMm()-curData.GetM()) < *config.Tolerance {
-			sched.done = true
+	myData := sched.MyData()
+	var flag bool
+	prevFlag := myData.GetFlag()
 
+	if sched.timeToCheck() {
+		if math.Abs(myData.GetMm()-myData.GetM()) < *config.Tolerance {
 			log.WithFields(log.Fields{
 				"name":      sched.hostname,
 				"iteration": sched.k,
 				"data":      sched.MyData(),
 				"ratio":     sched.MyData().GetY() / sched.MyData().GetZ(),
-			}).Info("convergence reached for this node!")
+			}).Info("flag raised for this node")
+			flag = true
+		} else {
+			flag = false
+
+			if myData.GetFlag() {
+				log.WithFields(log.Fields{
+					"at k": sched.k,
+					"data": sched.MyData(),
+				}).Info("flip!")
+			}
+
 		}
 
-		mu := curData.GetY() / curData.GetZ()
+		mu := myData.GetY() / myData.GetZ()
 
 		log.WithFields(log.Fields{
-			"Mm":   curData.GetMm(),
-			"m":    curData.GetM(),
-			"diff": math.Abs(curData.Mm - curData.M),
-			"Y":    curData.GetY(),
-			"Z":    curData.GetZ(),
+			"Mm":   myData.GetMm(),
+			"m":    myData.GetM(),
+			"diff": math.Abs(myData.Mm - myData.M),
+			"Y":    myData.GetY(),
+			"Z":    myData.GetZ(),
 			"mu":   mu,
-			"done": sched.done,
 		}).Info("so updating M and m")
 
 		sched.conData[sched.k][sched.hostname] = &pb.ConData{
-			P:  curData.GetP(),
-			Y:  curData.GetY(),
-			Z:  curData.GetZ(),
-			Mm: mu,
-			M:  mu,
+			P:    myData.GetP(),
+			Y:    myData.GetY(),
+			Z:    myData.GetZ(),
+			Mm:   mu,
+			M:    mu,
+			Flag: flag,
 		}
+
+		// now check for termination
+		if prevFlag && flag {
+			log.WithFields(log.Fields{
+				"name":  sched.hostname,
+				"k":     sched.k,
+				"data":  sched.MyData(),
+				"ratio": sched.MyData().GetY() / sched.MyData().GetZ(),
+			}).Info("termination reached")
+
+			sched.done = true
+		}
+
 	}
 
 	return false
@@ -104,9 +106,8 @@ func (sched *Scheduler) sendOne(name string, stub pb.RatioConsensusClient, done 
 			Data: sched.MyData(),
 		}
 
-
 		sched.mu.Unlock()
-		_, err := stub.SendConData(ctx,data)
+		_, err := stub.SendConData(ctx, data)
 		sched.mu.Lock()
 
 		if err != nil {
@@ -201,11 +202,12 @@ func (sched *Scheduler) LocalComp() {
 	}
 
 	sched.conData[sched.k+1][sched.hostname] = &pb.ConData{
-		P:  myData.GetP(),
-		Y:  newY,
-		Z:  newZ,
-		M:  newm,
-		Mm: newM,
+		P:    myData.GetP(),
+		Y:    newY,
+		Z:    newZ,
+		M:    newm,
+		Mm:   newM,
+		Flag: myData.GetFlag(),
 	}
 
 	log.WithFields(log.Fields{
