@@ -22,15 +22,21 @@ func init() {
 }
 
 func main() {
-	var s float64 = 0.0
-	for _, v := range config.Load {
-		s += v
+	var load float64 = 0.0
+	var used float64 = 0.0
+	var cap float64 = 0.0
+	for i := range config.Load {
+		load += config.Load[i]
+		used += config.Used[i]
+
+		cap += config.Cap[i]
 	}
+
 
 	log.WithFields(log.Fields{
 		"loads": config.Load,
 		"number of schedulers": *config.NumSchedulers,
-		"expected ratio": s / float64(*config.NumSchedulers),
+		"expected ratio": (used + load) / cap,
 	}).Info("expected ratio")
 
 	ctl := controller.New()

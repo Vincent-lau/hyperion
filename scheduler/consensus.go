@@ -220,7 +220,7 @@ func (sched *Scheduler) LocalComp() {
 }
 
 func (sched *Scheduler) Consensus() {
-	for !sched.CheckCvg() && sched.k < 50 {
+	for !sched.CheckCvg() && sched.k < *config.MaxIter {
 
 		log.Printf("doing msg exchange...")
 		sched.MsgXchg()
