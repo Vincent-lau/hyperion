@@ -14,6 +14,21 @@ func (sched *Scheduler) timeToCheck() bool {
 	return sched.k%*config.Diameter == 0 && sched.k != 0
 }
 
+func (sched *Scheduler) getPrevRoundFlag() bool {
+	if sched.k >= *config.Diameter {
+
+		log.WithFields(log.Fields{
+			"k": sched.k,
+			"prev k": sched.k - *config.Diameter,
+			"prev k flag": sched.conData[sched.k-*config.Diameter][sched.hostname].GetFlag(),
+		}).Info("checking flag at previous round")
+
+		return sched.conData[sched.k-*config.Diameter][sched.hostname].GetFlag()
+	} else {
+		return false
+	}
+}
+
 func (sched *Scheduler) CheckCvg() bool {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
@@ -24,60 +39,67 @@ func (sched *Scheduler) CheckCvg() bool {
 
 	log.Println("checking convergence...")
 	myData := sched.MyData()
-	var flag bool
-	prevFlag := myData.GetFlag()
 
-	if sched.timeToCheck() {
-		if math.Abs(myData.GetMm()-myData.GetM()) < *config.Tolerance {
-			log.WithFields(log.Fields{
-				"name":      sched.hostname,
-				"iteration": sched.k,
-				"data":      sched.MyData(),
-				"ratio":     sched.MyData().GetY() / sched.MyData().GetZ(),
-			}).Info("flag raised for this node")
-			flag = true
-		} else {
-			flag = false
-
-			if myData.GetFlag() {
+	if !myData.GetFlag() {
+		flag := false
+		if sched.timeToCheck() {
+			if math.Abs(myData.GetMm()-myData.GetM()) < *config.Tolerance {
 				log.WithFields(log.Fields{
-					"at k": sched.k,
-					"data": sched.MyData(),
-				}).Info("flip!")
+					"name":      sched.hostname,
+					"iteration": sched.k,
+					"data":      sched.MyData(),
+					"ratio":     sched.MyData().GetY() / sched.MyData().GetZ(),
+				}).Info("flag raised for this node")
+				flag = true
+			}
+			mu := myData.GetY() / myData.GetZ()
+
+			log.WithFields(log.Fields{
+				"Mm":   myData.GetMm(),
+				"m":    myData.GetM(),
+				"diff": math.Abs(myData.Mm - myData.M),
+				"Y":    myData.GetY(),
+				"Z":    myData.GetZ(),
+				"mu":   mu,
+			}).Info("updating M and m")
+
+			sched.conData[sched.k][sched.hostname] = &pb.ConData{
+				P:    myData.GetP(),
+				Y:    myData.GetY(),
+				Z:    myData.GetZ(),
+				Mm:   mu,
+				M:    mu,
+				Flag: flag,
+			}
+
+			// now check for termination
+			if sched.getPrevRoundFlag() && flag {
+				log.WithFields(log.Fields{
+					"name":  sched.hostname,
+					"k":     sched.k,
+					"data":  sched.MyData(),
+					"ratio": sched.MyData().GetY() / sched.MyData().GetZ(),
+				}).Info("termination reached")
+
+				sched.done = true
 			}
 
 		}
 
-		mu := myData.GetY() / myData.GetZ()
-
-		log.WithFields(log.Fields{
-			"Mm":   myData.GetMm(),
-			"m":    myData.GetM(),
-			"diff": math.Abs(myData.Mm - myData.M),
-			"Y":    myData.GetY(),
-			"Z":    myData.GetZ(),
-			"mu":   mu,
-		}).Info("so updating M and m")
-
-		sched.conData[sched.k][sched.hostname] = &pb.ConData{
-			P:    myData.GetP(),
-			Y:    myData.GetY(),
-			Z:    myData.GetZ(),
-			Mm:   mu,
-			M:    mu,
-			Flag: flag,
-		}
-
-		// now check for termination
-		if prevFlag && flag {
+	} else { // flag == 1
+		if math.Abs(myData.GetMm()-myData.GetM()) >= *config.Tolerance {
+			sched.conData[sched.k][sched.hostname] = &pb.ConData{
+				P:    myData.GetP(),
+				Y:    myData.GetY(),
+				Z:    myData.GetZ(),
+				Mm:   myData.GetMm(),
+				M:    myData.GetM(),
+				Flag: false,
+			}
 			log.WithFields(log.Fields{
-				"name":  sched.hostname,
-				"k":     sched.k,
-				"data":  sched.MyData(),
-				"ratio": sched.MyData().GetY() / sched.MyData().GetZ(),
-			}).Info("termination reached")
-
-			sched.done = true
+				"at": sched.k,
+				"data": sched.MyData(),
+			}).Info("flip!")
 		}
 
 	}
@@ -207,7 +229,7 @@ func (sched *Scheduler) LocalComp() {
 		Z:    newZ,
 		M:    newm,
 		Mm:   newM,
-		Flag: myData.GetFlag(),
+		Flag: false,
 	}
 
 	log.WithFields(log.Fields{
