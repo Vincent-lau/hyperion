@@ -11,7 +11,7 @@ import (
 
 
 func readMat() [][]int {
-	file, err := os.Open("data/adj.txt")	
+	file, err := os.Open(*MFile)	
 	if err != nil {
 		log.Fatal(err)
 	}
