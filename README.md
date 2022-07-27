@@ -5,14 +5,18 @@
 
 ```
 .
-├── app      # binary code for scheudler
-├── client   # scheduler as a client
-├── config   # some network configuration
-├── deploy   # k8s deployment files
-├── main
-├── message  # Protobuf code
-├── scheduler
-└── server # scheduler server stuff
+├── bin # binary for scheudler and controller
+├── cmd # main files for scheduler and controller
+│   ├── controller
+│   └── scheduler
+├── config  # some network configuration
+│   └── data # network topology
+├── controller # controller for setting up the graph
+├── deploy # k8s deployment files
+├── message # protobuf
+├── scheduler # main scheduler source code
+├── script
+└── server
 ```
 
 
