@@ -13,6 +13,8 @@ main/main
 ctl
 sched
 data/
+profiles/
+scratch.txt
 
 # Test binary, built with `go test -c`
 *.test
