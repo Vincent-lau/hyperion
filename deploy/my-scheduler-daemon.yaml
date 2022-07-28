@@ -64,6 +64,19 @@ spec:
         tier: control-plane
         version: third
     spec:
+      # affinity:
+      #   nodeAffinity:
+      #     requiredDuringSchedulingIgnoredDuringExecution:
+      #       nodeSelectorTerms:
+      #       - matchExpressions:
+      #         - key: kubernetes.io/hostname
+      #           operator: In
+      #           values:
+      #           - caelum-103
+      #           - caelum-201
+      #           - caelum-214
+      #           - caelum-401
+      #           - caelum-402
       topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
@@ -77,6 +90,7 @@ spec:
       containers:
       - command:
         - /usr/local/bin/kube-scheduler
+        - -cpuprofile=sched.prof
         image: cuso4/my-sched
         ports:
         - containerPort: 2379

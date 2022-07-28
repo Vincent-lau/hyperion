@@ -57,18 +57,18 @@ spec:
     matchLabels:
       component: scheduler
       tier: control-plane
-  replicas: 9
+  replicas: 50
   template:
     metadata:
       labels:
         component: scheduler
         tier: control-plane
-        version: third
+        version: second
     spec:
       topologySpreadConstraints:
       - maxSkew: 1
         topologyKey: kubernetes.io/hostname
-        whenUnsatisfiable: DoNotSchedule
+        whenUnsatisfiable: ScheduleAnyway
         labelSelector:
           matchLabels:
             component: scheduler
