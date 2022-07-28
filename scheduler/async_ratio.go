@@ -7,8 +7,9 @@ package scheduler
 import (
 	"example/dist_sched/config"
 	pb "example/dist_sched/message"
-	log "github.com/sirupsen/logrus"
 	"math"
+
+	log "github.com/sirupsen/logrus"
 )
 
 func (sched *Scheduler) InitMyConData() {
@@ -32,6 +33,6 @@ func (sched *Scheduler) InitMyConData() {
 
 	log.WithFields(log.Fields{
 		"data": sched.MyData(),
-	}).Info("initialized conData")
+	}).Debug("initialized conData")
 
 }

@@ -5,25 +5,29 @@ import (
 	"example/dist_sched/config"
 	pb "example/dist_sched/message"
 	"math"
+	"os"
+	"runtime/pprof"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 )
 
+var metricsLogger = log.WithFields(log.Fields{"prefix": "metrics"})
+
 func (sched *Scheduler) timeToCheck() bool {
-	return sched.k%*config.Diameter == 0 && sched.k != 0
+	return sched.k%config.Diameter == 0 && sched.k != 0
 }
 
 func (sched *Scheduler) getPrevRoundFlag() bool {
-	if sched.k >= *config.Diameter {
+	if sched.k >= config.Diameter {
 
 		log.WithFields(log.Fields{
-			"k": sched.k,
-			"prev k": sched.k - *config.Diameter,
-			"prev k flag": sched.conData[sched.k-*config.Diameter][sched.hostname].GetFlag(),
-		}).Info("checking flag at previous round")
+			"k":           sched.k,
+			"prev k":      sched.k - config.Diameter,
+			"prev k flag": sched.conData[sched.k-config.Diameter][sched.hostname].GetFlag(),
+		}).Debug("checking flag at previous round")
 
-		return sched.conData[sched.k-*config.Diameter][sched.hostname].GetFlag()
+		return sched.conData[sched.k-config.Diameter][sched.hostname].GetFlag()
 	} else {
 		return false
 	}
@@ -37,7 +41,7 @@ func (sched *Scheduler) CheckCvg() bool {
 		return true
 	}
 
-	log.Println("checking convergence...")
+	log.Debug("checking convergence...")
 	myData := sched.MyData()
 
 	if !myData.GetFlag() {
@@ -49,7 +53,7 @@ func (sched *Scheduler) CheckCvg() bool {
 					"iteration": sched.k,
 					"data":      sched.MyData(),
 					"ratio":     sched.MyData().GetY() / sched.MyData().GetZ(),
-				}).Info("flag raised for this node")
+				}).Debug("flag raised for this node")
 				flag = true
 			}
 			mu := myData.GetY() / myData.GetZ()
@@ -61,7 +65,7 @@ func (sched *Scheduler) CheckCvg() bool {
 				"Y":    myData.GetY(),
 				"Z":    myData.GetZ(),
 				"mu":   mu,
-			}).Info("updating M and m")
+			}).Debug("updating M and m")
 
 			sched.conData[sched.k][sched.hostname] = &pb.ConData{
 				P:    myData.GetP(),
@@ -79,7 +83,7 @@ func (sched *Scheduler) CheckCvg() bool {
 					"k":     sched.k,
 					"data":  sched.MyData(),
 					"ratio": sched.MyData().GetY() / sched.MyData().GetZ(),
-				}).Info("termination reached")
+				}).Debug("termination reached")
 
 				sched.done = true
 			}
@@ -97,9 +101,9 @@ func (sched *Scheduler) CheckCvg() bool {
 				Flag: false,
 			}
 			log.WithFields(log.Fields{
-				"at": sched.k,
+				"at":   sched.k,
 				"data": sched.MyData(),
-			}).Info("flip!")
+			}).Debug("flip!")
 		}
 
 	}
@@ -120,7 +124,7 @@ func (sched *Scheduler) sendOne(name string, stub pb.RatioConsensusClient, done 
 			"to":   name,
 			"k":    sched.k,
 			"data": sched.MyData(),
-		}).Info("sending data in sendOne")
+		}).Debug("sending data in sendOne")
 
 		data := &pb.ConDataRequest{
 			K:    int32(sched.k),
@@ -164,7 +168,7 @@ func (sched *Scheduler) MsgXchg() {
 
 	log.WithFields(log.Fields{
 		"to": sched.outConns,
-	}).Info("waiting for goroutine to finish sendOne")
+	}).Debug("waiting for goroutine to finish sendOne")
 
 	sched.mu.Unlock()
 	for range sched.outConns {
@@ -185,11 +189,11 @@ func (sched *Scheduler) MsgXchg() {
 			"missing no":   sched.inNeighbours - (len(sched.CurData()) - 1),
 			"missing from": missing,
 			"k":            sched.k,
-		}).Info("waiting for all responses")
+		}).Debug("waiting for all responses")
 
 		sched.cond.Wait()
 	}
-	log.Info("finished waiting for all responses")
+	log.Debug("finished waiting for all responses")
 
 }
 
@@ -203,7 +207,7 @@ func (sched *Scheduler) LocalComp() {
 	log.WithFields(log.Fields{
 		"iteration": sched.k,
 		"data":      myData,
-	}).Info("current data")
+	}).Debug("current data")
 
 	newY := myData.GetY() * myData.GetP()
 	newZ := myData.GetZ() * myData.GetP()
@@ -235,7 +239,7 @@ func (sched *Scheduler) LocalComp() {
 	log.WithFields(log.Fields{
 		"to":           sched.k + 1,
 		"updated data": sched.conData[sched.k+1][sched.hostname],
-	}).Info("awesome computation done, advancing iteration counter")
+	}).Debug("awesome computation done, advancing iteration counter")
 
 	if !sched.done {
 		sched.k++
@@ -244,13 +248,40 @@ func (sched *Scheduler) LocalComp() {
 }
 
 func (sched *Scheduler) Consensus() {
-	for !sched.CheckCvg() && sched.k < *config.MaxIter {
+	if *config.Cpuprofile != "" {
+		f, err := os.Create(*config.Cpuprofile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
+	}
 
-		log.Printf("doing msg exchange...")
+	ts := make([]int64, 0)
+
+	for !sched.CheckCvg() && sched.k < *config.MaxIter {
+		t := time.Now()
+
+		log.Debug("doing msg exchange...")
 		sched.MsgXchg()
 
-		log.Println("doing local computation...")
+		log.Debug("doing local computation...")
 		sched.LocalComp()
+
+		ts = append(ts, time.Since(t).Milliseconds())
+		metricsLogger.WithFields(log.Fields{
+			"iteration":          sched.k,
+			"time per iteration": ts[len(ts)-1],
+		}).Debug("time per iteration")
+	}
+
+	var tot int64
+	// remove the first few elements
+	// TODO could use conditional var to make sure starting time is close
+
+	ts = ts[5:]
+	for _, t := range ts {
+		tot += t
 	}
 
 	log.WithFields(log.Fields{
@@ -258,6 +289,12 @@ func (sched *Scheduler) Consensus() {
 		"data":              sched.MyData(),
 		"average consensus": sched.MyData().GetY() / sched.MyData().GetZ(),
 	}).Info("consensus done!")
+
+	metricsLogger.WithFields(log.Fields{
+		"average time per iteration": float64(tot) / float64(len(ts)),
+		"total time taken":           tot,
+	}).Info("consensus time, first few times truncated")
+
 }
 
 func (sched *Scheduler) CurData() map[string]*pb.ConData {

@@ -30,7 +30,7 @@ func (sched *Scheduler) HealthSrv() {
 
 	log.WithFields(log.Fields{
 		"at": lis.Addr(),
-	}).Info("health server listening")
+	}).Debug("health server listening")
 
 	go func() {
 		if err := s.Serve(lis); err != nil {
@@ -79,7 +79,7 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 		sched.inConns = append(sched.inConns, in.GetName())
 	}
 
-	log.Printf("Received hello from %v", in.GetName())
+	log.WithFields(log.Fields{"from": in.GetName()}).Debug("Received hello")
 	return &pb.HelloReply{Name: sched.hostname}, nil
 }
 
@@ -100,7 +100,7 @@ func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) 
 		"data":               in.GetData(),
 		"expecting total":    sched.inNeighbours,
 		"currently received": len(sched.CurData()) - 1,
-	}).Info("Received data")
+	}).Debug("Received data")
 
 	if len(sched.CurData())-1 == sched.inNeighbours {
 		// received from all inbound neighbours

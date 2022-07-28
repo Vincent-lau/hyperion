@@ -63,7 +63,7 @@ func (ctl *Controller) Reg(ctx context.Context, in *pb.RegRequest) (*pb.RegReply
 
 	log.WithFields(log.Fields{
 		"requester data": in,
-	}).Info("Received reg request")
+	}).Debug("Received reg request")
 
 	if !slices.Contains(ctl.schedulers, in.GetName()) {
 		ctl.schedulers = append(ctl.schedulers, in.GetName())
@@ -74,7 +74,7 @@ func (ctl *Controller) Reg(ctx context.Context, in *pb.RegRequest) (*pb.RegReply
 	} else {
 		log.WithFields(log.Fields{
 			"name": in.GetName(),
-		}).Info("scheduler already registered")
+		}).Debug("scheduler already registered")
 
 		return &pb.RegReply{
 			You: int32(slices.Index(ctl.schedulers, in.GetName())),
@@ -88,7 +88,7 @@ func (ctl *Controller) GetNeighbours(ctx context.Context, in *pb.NeighboursReque
 	ctl.mu.Lock()
 	defer ctl.mu.Unlock()
 
-	if len(ctl.schedulers) < *config.NumSchedulers {
+	if len(ctl.schedulers) < config.NumSchedulers {
 		return nil, errors.New("not enough schedulers, wait more")
 	}
 
@@ -111,7 +111,7 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 	1. all schedulers are ready
 	2. the scheduler has been connected by all its in neighbours
 	*/
-	allReady := len(ctl.readySched) == *config.NumSchedulers
+	allReady := len(ctl.readySched) == config.NumSchedulers
 	allConnected := int(in.GetInNeighbours()) == len(config.RNetwork[int(in.GetMe())])
 
 	if allConnected {
@@ -121,13 +121,13 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 	log.WithFields(log.Fields{
 		"scheduler ready":  in.GetMe(),
 		"scheduler status": ctl.readySched,
-	}).Info("scheduler ready")
+	}).Debug("scheduler ready")
 
 	log.WithFields(log.Fields{
 		"controller reply": allReady,
 		"to":               in.GetMe(),
 		"in neighbours":    in.GetInNeighbours(),
-	}).Info("controller reply")
+	}).Debug("controller reply")
 
 	return &pb.SetupReply{
 		Finished: allReady,
@@ -158,7 +158,7 @@ func (ctl *Controller) HealthSrv() {
 
 	log.WithFields(log.Fields{
 		"at": lis.Addr(),
-	}).Info("health server listening")
+	}).Debug("health server listening")
 
 	go func() {
 		if err := s.Serve(lis); err != nil {

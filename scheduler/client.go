@@ -88,7 +88,7 @@ func (sched *Scheduler) regWithCtl() {
 		if err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
-			}).Info("Could not register with controller")
+			}).Debug("Could not register with controller")
 			sched.mu.Unlock()
 			time.Sleep(time.Second)
 			sched.mu.Lock()
@@ -100,7 +100,7 @@ func (sched *Scheduler) regWithCtl() {
 	sched.me = int(r.GetYou())
 	log.WithFields(log.Fields{
 		"me": sched.me,
-	}).Info("My number")
+	}).Debug("My number")
 
 }
 
@@ -119,7 +119,7 @@ func (sched *Scheduler) getNeighbours() []string {
 		if err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
-			}).Info("could not get neighbours")
+			}).Debug("could not get neighbours")
 
 			sched.mu.Unlock()
 			time.Sleep(time.Second)
@@ -127,7 +127,7 @@ func (sched *Scheduler) getNeighbours() []string {
 		} else {
 			log.WithFields(log.Fields{
 				"neighbours": r.GetNeigh(),
-			}).Info("got all neighbours")
+			}).Debug("got all neighbours")
 			return r.GetNeigh()
 		}
 	}
@@ -168,7 +168,7 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 			} else {
 				log.WithFields(log.Fields{
 					"to": r.GetName(),
-				}).Info("greeted")
+				}).Debug("greeted")
 				break
 			}
 		}
@@ -180,7 +180,7 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 
 	log.WithFields(log.Fields{
 		"number of out neighbours": sched.outNeighbours,
-	}).Info("connected to all neighbours")
+	}).Debug("connected to all neighbours")
 }
 
 func (sched *Scheduler) waitForFinish() {
@@ -192,7 +192,7 @@ func (sched *Scheduler) waitForFinish() {
 		defer cancel()
 		sched.mu.Unlock()
 		r, err := sched.ctlStub.FinSetup(ctx, &pb.SetupRequest{
-			Me: int32(sched.me),
+			Me:           int32(sched.me),
 			InNeighbours: int64(sched.inNeighbours),
 		})
 		sched.mu.Lock()
@@ -201,16 +201,16 @@ func (sched *Scheduler) waitForFinish() {
 			log.WithFields(log.Fields{
 				"error":    err,
 				"finished": r.GetFinished(),
-			}).Info("not finished yet")
+			}).Debug("not finished yet")
 			sched.mu.Unlock()
-			time.Sleep(time.Second * 2)
+			time.Sleep(time.Second)
 			sched.mu.Lock()
 
 		} else {
 			log.WithFields(log.Fields{
-				"in nieghbours": sched.inNeighbours,
+				"in nieghbours":    sched.inNeighbours,
 				"controller reply": r.GetFinished(),
-			}).Info("all schedulers are connected")
+			}).Debug("all schedulers are connected")
 			break
 		}
 	}
@@ -241,15 +241,15 @@ func (sched *Scheduler) waitForFinish() {
 // 				found[ip.String()] = true
 // 			}
 // 		}
-// 		if len(found) == *config.NumSchedulers {
+// 		if len(found) == config.NumSchedulers {
 // 			return s
 // 		} else {
-// 			log.Printf("Found %d IPs, waiting for %d", len(found), *config.NumSchedulers-len(found))
-// 			if len(found) > *config.NumSchedulers {
+// 			log.Printf("Found %d IPs, waiting for %d", len(found), config.NumSchedulers-len(found))
+// 			if len(found) > config.NumSchedulers {
 // 				log.WithFields(log.Fields{
-// 					"total number of schedulers": *config.NumSchedulers,
+// 					"total number of schedulers": config.NumSchedulers,
 // 					"scheduler ips":              found,
-// 				}).Info("Found too many ips")
+// 				}).Debug("Found too many ips")
 
 // 				// HACK: remove ips that are no longer from the DNS service
 // 				// should check where this issue comes from
@@ -265,7 +265,7 @@ func (sched *Scheduler) waitForFinish() {
 // 					}
 // 				}
 
-// 				if len(newS) > *config.NumSchedulers {
+// 				if len(newS) > config.NumSchedulers {
 // 					log.WithFields(log.Fields{
 // 						"num of ips": len(newS),
 // 						"ips are":    newS,
