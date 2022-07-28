@@ -2,12 +2,34 @@ package config
 
 import (
 	"flag"
+	"math/rand"
+
+	log "github.com/sirupsen/logrus"
 )
 
+func gen_load() {
+	maxCap := 10
+
+	for i := range Load {
+		Load[i] = float64(rand.Intn(maxCap + 1))
+		Used[i] = float64(rand.Intn(maxCap + 1 - int(Load[i])))
+		Cap[i] = float64(maxCap)
+	}
+
+}
+
 func init() {
-	flag.Parse()	
+	flag.Parse()
 	Network = AdjList()
 	RNetwork = RAdjList()
+	gen_load()
+
+	log.WithFields(log.Fields{
+		"load": Load,
+		"used": Used,
+		"cap":  Cap,
+	}).Info("initial data")
+
 }
 
 var (
@@ -16,15 +38,14 @@ var (
 	MaxIter   = flag.Int("maxiter", 500, "Maximum number of iterations")
 	MFile     = flag.String("Matrix file", "data/adj.txt", "Matrix file name")
 
-	Diameter  = flag.Int("diameter", 8, "Network diameter")
-	NumSchedulers = flag.Int("num_schedulers", 9, "Number of schedulers")
-	Load = []float64{4, 3, 3, 5, 5, 6, 8, 1, 4}
-	Used = []float64{0, 0, 0, 0, 0, 0, 0, 0, 0}
-	Cap  = []float64{10, 10, 10, 10, 10, 10, 10,10, 10}
+	NumSchedulers = 200
+	Diameter      int
+	Load          = make([]float64, NumSchedulers)
+	Used          = make([]float64, NumSchedulers)
+	Cap           = make([]float64, NumSchedulers)
 
 	Network [][]int
 
 	// reversed network
 	RNetwork [][]int
-
 )
