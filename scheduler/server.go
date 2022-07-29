@@ -17,7 +17,7 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
-func (sched *Scheduler) HealthSrv() {
+func (sched *Scheduler) healthSrv() {
 	lis, err := net.Listen("tcp", ":"+*config.LivenessPort)
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -42,9 +42,35 @@ func (sched *Scheduler) HealthSrv() {
 
 }
 
+func (sched *Scheduler) schedStartSrv() {
+	lis, err := net.Listen("tcp", ":"+*config.StartPort)
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Fatalf("failed to serve start server")
+	}
+
+	s := grpc.NewServer()
+	pb.RegisterSchedStartServer(s, sched)
+
+	log.WithFields(log.Fields{
+		"at": lis.Addr(),
+	}).Debug("start server listening")
+
+	go func() {
+		if err := s.Serve(lis); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Fatalf("failed to serve start server")
+		}
+	}()
+}
+
 func (sched *Scheduler) AsServer() {
 
-	sched.HealthSrv()
+	sched.healthSrv() // for k8s liveness probing
+
+	sched.schedStartSrv() // for controller to start the scheduler
 
 	// grpc will multiplex the connection over a single TCP connection
 	// so tcp is fine here
@@ -79,6 +105,14 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 		sched.inConns = append(sched.inConns, in.GetName())
 	}
 
+	if sched.expectedIn != 0  && sched.expectedIn == sched.inNeighbours {
+		// graph is strongly connected, hence >=1 in neighbours
+		log.WithFields(log.Fields{
+			"expected in": sched.expectedIn,
+		}).Debug("all neighbours connected, broadcasting")
+		sched.neighCond.Broadcast()
+	}
+
 	log.WithFields(log.Fields{"from": in.GetName()}).Debug("Received hello")
 	return &pb.HelloReply{Name: sched.hostname}, nil
 }
@@ -104,13 +138,10 @@ func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) 
 
 	if len(sched.CurData())-1 == sched.inNeighbours {
 		// received from all inbound neighbours
-		sched.cond.Broadcast()
+		log.Debug("received from all inbound neighbours, broadcasting")
+		sched.neighCond.Broadcast()
 	}
 
-	if sched.timeToCheck() && int(in.GetK()) > sched.k {
-		// received an update from a non-terminating node
-		sched.cond.Broadcast()
-	}
 
 	return &pb.EmptyReply{}, nil
 }
@@ -121,4 +152,16 @@ func (sched *Scheduler) Check(ctx context.Context, in *grpc_health_v1.HealthChec
 
 func (sched *Scheduler) Watch(in *grpc_health_v1.HealthCheckRequest, stream grpc_health_v1.Health_WatchServer) error {
 	return errors.New("not implemented")
+}
+
+func (sched *Scheduler) Start(ctx context.Context, in *pb.EmptyRequest) (*pb.EmptyReply, error) {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
+	log.Debug("received start from controller")
+
+	sched.setup = true
+	sched.startCond.Broadcast()
+
+	return &pb.EmptyReply{}, nil
 }

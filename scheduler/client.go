@@ -10,6 +10,7 @@ import (
 	log "github.com/sirupsen/logrus"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
 
 	pb "example/dist_sched/message"
@@ -18,7 +19,8 @@ import (
 func (sched *Scheduler) AsClient() {
 	ctlAddr := findCtlAddr()
 
-	conn, err := grpc.Dial(ctlAddr.String()+":"+*config.CtlPort, grpc.WithInsecure())
+	conn, err := grpc.Dial(ctlAddr.String()+":"+*config.CtlPort,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
@@ -125,9 +127,12 @@ func (sched *Scheduler) getNeighbours() []string {
 			time.Sleep(time.Second)
 			sched.mu.Lock()
 		} else {
+			sched.expectedIn = int(r.GetInNeighbours())
+
 			log.WithFields(log.Fields{
 				"neighbours": r.GetNeigh(),
-			}).Debug("got all neighbours")
+				"expected in": r.GetInNeighbours(),
+			}).Debug("got neighbours")
 			return r.GetNeigh()
 		}
 	}
@@ -138,7 +143,8 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 	defer sched.mu.Unlock()
 
 	for _, n := range neighbours {
-		conn, err := grpc.Dial(n+":"+*config.SchedPort, grpc.WithInsecure(),
+		conn, err := grpc.Dial(n+":"+*config.SchedPort, 
+			grpc.WithTransportCredentials(insecure.NewCredentials()),
 			grpc.WithKeepaliveParams(keepalive.ClientParameters{}))
 
 		if err != nil {
@@ -181,6 +187,18 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 	log.WithFields(log.Fields{
 		"number of out neighbours": sched.outNeighbours,
 	}).Debug("connected to all neighbours")
+
+	// now wait for all neighbours to connect to me
+	for sched.expectedIn != sched.inNeighbours {
+		log.WithFields(log.Fields{
+			"expected in": sched.expectedIn,
+			"in neighbours": sched.inNeighbours,
+		}).Debug("waiting for all neighbours to connect to me")
+		sched.neighCond.Wait()
+	}
+
+	log.Debug("all neighbours connected to me")
+
 }
 
 func (sched *Scheduler) waitForFinish() {
@@ -197,23 +215,26 @@ func (sched *Scheduler) waitForFinish() {
 		})
 		sched.mu.Lock()
 
-		if err != nil || !r.GetFinished() {
+		if err != nil {
 			log.WithFields(log.Fields{
 				"error":    err,
 				"finished": r.GetFinished(),
-			}).Debug("not finished yet")
+			}).Warn("error sending finish to controller")
 			sched.mu.Unlock()
 			time.Sleep(time.Second)
 			sched.mu.Lock()
-
 		} else {
-			log.WithFields(log.Fields{
-				"in nieghbours":    sched.inNeighbours,
-				"controller reply": r.GetFinished(),
-			}).Debug("all schedulers are connected")
 			break
 		}
 	}
+
+	for !sched.setup {
+		sched.startCond.Wait()
+	}
+
+	log.WithFields(log.Fields{
+		"in nieghbours": sched.inNeighbours,
+	}).Debug("received finish setup from controller, all schedulers are connected")
 
 }
 

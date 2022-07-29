@@ -12,13 +12,19 @@ import (
 )
 
 type Scheduler struct {
-	mu       sync.Mutex
-	cond     *sync.Cond
+	mu sync.Mutex
+	/* cond is used for the following purpose
+	1. wait for all in neighbours to connect to me
+	2. wait for all in neighbours to send their message to me
+	*/
+	neighCond *sync.Cond
+
 	hostname string
 
 	// name of inNeighbours, N-, ones that we will receive data from
 	inConns      []string
 	inNeighbours int
+	expectedIn   int // expected number of inNeighbours, used for waiting
 	// number of out neighbours, N+, i.e. ones to which we will broadcast values
 	outConns      []string
 	outNeighbours int
@@ -31,7 +37,10 @@ type Scheduler struct {
 
 	// used by central controller
 	me      int
+	setup   bool
+	startCond *sync.Cond
 	ctlStub pb.SchedRegClient
+	pb.UnimplementedSchedStartServer
 
 	// implementing the gRPC server
 	pb.UnimplementedRatioConsensusServer
@@ -44,30 +53,39 @@ const (
 )
 
 func New() *Scheduler {
+	st := time.Now()
 
 	hostname, err := os.Hostname()
 	if err != nil {
-		log.Fatalf("Could not get hostname: %v", err)
+		log.Fatalf("could not get hostname: %v", err)
 	}
 
 	sched := &Scheduler{
 		hostname:      hostname,
 		inConns:       make([]string, 0),
 		inNeighbours:  0,
+		expectedIn:    0,
 		stubs:         make(map[string]pb.RatioConsensusClient),
 		outConns:      make([]string, 0),
 		outNeighbours: 0,
 		k:             0,
 
 		conData: make(map[int]map[string]*pb.ConData),
+
+		setup: false,
 	}
-	sched.cond = sync.NewCond(&sched.mu)
+	sched.neighCond = sync.NewCond(&sched.mu)
+	sched.startCond = sync.NewCond(&sched.mu)
 
 	sched.AsServer()
 	time.Sleep(time.Second)
 	sched.AsClient()
 
 	sched.InitMyConData()
+
+	log.WithFields(log.Fields{
+		"time": time.Since(st).Seconds(),
+	}).Info("set up time")
 
 	return sched
 

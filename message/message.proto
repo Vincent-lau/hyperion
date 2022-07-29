@@ -29,7 +29,10 @@ service SchedReg {
   rpc Reg(RegRequest) returns (RegReply) {}
   rpc GetNeighbours(NeighboursRequest) returns (NeighboursReply) {}
   rpc FinSetup(SetupRequest) returns (SetupReply) {}
-  // rpc Advance(EmptyRequest) returns (AdvanceReply) {}
+}
+
+service SchedStart {
+  rpc Start(EmptyRequest) returns (EmptyReply) {}
 }
 
 message RegRequest {
@@ -47,6 +50,7 @@ message NeighboursRequest {
 
 message NeighboursReply {
   repeated string neigh = 1;
+  int32 inNeighbours = 2;
 }
 
 message SetupRequest {

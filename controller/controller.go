@@ -7,11 +7,13 @@ import (
 	pb "example/dist_sched/message"
 	"net"
 	"sync"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 
 	"golang.org/x/exp/slices"
+	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
@@ -20,7 +22,9 @@ type Controller struct {
 	schedulers []string
 	readySched map[int]bool      // schedulers that have finished connection
 	schedIP    map[string]string // scheduler name -> IP addr
+	schedStub  map[string]pb.SchedStartClient
 	network    [][]int
+	rnetwork   [][]int
 
 	pb.UnimplementedSchedRegServer
 	grpc_health_v1.UnimplementedHealthServer
@@ -53,8 +57,29 @@ func New() *Controller {
 		schedulers: make([]string, 0),
 		schedIP:    make(map[string]string),
 		readySched: make(map[int]bool),
+		schedStub:  make(map[string]pb.SchedStartClient),
 		network:    config.Network,
+		rnetwork:   config.RNetwork,
 	}
+}
+
+func (ctl *Controller) connSched(in *pb.RegRequest) {
+	for {
+		conn, err := grpc.Dial(in.GetIp()+":"+*config.StartPort,
+			grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+				"name":  in.GetName(),
+			}).Fatal("Could not connect to scheduler")
+			time.Sleep(time.Second)
+		} else {
+			ctl.schedStub[in.GetName()] = pb.NewSchedStartClient(conn)
+			break
+		}
+	}
+
 }
 
 func (ctl *Controller) Reg(ctx context.Context, in *pb.RegRequest) (*pb.RegReply, error) {
@@ -68,6 +93,9 @@ func (ctl *Controller) Reg(ctx context.Context, in *pb.RegRequest) (*pb.RegReply
 	if !slices.Contains(ctl.schedulers, in.GetName()) {
 		ctl.schedulers = append(ctl.schedulers, in.GetName())
 		ctl.schedIP[in.GetName()] = in.GetIp()
+
+		ctl.connSched(in)
+
 		return &pb.RegReply{
 			You: int32(len(ctl.schedulers) - 1),
 		}, nil
@@ -98,7 +126,8 @@ func (ctl *Controller) GetNeighbours(ctx context.Context, in *pb.NeighboursReque
 	}
 
 	return &pb.NeighboursReply{
-		Neigh: neighbours,
+		Neigh:        neighbours,
+		InNeighbours: int32(len(ctl.rnetwork[in.GetMe()])),
 	}, nil
 
 }
@@ -111,11 +140,15 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 	1. all schedulers are ready
 	2. the scheduler has been connected by all its in neighbours
 	*/
-	allReady := len(ctl.readySched) == config.NumSchedulers
 	allConnected := int(in.GetInNeighbours()) == len(config.RNetwork[int(in.GetMe())])
 
 	if allConnected {
 		ctl.readySched[int(in.GetMe())] = true
+	} else {
+		log.WithFields(log.Fields{
+			"connected neighbours": int(in.GetInNeighbours()),
+			"expected neighbours":  len(config.RNetwork[int(in.GetMe())]),
+		}).Debug("you are not all connected")
 	}
 
 	log.WithFields(log.Fields{
@@ -123,16 +156,39 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 		"scheduler status": ctl.readySched,
 	}).Debug("scheduler ready")
 
+
+	allReady := len(ctl.readySched) == config.NumSchedulers
+
 	log.WithFields(log.Fields{
 		"controller reply": allReady,
 		"to":               in.GetMe(),
 		"in neighbours":    in.GetInNeighbours(),
 	}).Debug("controller reply")
 
+	if allReady {
+		ctl.bcastStart()
+	}
+
 	return &pb.SetupReply{
 		Finished: allReady,
 	}, nil
 
+}
+
+func (ctl *Controller) bcastStart() {
+
+	log.Debug("broadcasting start")
+
+	for _, s := range ctl.schedulers {
+		go func(s string) {
+			_, err := ctl.schedStub[s].Start(context.Background(), &pb.EmptyRequest{})
+			if err != nil {
+				log.WithFields(log.Fields{
+					"error": err,
+				}).Warn("could not broadcast start")
+			}
+		}(s)
+	}
 }
 
 func (ctl *Controller) Check(ctx context.Context, in *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {

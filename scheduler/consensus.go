@@ -191,7 +191,10 @@ func (sched *Scheduler) MsgXchg() {
 			"k":            sched.k,
 		}).Debug("waiting for all responses")
 
-		sched.cond.Wait()
+		for len(sched.CurData())-1 != sched.inNeighbours {
+			sched.neighCond.Wait()
+		}
+
 	}
 	log.Debug("finished waiting for all responses")
 
@@ -248,8 +251,8 @@ func (sched *Scheduler) LocalComp() {
 }
 
 func (sched *Scheduler) Consensus() {
-	if *config.Cpuprofile != "" {
-		f, err := os.Create(*config.Cpuprofile)
+	if *config.CpuProfile != "" {
+		f, err := os.Create(*config.CpuProfile)
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -265,21 +268,23 @@ func (sched *Scheduler) Consensus() {
 		log.Debug("doing msg exchange...")
 		sched.MsgXchg()
 
+		t1 := time.Now()
+
 		log.Debug("doing local computation...")
 		sched.LocalComp()
 
-		ts = append(ts, time.Since(t).Milliseconds())
+		t2 := time.Now()
+
+		ts = append(ts, time.Since(t).Microseconds())
 		metricsLogger.WithFields(log.Fields{
-			"iteration":          sched.k,
-			"time per iteration": ts[len(ts)-1],
-		}).Debug("time per iteration")
+			"iteration":                           sched.k,
+			"msg_exchange_time in micro sec ":     t1.Sub(t).Microseconds(),
+			"local_computation_time in micro sec": t2.Sub(t1).Microseconds(),
+			"time per iteration":                  ts[len(ts)-1],
+		}).Info("time of this iteration")
 	}
 
 	var tot int64
-	// remove the first few elements
-	// TODO could use conditional var to make sure starting time is close
-
-	ts = ts[5:]
 	for _, t := range ts {
 		tot += t
 	}
@@ -293,7 +298,7 @@ func (sched *Scheduler) Consensus() {
 	metricsLogger.WithFields(log.Fields{
 		"average time per iteration": float64(tot) / float64(len(ts)),
 		"total time taken":           tot,
-	}).Info("consensus time, first few times truncated")
+	}).Info("consensus time")
 
 }
 
