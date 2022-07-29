@@ -22,6 +22,7 @@ spec:
     - ./ctl
     name: my-controller
     image: cuso4/my-ctl
+    imagePullPolicy: IfNotPresent
     ports:
     - containerPort: 2379
     livenessProbe:

@@ -57,7 +57,7 @@ spec:
     matchLabels:
       component: scheduler
       tier: control-plane
-  replicas: 50
+  replicas: 70
   template:
     metadata:
       labels:
@@ -79,6 +79,7 @@ spec:
       - command:
         - /usr/local/bin/kube-scheduler
         image: cuso4/my-sched
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 2379
         livenessProbe:
