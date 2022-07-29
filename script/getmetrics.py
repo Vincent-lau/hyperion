@@ -16,4 +16,6 @@ for i in ret.items:
       os.system(f'kubectl cp kube-system/{i.metadata.name}:sched.prof profiles/sched{k}.prof')
       print(f'copied from {i.metadata.name} to sched{k}.prof')
       k += 1
+    if k > 1:
+      break
 
