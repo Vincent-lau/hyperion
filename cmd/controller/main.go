@@ -18,7 +18,7 @@ func init() {
 	log.SetFormatter(&log.TextFormatter{
 		ForceColors: true,
 	})
-	log.SetLevel(log.InfoLevel)
+	log.SetLevel(log.DebugLevel)
 }
 
 func main() {
@@ -32,12 +32,11 @@ func main() {
 		cap += config.Cap[i]
 	}
 
-
 	log.WithFields(log.Fields{
-		"loads": config.Load,
-		"number of schedulers": *config.NumSchedulers,
-		"expected ratio": (used + load) / cap,
-	}).Info("expected ratio")
+		"loads":                config.Load,
+		"number of schedulers": config.NumSchedulers,
+		"expected consensus":   (used + load) / cap,
+	}).Debug("expected ratio")
 
 	ctl := controller.New()
 	ctl.AsServer()
