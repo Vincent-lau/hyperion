@@ -20,7 +20,7 @@ spec:
   containers:
   - command:
     - ./ctl
-    - -schednum=200
+    - -schednum=%REPLICAS%
     name: my-controller
     image: cuso4/my-ctl:latest
     imagePullPolicy: Always
