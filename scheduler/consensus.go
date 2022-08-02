@@ -10,9 +10,9 @@ import (
 	"time"
 
 	log "github.com/sirupsen/logrus"
-)
 
-var metricsLogger = log.WithFields(log.Fields{"prefix": "metrics"})
+	"google.golang.org/protobuf/proto"
+)
 
 func (sched *Scheduler) timeToCheck() bool {
 	return sched.k%config.Diameter == 0 && sched.k != 0
@@ -131,6 +131,9 @@ func (sched *Scheduler) sendOne(name string, stub pb.RatioConsensusClient, done 
 			Name: sched.hostname,
 			Data: sched.MyData(),
 		}
+
+		s := proto.Size(data)
+		sched.msgSent += s
 
 		sched.mu.Unlock()
 		_, err := stub.SendConData(ctx, data)
@@ -276,11 +279,11 @@ func (sched *Scheduler) Consensus() {
 		t2 := time.Now()
 
 		ts = append(ts, time.Since(t).Microseconds())
-		metricsLogger.WithFields(log.Fields{
-			"iteration":                           sched.k,
-			"msg_exchange_time in micro sec ":     t1.Sub(t).Microseconds(),
-			"local_computation_time in micro sec": t2.Sub(t1).Microseconds(),
-			"time per iteration":                  ts[len(ts)-1],
+		MetricsLogger.WithFields(log.Fields{
+			"iteration":          sched.k,
+			"xchg time per iter": t1.Sub(t).Microseconds(),
+			"comp time per iter": t2.Sub(t1).Microseconds(),
+			"time per iteration": ts[len(ts)-1],
 		}).Info("time of this iteration")
 	}
 
@@ -295,10 +298,16 @@ func (sched *Scheduler) Consensus() {
 		"average consensus": sched.MyData().GetY() / sched.MyData().GetZ(),
 	}).Info("consensus done!")
 
-	metricsLogger.WithFields(log.Fields{
-		"average time per iteration": float64(tot) / float64(len(ts)),
-		"total time taken":           tot,
-	}).Info("consensus time")
+	MetricsLogger.WithFields(log.Fields{
+		"avg time per iter": float64(tot) / float64(len(ts)),
+		"total time":        tot,
+		"total iter":        sched.k,
+	}).Info("final consensus time")
+
+	MetricsLogger.WithFields(log.Fields{
+		"msg rcv total":  sched.msgSent,
+		"msg sent total": sched.msgRcv,
+	}).Info("consensus message exchanged")
 
 }
 

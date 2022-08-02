@@ -20,7 +20,6 @@ type Scheduler struct {
 	neighCond *sync.Cond
 
 	hostname string
-
 	// name of inNeighbours, N-, ones that we will receive data from
 	inConns      []string
 	inNeighbours int
@@ -35,22 +34,33 @@ type Scheduler struct {
 
 	conData map[int]map[string]*pb.ConData
 
-	// used by central controller
+	/* used by central controller */
 	me      int
 	setup   bool
 	startCond *sync.Cond
 	ctlStub pb.SchedRegClient
 	pb.UnimplementedSchedStartServer
 
-	// implementing the gRPC server
-	pb.UnimplementedRatioConsensusServer
+	/* metrics */
+	msgRcv int
+	msgSent int
 
+
+	/* implementing the gRPC server */
+	pb.UnimplementedRatioConsensusServer
 	grpc_health_v1.UnimplementedHealthServer
 }
 
 const (
 	schedulerName = "my-scheduler"
 )
+
+var (
+	MetricsLogger = log.WithFields(log.Fields{"prefix": "metrics"})
+)
+
+func init() {
+}
 
 func New() *Scheduler {
 	st := time.Now()
@@ -69,10 +79,13 @@ func New() *Scheduler {
 		outConns:      make([]string, 0),
 		outNeighbours: 0,
 		k:             0,
-
 		conData: make(map[int]map[string]*pb.ConData),
 
 		setup: false,
+
+		// metrics
+		msgSent: 0,
+		msgRcv: 0,
 	}
 	sched.neighCond = sync.NewCond(&sched.mu)
 	sched.startCond = sync.NewCond(&sched.mu)

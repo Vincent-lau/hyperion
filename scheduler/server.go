@@ -15,6 +15,8 @@ import (
 	pb "example/dist_sched/message"
 
 	"google.golang.org/grpc/health/grpc_health_v1"
+
+	"google.golang.org/protobuf/proto"
 )
 
 func (sched *Scheduler) healthSrv() {
@@ -39,7 +41,6 @@ func (sched *Scheduler) healthSrv() {
 			}).Fatalf("failed to serve health server")
 		}
 	}()
-
 }
 
 func (sched *Scheduler) schedStartSrv() {
@@ -105,7 +106,7 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 		sched.inConns = append(sched.inConns, in.GetName())
 	}
 
-	if sched.expectedIn != 0  && sched.expectedIn == sched.inNeighbours {
+	if sched.expectedIn != 0 && sched.expectedIn == sched.inNeighbours {
 		// graph is strongly connected, hence >=1 in neighbours
 		log.WithFields(log.Fields{
 			"expected in": sched.expectedIn,
@@ -134,14 +135,16 @@ func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) 
 		"data":               in.GetData(),
 		"expecting total":    sched.inNeighbours,
 		"currently received": len(sched.CurData()) - 1,
-	}).Debug("Received data")
+	}).Debug("received data")
+
+	s := proto.Size(in)
+	sched.msgRcv += s
 
 	if len(sched.CurData())-1 == sched.inNeighbours {
 		// received from all inbound neighbours
 		log.Debug("received from all inbound neighbours, broadcasting")
 		sched.neighCond.Broadcast()
 	}
-
 
 	return &pb.EmptyReply{}, nil
 }
