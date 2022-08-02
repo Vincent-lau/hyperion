@@ -116,7 +116,12 @@ func (ctl *Controller) GetNeighbours(ctx context.Context, in *pb.NeighboursReque
 	ctl.mu.Lock()
 	defer ctl.mu.Unlock()
 
-	if len(ctl.schedulers) < config.NumSchedulers {
+	if len(ctl.schedulers) < *config.NumSchedulers {
+		log.WithFields(log.Fields{
+			"expecting": *config.NumSchedulers,
+			"got":       len(ctl.schedulers),
+		}).Debug("not enough schedulers")
+
 		return nil, errors.New("not enough schedulers, wait more")
 	}
 
@@ -156,8 +161,7 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 		"scheduler status": ctl.readySched,
 	}).Debug("scheduler ready")
 
-
-	allReady := len(ctl.readySched) == config.NumSchedulers
+	allReady := len(ctl.readySched) == *config.NumSchedulers
 
 	log.WithFields(log.Fields{
 		"controller reply": allReady,

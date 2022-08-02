@@ -34,7 +34,7 @@ func main() {
 
 	log.WithFields(log.Fields{
 		"loads":                config.Load,
-		"number of schedulers": config.NumSchedulers,
+		"number of schedulers": *config.NumSchedulers,
 		"expected consensus":   (used + load) / cap,
 	}).Debug("expected ratio")
 

@@ -10,7 +10,7 @@ import (
 )
 
 func readMat() [][]int {
-	file, err := os.Open(*MFile)
+	file, err := os.Open(MFile)
 	if err != nil {
 		log.Fatal(err)
 	}
