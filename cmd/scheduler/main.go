@@ -9,15 +9,26 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	environment = "prod"
+)
+
 func init() {
 	flag.Parse()
 	// log.SetReportCaller(true)
 	rand.Seed(time.Now().UnixNano())
 
-	log.SetFormatter(&log.TextFormatter{
-		ForceColors: true,
-	})
-	log.SetLevel(log.InfoLevel)
+	if environment == "dev" {
+		log.SetLevel(log.DebugLevel)
+		log.SetFormatter(&log.TextFormatter{
+			ForceColors: true,
+		})
+	} else if environment == "prod" {
+		log.SetLevel(log.InfoLevel)
+		log.SetFormatter(&log.JSONFormatter{})
+	} else {
+		panic("unknown environment")
+	}
 
 }
 
