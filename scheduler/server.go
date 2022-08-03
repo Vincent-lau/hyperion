@@ -157,11 +157,18 @@ func (sched *Scheduler) Watch(in *grpc_health_v1.HealthCheckRequest, stream grpc
 	return errors.New("not implemented")
 }
 
-func (sched *Scheduler) Start(ctx context.Context, in *pb.EmptyRequest) (*pb.EmptyReply, error) {
+func (sched *Scheduler) Start(ctx context.Context, in *pb.StartRequest) (*pb.EmptyReply, error) {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
-	log.Debug("received start from controller")
+	log.WithFields(log.Fields{
+		"l": in.GetL(),
+		"u": in.GetU(),
+		"pi": in.GetPi(),
+	}).Debug("received start from controller")
+
+	sched.InitMyConData(in.GetL(), in.GetU(), in.GetPi())
+	sched.trial = int(in.GetTrial())
 
 	sched.setup = true
 	sched.startCond.Broadcast()

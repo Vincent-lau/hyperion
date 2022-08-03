@@ -29,11 +29,26 @@ service SchedReg {
   rpc Reg(RegRequest) returns (RegReply) {}
   rpc GetNeighbours(NeighboursRequest) returns (NeighboursReply) {}
   rpc FinSetup(SetupRequest) returns (SetupReply) {}
+  rpc FinConsensus(FinRequest) returns (EmptyReply) {}
 }
 
 service SchedStart {
-  rpc Start(EmptyRequest) returns (EmptyReply) {}
+  rpc Start(StartRequest) returns (EmptyReply) {}
 }
+
+message FinRequest {
+  int32 me = 1;
+  int32 trial = 2; 
+}
+
+
+message StartRequest {
+  int32 trial = 1;
+  double l = 2;
+  double u = 3;
+  double pi = 4;
+}
+
 
 message RegRequest {
   string name = 1;

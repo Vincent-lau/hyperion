@@ -253,6 +253,26 @@ func (sched *Scheduler) LocalComp() {
 
 }
 
+func (sched *Scheduler) LoopConsensus() {
+	for {
+
+		log.WithFields(log.Fields{
+			"name":  sched.hostname,
+			"trial": sched.trial,
+		}).Info("============New trial is starting============")
+
+		sched.Consensus()
+
+		sched.mu.Lock()
+		for !sched.setup {
+			sched.startCond.Wait()
+		}
+		sched.mu.Unlock()
+
+	}
+
+}
+
 func (sched *Scheduler) Consensus() {
 	if *config.CpuProfile != "" {
 		f, err := os.Create(*config.CpuProfile)
@@ -309,6 +329,9 @@ func (sched *Scheduler) Consensus() {
 		"msg sent total": sched.msgRcv,
 	}).Info("consensus message exchanged")
 
+	sched.sendFin()
+	sched.reset()
+
 }
 
 func (sched *Scheduler) CurData() map[string]*pb.ConData {
@@ -317,4 +340,48 @@ func (sched *Scheduler) CurData() map[string]*pb.ConData {
 
 func (sched *Scheduler) MyData() *pb.ConData {
 	return sched.conData[sched.k][sched.hostname]
+}
+
+func (sched *Scheduler) sendFin() {
+	for {
+		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+		defer cancel()
+
+		sched.mu.Lock()
+		me := int32(sched.me)
+		trial := int32(sched.trial)
+		sched.mu.Unlock()
+
+		_, err := sched.ctlStub.FinConsensus(ctx, &pb.FinRequest{
+			Me:    me,
+			Trial: trial,
+		})
+
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Warn("failed to send fin consensus")
+
+			time.Sleep(time.Second)
+		} else {
+			log.Debug("fin consensus sent")
+			break
+		}
+	}
+
+}
+
+func (sched *Scheduler) reset() {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
+	sched.k = 0
+	sched.done = false
+
+	sched.conData = make(map[int]map[string]*pb.ConData)
+	sched.setup = false
+
+	sched.msgRcv = 0
+	sched.msgSent = 0
+
 }

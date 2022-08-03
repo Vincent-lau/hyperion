@@ -10,7 +10,7 @@ import (
 )
 
 const (
-	environment = "prod"
+	environment = "dev"
 )
 
 func init() {
@@ -35,7 +35,7 @@ func init() {
 func main() {
 
 	sched := scheduler.New()
-	sched.Consensus()
+	sched.LoopConsensus()
 
 	for {
 		time.Sleep(10 * time.Second)

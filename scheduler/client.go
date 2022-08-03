@@ -110,6 +110,7 @@ func (sched *Scheduler) getNeighbours() []string {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
+	wt := 1
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
@@ -124,7 +125,8 @@ func (sched *Scheduler) getNeighbours() []string {
 			}).Debug("could not get neighbours")
 
 			sched.mu.Unlock()
-			time.Sleep(time.Second)
+			time.Sleep(time.Second * time.Duration(wt))
+			wt *= 2
 			sched.mu.Lock()
 		} else {
 			sched.expectedIn = int(r.GetInNeighbours())

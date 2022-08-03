@@ -35,16 +35,16 @@ type Scheduler struct {
 	conData map[int]map[string]*pb.ConData
 
 	/* used by central controller */
-	me      int
-	setup   bool
+	me        int
+	trial     int
+	setup     bool
 	startCond *sync.Cond
-	ctlStub pb.SchedRegClient
+	ctlStub   pb.SchedRegClient
 	pb.UnimplementedSchedStartServer
 
 	/* metrics */
-	msgRcv int
+	msgRcv  int
 	msgSent int
-
 
 	/* implementing the gRPC server */
 	pb.UnimplementedRatioConsensusServer
@@ -58,9 +58,6 @@ const (
 var (
 	MetricsLogger = log.WithFields(log.Fields{"prefix": "metrics"})
 )
-
-func init() {
-}
 
 func New() *Scheduler {
 	st := time.Now()
@@ -79,13 +76,13 @@ func New() *Scheduler {
 		outConns:      make([]string, 0),
 		outNeighbours: 0,
 		k:             0,
-		conData: make(map[int]map[string]*pb.ConData),
+		conData:       make(map[int]map[string]*pb.ConData),
 
 		setup: false,
 
 		// metrics
 		msgSent: 0,
-		msgRcv: 0,
+		msgRcv:  0,
 	}
 	sched.neighCond = sync.NewCond(&sched.mu)
 	sched.startCond = sync.NewCond(&sched.mu)
@@ -94,11 +91,10 @@ func New() *Scheduler {
 	time.Sleep(time.Second)
 	sched.AsClient()
 
-	sched.InitMyConData()
-
-	log.WithFields(log.Fields{
-		"time": time.Since(st).Seconds(),
-	}).Info("set up time")
+	MetricsLogger.WithFields(log.Fields{
+		"test":       "whatever",
+		"setup time": time.Since(st).Seconds(),
+	}).Info("setup done")
 
 	return sched
 
