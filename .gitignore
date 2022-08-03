@@ -16,6 +16,7 @@ data/
 graphs/
 profiles/
 scratch.txt
+my-scheduler-deploy.yaml
 
 # Test binary, built with `go test -c`
 *.test
