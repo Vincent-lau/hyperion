@@ -5,17 +5,13 @@
 package scheduler
 
 import (
-	"example/dist_sched/config"
 	pb "example/dist_sched/message"
 	"math"
 
 	log "github.com/sirupsen/logrus"
 )
 
-func (sched *Scheduler) InitMyConData() {
-
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
+func (sched *Scheduler) InitMyConData(l, u, pi float64) {
 
 	if _, ok := sched.conData[0]; !ok {
 		sched.conData[0] = make(map[string]*pb.ConData)
@@ -24,8 +20,8 @@ func (sched *Scheduler) InitMyConData() {
 	// this node's data
 	sched.conData[0][sched.hostname] = &pb.ConData{
 		P:    1 / (float64(sched.outNeighbours) + 1), // p for this node
-		Y:    config.Load[sched.me] + config.Used[sched.me],
-		Z:    config.Cap[sched.me],
+		Y:    l + u,
+		Z:    pi,
 		Mm:   math.Inf(1),
 		M:    math.Inf(-1),
 		Flag: false,

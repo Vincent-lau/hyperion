@@ -5,6 +5,7 @@ import (
 	"errors"
 	"example/dist_sched/config"
 	pb "example/dist_sched/message"
+	"math/rand"
 	"net"
 	"sync"
 	"time"
@@ -25,13 +26,19 @@ type Controller struct {
 	schedStub  map[string]pb.SchedStartClient
 	network    [][]int
 	rnetwork   [][]int
+	load       []float64
+	used       []float64
+	cap        []float64
+
+	finSched map[int]bool
+	trial    int
 
 	pb.UnimplementedSchedRegServer
 	grpc_health_v1.UnimplementedHealthServer
 }
 
 func (ctl *Controller) AsServer() {
-	ctl.HealthSrv()
+	ctl.healthSrv()
 
 	lis, err := net.Listen("tcp", ":"+*config.CtlPort)
 	if err != nil {
@@ -60,6 +67,11 @@ func New() *Controller {
 		schedStub:  make(map[string]pb.SchedStartClient),
 		network:    config.Network,
 		rnetwork:   config.RNetwork,
+		load:       make([]float64, *config.NumSchedulers),
+		used:       make([]float64, *config.NumSchedulers),
+		cap:        make([]float64, *config.NumSchedulers),
+		finSched:   make(map[int]bool),
+		trial:      0,
 	}
 }
 
@@ -73,7 +85,9 @@ func (ctl *Controller) connSched(in *pb.RegRequest) {
 				"error": err,
 				"name":  in.GetName(),
 			}).Fatal("Could not connect to scheduler")
+			ctl.mu.Unlock()
 			time.Sleep(time.Second)
+			ctl.mu.Lock()
 		} else {
 			ctl.schedStub[in.GetName()] = pb.NewSchedStartClient(conn)
 			break
@@ -157,8 +171,7 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 	}
 
 	log.WithFields(log.Fields{
-		"scheduler ready":  in.GetMe(),
-		"scheduler status": ctl.readySched,
+		"scheduler ready": in.GetMe(),
 	}).Debug("scheduler ready")
 
 	allReady := len(ctl.readySched) == *config.NumSchedulers
@@ -170,33 +183,50 @@ func (ctl *Controller) FinSetup(ctx context.Context, in *pb.SetupRequest) (*pb.S
 	}).Debug("controller reply")
 
 	if allReady {
-		ctl.bcastStart()
+		go ctl.newTrial()
 	}
 
 	return &pb.SetupReply{
 		Finished: allReady,
 	}, nil
-
 }
 
-func (ctl *Controller) bcastStart() {
+func (ctl *Controller) FinConsensus(ctx context.Context, in *pb.FinRequest) (*pb.EmptyReply, error) {
+	ctl.mu.Lock()
+	defer ctl.mu.Unlock()
 
-	log.Debug("broadcasting start")
-
-	for _, s := range ctl.schedulers {
-		go func(s string) {
-			_, err := ctl.schedStub[s].Start(context.Background(), &pb.EmptyRequest{})
-			if err != nil {
-				log.WithFields(log.Fields{
-					"error": err,
-				}).Warn("could not broadcast start")
-			}
-		}(s)
+	if int(in.GetTrial()) != ctl.trial || len(ctl.finSched) == *config.NumSchedulers {
+		log.WithFields(log.Fields{
+			"from":            in.GetMe(),
+			"sched trial":     in.GetTrial(),
+			"ctl trial":       ctl.trial,
+			"number finished": len(ctl.finSched),
+		}).Debug("wrong trial or already finished")
+		return &pb.EmptyReply{}, nil
 	}
+
+	ctl.finSched[int(in.GetMe())] = true
+
+	if len(ctl.finSched) == *config.NumSchedulers {
+		log.WithFields(log.Fields{
+			"from": in.GetMe(),
+		}).Debug("all schedulers finished, sleep before a new trial")
+		// we should lock while we sleep here because we don't want to do anything else
+		time.Sleep(10 * time.Second)
+		go ctl.newTrial()
+	} else {
+		log.WithFields(log.Fields{
+			"from":     in.GetMe(),
+			"finished": len(ctl.finSched),
+			"expected": *config.NumSchedulers,
+		}).Debug("not all schedulers finished")
+	}
+
+	return &pb.EmptyReply{}, nil
+
 }
 
 func (ctl *Controller) Check(ctx context.Context, in *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {
-
 	return &grpc_health_v1.HealthCheckResponse{Status: grpc_health_v1.HealthCheckResponse_SERVING}, nil
 }
 
@@ -204,7 +234,80 @@ func (ctl *Controller) Watch(in *grpc_health_v1.HealthCheckRequest, stream grpc_
 	return errors.New("not implemented")
 }
 
-func (ctl *Controller) HealthSrv() {
+/* private functions */
+
+func (ctl *Controller) gen_load() {
+	maxCap := 10
+
+	for i := range ctl.load {
+		ctl.load[i] = float64(rand.Intn(maxCap + 1))
+		ctl.used[i] = float64(rand.Intn(maxCap + 1 - int(ctl.load[i])))
+		ctl.cap[i] = float64(maxCap)
+	}
+
+}
+
+func (ctl *Controller) newTrial() {
+	ctl.mu.Lock()
+	defer ctl.mu.Unlock()
+
+	if ctl.trial > config.MaxTrials {
+		log.WithFields(log.Fields{
+			"trial": ctl.trial,
+		}).Debug("max trials reached")
+		return
+	}
+
+	ctl.trial++
+	ctl.finSched = make(map[int]bool)
+	ctl.gen_load()
+
+	log.WithFields(log.Fields{
+		"load":  ctl.load,
+		"used":  ctl.used,
+		"cap":   ctl.cap,
+		"trial": ctl.trial,
+	}).Info("new trial")
+
+	var load, used, cap float64
+
+	for i := range ctl.load {
+		load += ctl.load[i]
+		used += ctl.used[i]
+		cap += ctl.cap[i]
+	}
+
+	log.WithFields(log.Fields{
+		"number of schedulers": *config.NumSchedulers,
+		"expected consensus":   (used + load) / cap,
+	}).Debug("expected ratio")
+
+	ctl.bcastStart()
+}
+
+func (ctl *Controller) bcastStart() {
+
+	log.Debug("broadcasting start")
+
+	for i, s := range ctl.schedulers {
+		go func(i int, s string, trial int, l, u, pi float64) {
+			_, err := ctl.schedStub[s].Start(context.Background(),
+				&pb.StartRequest{
+					Trial: int32(trial),
+					L:     l,
+					U:     u,
+					Pi:    pi,
+				})
+			if err != nil {
+				log.WithFields(log.Fields{
+					"error": err,
+				}).Warn("could not broadcast start")
+			}
+		}(i, s, ctl.trial, ctl.load[i], ctl.used[i], ctl.cap[i])
+	}
+}
+
+func (ctl *Controller) healthSrv() {
 
 	lis, err := net.Listen("tcp", ":"+*config.LivenessPort)
 	if err != nil {
