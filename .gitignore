@@ -13,10 +13,13 @@ main/main
 ctl
 sched
 data/
+log/
+old_data/
 graphs/
 profiles/
 scratch.txt
 my-scheduler-deploy.yaml
+my-controller-pod.yaml
 
 # Test binary, built with `go test -c`
 *.test
