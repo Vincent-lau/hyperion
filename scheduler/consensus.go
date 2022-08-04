@@ -259,7 +259,7 @@ func (sched *Scheduler) LoopConsensus() {
 		log.WithFields(log.Fields{
 			"name":  sched.hostname,
 			"trial": sched.trial,
-		}).Info("============New trial is starting============")
+		}).Info("new trial is starting")
 
 		sched.Consensus()
 
@@ -329,8 +329,8 @@ func (sched *Scheduler) Consensus() {
 		"msg sent total": sched.msgRcv,
 	}).Info("consensus message exchanged")
 
-	sched.sendFin()
 	sched.reset()
+	sched.sendFin()
 
 }
 

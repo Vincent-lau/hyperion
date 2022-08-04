@@ -212,15 +212,18 @@ func (ctl *Controller) FinConsensus(ctx context.Context, in *pb.FinRequest) (*pb
 			"from": in.GetMe(),
 		}).Debug("all schedulers finished, sleep before a new trial")
 		// we should lock while we sleep here because we don't want to do anything else
+		ctl.mu.Unlock()
 		time.Sleep(10 * time.Second)
+		ctl.mu.Lock()
 		go ctl.newTrial()
-	} else {
-		log.WithFields(log.Fields{
-			"from":     in.GetMe(),
-			"finished": len(ctl.finSched),
-			"expected": *config.NumSchedulers,
-		}).Debug("not all schedulers finished")
-	}
+	} 
+	// else {
+	// 	log.WithFields(log.Fields{
+	// 		"from":     in.GetMe(),
+	// 		"finished": len(ctl.finSched),
+	// 		"expected": *config.NumSchedulers,
+	// 	}).Debug("not all schedulers finished")
+	// }
 
 	return &pb.EmptyReply{}, nil
 
@@ -254,7 +257,7 @@ func (ctl *Controller) newTrial() {
 	if ctl.trial > config.MaxTrials {
 		log.WithFields(log.Fields{
 			"trial": ctl.trial,
-		}).Debug("max trials reached")
+		}).Info("max trials reached")
 		return
 	}
 

@@ -169,6 +169,10 @@ func (sched *Scheduler) Start(ctx context.Context, in *pb.StartRequest) (*pb.Emp
 
 	sched.InitMyConData(in.GetL(), in.GetU(), in.GetPi())
 	sched.trial = int(in.GetTrial())
+	
+	MetricsLogger = MetricsLogger.WithFields(log.Fields{
+		"trial": in.GetTrial(),
+	})
 
 	sched.setup = true
 	sched.startCond.Broadcast()
