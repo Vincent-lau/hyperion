@@ -13,7 +13,8 @@ stats_name = ['msg rcv total',
               'xchg time per iter',
               'avg time per iter',
               'total time',
-              'total iter']
+              'total iter',
+              'setup time']
 
 '''
 We analyse the following per pod:
@@ -35,6 +36,7 @@ metrics = {}
 
 
 v1 = client.CoreV1Api()
+# TODO don't use all namespaces
 ret = v1.list_pod_for_all_namespaces(watch=False)
 for i in ret.items:
     if i.metadata.name.startswith("my-scheduler-") or i.metadata.name.startswith("my-controller"):
@@ -42,21 +44,30 @@ for i in ret.items:
         lines = v1.read_namespaced_pod_log(
             name=i.metadata.name, namespace=i.metadata.namespace)
 
-        name = i.metadata.name
-        if name.startswith('my-scheduler-'):
-            metrics[name] = {}
+        sched_name = ""
+        if i.metadata.name.startswith('my-scheduler-'):
+            sched_name = i.metadata.name
         for line in lines.split('\n'):
-            if name.startswith('my-sched') and line.startswith('{'):
+            if sched_name.startswith('my-sched') and line.startswith('{') and line.find("metrics") != -1 \
+                and line.find("trial") != -1:
                 d = json.loads(line)
+
+                trial = int(d['trial']) - 1
+                if len(metrics) < trial + 1:
+                    metrics[trial] = {}
+                m = metrics[trial]
+                if sched_name not in metrics[trial]:
+                    m[sched_name] = {}
+
                 for sn in stats_name:
-                    if sn.endswith('per iter'):
-                        if not sn in metrics[name]:
-                            metrics[name][sn] = []
-                        if sn in d:
-                            metrics[name][sn].append(d[sn])
-                    else:
-                        if sn in d:
-                            metrics[name][sn] = d[sn]
+                    # if sn.endswith('per iter'):
+                    #     if not sn in m[sched_name]:
+                    #         m[sched_name][sn] = []
+                    #     if sn in d:
+                    #         m[sched_name][sn].append(d[sn])
+                    # else:
+                    if sn in d:
+                        m[sched_name][sn] = d[sn]
 
 
 print(json.dumps(metrics))
