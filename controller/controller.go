@@ -254,7 +254,7 @@ func (ctl *Controller) newTrial() {
 	ctl.mu.Lock()
 	defer ctl.mu.Unlock()
 
-	if ctl.trial > config.MaxTrials {
+	if ctl.trial >= config.MaxTrials {
 		log.WithFields(log.Fields{
 			"trial": ctl.trial,
 		}).Info("max trials reached")
