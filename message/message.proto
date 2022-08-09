@@ -87,7 +87,7 @@ message EmptyReply {
 
 message ConDataRequest {
   int32 k = 1;
-  string name = 2;
+  int32 me = 2;
   ConData data = 3;
 }
 
@@ -108,13 +108,11 @@ message ConData {
 }
 
 
-
-// The request message containing the user's name.
 message HelloRequest {
-  string name = 1;
+  int32 me = 1;
 }
 
 // The response message containing the greetings
 message HelloReply {
-  string name = 1;
+  int32 me = 1;
 }

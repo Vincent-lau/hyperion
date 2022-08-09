@@ -21,18 +21,18 @@ type Scheduler struct {
 
 	hostname string
 	// name of inNeighbours, N-, ones that we will receive data from
-	inConns      []string
+	inConns      []int
 	inNeighbours int
 	expectedIn   int // expected number of inNeighbours, used for waiting
 	// number of out neighbours, N+, i.e. ones to which we will broadcast values
-	outConns      []string
+	outConns      []int
 	outNeighbours int
-	stubs         map[string]pb.RatioConsensusClient // stubs of outNeighbours
+	stubs         map[int]pb.RatioConsensusClient // stubs of outNeighbours
 
 	k    int
 	done bool // this indicates termination, which is different from flag
 
-	conData map[int]map[string]*pb.ConData
+	conData map[int]map[int]*pb.ConData
 
 	/* used by central controller */
 	me        int
@@ -69,14 +69,14 @@ func New() *Scheduler {
 
 	sched := &Scheduler{
 		hostname:      hostname,
-		inConns:       make([]string, 0),
+		inConns:       make([]int, 0),
 		inNeighbours:  0,
 		expectedIn:    0,
-		stubs:         make(map[string]pb.RatioConsensusClient),
-		outConns:      make([]string, 0),
+		stubs:         make(map[int]pb.RatioConsensusClient),
+		outConns:      make([]int, 0),
 		outNeighbours: 0,
 		k:             0,
-		conData:       make(map[int]map[string]*pb.ConData),
+		conData:       make(map[int]map[int]*pb.ConData),
 
 		setup: false,
 
@@ -92,7 +92,6 @@ func New() *Scheduler {
 	sched.AsClient()
 
 	MetricsLogger.WithFields(log.Fields{
-		"test":       "whatever",
 		"setup time": time.Since(st).Seconds(),
 	}).Info("setup done")
 

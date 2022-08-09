@@ -96,18 +96,17 @@ func (sched *Scheduler) AsServer() {
 
 }
 
-func (sched *Scheduler) Ping (ctx context.Context, in *pb.EmptyRequest) (*pb.EmptyReply, error) {
+func (sched *Scheduler) Ping(ctx context.Context, in *pb.EmptyRequest) (*pb.EmptyReply, error) {
 	return &pb.EmptyReply{}, nil
 }
-
 
 func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
-	if !slices.Contains(sched.inConns, in.GetName()) {
+	if !slices.Contains(sched.inConns, int(in.GetMe())) {
 		sched.inNeighbours++
-		sched.inConns = append(sched.inConns, in.GetName())
+		sched.inConns = append(sched.inConns, int(in.GetMe()))
 	}
 
 	if sched.expectedIn != 0 && sched.expectedIn == sched.inNeighbours {
@@ -118,8 +117,8 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 		sched.neighCond.Broadcast()
 	}
 
-	log.WithFields(log.Fields{"from": in.GetName()}).Debug("Received hello")
-	return &pb.HelloReply{Name: sched.hostname}, nil
+	log.WithFields(log.Fields{"from": in.GetMe()}).Debug("Received hello")
+	return &pb.HelloReply{Me: int32(sched.me)}, nil
 }
 
 func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) (*pb.EmptyReply, error) {
@@ -128,12 +127,12 @@ func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) 
 
 	k := int(in.GetK())
 	if _, ok := sched.conData[k]; !ok {
-		sched.conData[k] = make(map[string]*pb.ConData)
+		sched.conData[k] = make(map[int]*pb.ConData)
 	}
-	sched.conData[k][in.GetName()] = in.GetData()
+	sched.conData[k][int(in.GetMe())] = in.GetData()
 
 	log.WithFields(log.Fields{
-		"from":               in.GetName(),
+		"from":               in.GetMe(),
 		"scheduler k":        sched.k,
 		"received k":         in.GetK(),
 		"data":               in.GetData(),
@@ -166,14 +165,14 @@ func (sched *Scheduler) Start(ctx context.Context, in *pb.StartRequest) (*pb.Emp
 	defer sched.mu.Unlock()
 
 	log.WithFields(log.Fields{
-		"l": in.GetL(),
-		"u": in.GetU(),
+		"l":  in.GetL(),
+		"u":  in.GetU(),
 		"pi": in.GetPi(),
 	}).Debug("received start from controller")
 
 	sched.InitMyConData(in.GetL(), in.GetU(), in.GetPi())
 	sched.trial = int(in.GetTrial())
-	
+
 	MetricsLogger = MetricsLogger.WithFields(log.Fields{
 		"trial": in.GetTrial(),
 	})

@@ -163,12 +163,7 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 			defer cancel()
 			sched.mu.Unlock()
-			r, err = stub.SayHello(ctx, &pb.HelloRequest{Name: sched.hostname})
-			t := time.Now()
-			stub.Ping(context.Background(), &pb.EmptyRequest{})
-			MetricsLogger.WithFields(log.Fields{
-				"ping time": time.Since(t).Microseconds(),
-			}).Info("ping latency")
+			r, err = stub.SayHello(ctx, &pb.HelloRequest{Me: int32(sched.me)})
 			sched.mu.Lock()
 			if err != nil {
 				log.WithFields(log.Fields{
@@ -180,14 +175,14 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 				sched.mu.Lock()
 			} else {
 				log.WithFields(log.Fields{
-					"to": r.GetName(),
+					"to": r.GetMe(),
 				}).Debug("greeted")
 				break
 			}
 		}
 
-		sched.outConns = append(sched.outConns, r.GetName())
-		sched.stubs[r.GetName()] = stub
+		sched.outConns = append(sched.outConns, int(r.GetMe()))
+		sched.stubs[int(r.GetMe())] = stub
 	}
 	sched.outNeighbours = len(sched.outConns)
 

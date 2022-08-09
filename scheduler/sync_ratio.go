@@ -14,11 +14,11 @@ import (
 func (sched *Scheduler) InitMyConData(l, u, pi float64) {
 
 	if _, ok := sched.conData[0]; !ok {
-		sched.conData[0] = make(map[string]*pb.ConData)
+		sched.conData[0] = make(map[int]*pb.ConData)
 	}
 
 	// this node's data
-	sched.conData[0][sched.hostname] = &pb.ConData{
+	sched.conData[0][sched.me] = &pb.ConData{
 		P:    1 / (float64(sched.outNeighbours) + 1), // p for this node
 		Y:    l + u,
 		Z:    pi,

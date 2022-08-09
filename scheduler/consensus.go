@@ -24,10 +24,10 @@ func (sched *Scheduler) getPrevRoundFlag() bool {
 		log.WithFields(log.Fields{
 			"k":           sched.k,
 			"prev k":      sched.k - config.Diameter,
-			"prev k flag": sched.conData[sched.k-config.Diameter][sched.hostname].GetFlag(),
+			"prev k flag": sched.conData[sched.k-config.Diameter][sched.me].GetFlag(),
 		}).Debug("checking flag at previous round")
 
-		return sched.conData[sched.k-config.Diameter][sched.hostname].GetFlag()
+		return sched.conData[sched.k-config.Diameter][sched.me].GetFlag()
 	} else {
 		return false
 	}
@@ -67,7 +67,7 @@ func (sched *Scheduler) CheckCvg() bool {
 				"mu":   mu,
 			}).Debug("updating M and m")
 
-			sched.conData[sched.k][sched.hostname] = &pb.ConData{
+			sched.conData[sched.k][sched.me] = &pb.ConData{
 				P:    myData.GetP(),
 				Y:    myData.GetY(),
 				Z:    myData.GetZ(),
@@ -92,7 +92,7 @@ func (sched *Scheduler) CheckCvg() bool {
 
 	} else { // flag == 1
 		if math.Abs(myData.GetMm()-myData.GetM()) >= *config.Tolerance {
-			sched.conData[sched.k][sched.hostname] = &pb.ConData{
+			sched.conData[sched.k][sched.me] = &pb.ConData{
 				P:    myData.GetP(),
 				Y:    myData.GetY(),
 				Z:    myData.GetZ(),
@@ -112,7 +112,7 @@ func (sched *Scheduler) CheckCvg() bool {
 
 }
 
-func (sched *Scheduler) sendOne(name string, stub pb.RatioConsensusClient, done chan<- int) {
+func (sched *Scheduler) sendOne(to int, stub pb.RatioConsensusClient, done chan<- int) {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
@@ -121,14 +121,14 @@ func (sched *Scheduler) sendOne(name string, stub pb.RatioConsensusClient, done 
 		defer cancel()
 
 		log.WithFields(log.Fields{
-			"to":   name,
+			"to":   to,
 			"k":    sched.k,
 			"data": sched.MyData(),
 		}).Debug("sending data in sendOne")
 
 		data := &pb.ConDataRequest{
 			K:    int32(sched.k),
-			Name: sched.hostname,
+			Me: int32(sched.me),
 			Data: sched.MyData(),
 		}
 
@@ -142,7 +142,7 @@ func (sched *Scheduler) sendOne(name string, stub pb.RatioConsensusClient, done 
 		if err != nil {
 			log.WithFields(log.Fields{
 				"error":              err,
-				"sending request to": name,
+				"sending request to": to,
 				"iteration":          sched.k,
 			}).Warn("error send conData")
 
@@ -165,8 +165,8 @@ func (sched *Scheduler) MsgXchg() {
 
 	done := make(chan int)
 
-	for _, name := range sched.outConns {
-		go sched.sendOne(name, sched.stubs[name], done)
+	for _, you := range sched.outConns {
+		go sched.sendOne(you, sched.stubs[you], done)
 	}
 
 	log.WithFields(log.Fields{
@@ -181,10 +181,10 @@ func (sched *Scheduler) MsgXchg() {
 
 	for len(sched.CurData())-1 != sched.inNeighbours {
 
-		missing := make([]string, 0)
-		for _, name := range sched.inConns {
-			if _, ok := sched.conData[sched.k][name]; !ok {
-				missing = append(missing, name)
+		missing := make([]int, 0)
+		for _, from := range sched.inConns {
+			if _, ok := sched.conData[sched.k][from]; !ok {
+				missing = append(missing, from)
 			}
 		}
 
@@ -230,10 +230,10 @@ func (sched *Scheduler) LocalComp() {
 
 	// sched.k+1 might have been created by receiving response from other nodes
 	if _, ok := sched.conData[sched.k+1]; !ok {
-		sched.conData[sched.k+1] = make(map[string]*pb.ConData)
+		sched.conData[sched.k+1] = make(map[int]*pb.ConData)
 	}
 
-	sched.conData[sched.k+1][sched.hostname] = &pb.ConData{
+	sched.conData[sched.k+1][sched.me] = &pb.ConData{
 		P:    myData.GetP(),
 		Y:    newY,
 		Z:    newZ,
@@ -244,7 +244,7 @@ func (sched *Scheduler) LocalComp() {
 
 	log.WithFields(log.Fields{
 		"to":           sched.k + 1,
-		"updated data": sched.conData[sched.k+1][sched.hostname],
+		"updated data": sched.conData[sched.k+1][sched.me],
 	}).Debug("awesome computation done, advancing iteration counter")
 
 	if !sched.done {
@@ -287,7 +287,7 @@ func (sched *Scheduler) LoopConsensus() {
 		}
 		sched.mu.Unlock()
 
-		if *config.CpuProfile != "" && sched.trial > config.MaxTrials {
+		if *config.CpuProfile != "" && sched.trial >= config.MaxTrials {
 			pprof.StopCPUProfile()
 		}
 
@@ -318,7 +318,7 @@ func (sched *Scheduler) Consensus() {
 			"xchg time per iter": t1.Sub(t).Microseconds(),
 			"comp time per iter": t2.Sub(t1).Microseconds(),
 			"time per iteration": ts[len(ts)-1],
-		}).Info("time of this iteration")
+		}).Debug("time of this iteration")
 	}
 
 	var tot int64
@@ -348,12 +348,12 @@ func (sched *Scheduler) Consensus() {
 
 }
 
-func (sched *Scheduler) CurData() map[string]*pb.ConData {
+func (sched *Scheduler) CurData() map[int]*pb.ConData {
 	return sched.conData[sched.k]
 }
 
 func (sched *Scheduler) MyData() *pb.ConData {
-	return sched.conData[sched.k][sched.hostname]
+	return sched.conData[sched.k][sched.me]
 }
 
 func (sched *Scheduler) sendFin() {
@@ -392,7 +392,7 @@ func (sched *Scheduler) reset() {
 	sched.k = 0
 	sched.done = false
 
-	sched.conData = make(map[int]map[string]*pb.ConData)
+	sched.conData = make(map[int]map[int]*pb.ConData)
 	sched.setup = false
 
 	sched.msgRcv = 0
