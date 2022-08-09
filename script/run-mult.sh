@@ -1,7 +1,7 @@
 #!/bin/zsh
 
 CMD=$(gum choose "run.sh" "redeploy.sh" --limit=1 || echo "run.sh")
-for i in $(gum choose --no-limit 100 200 300 400)
+for i in $(gum choose --no-limit 9 100 200 300 400)
 do
   gum style --foreground 103 --border-foreground 212 --border double \
             --align center --width 50 --margin "1 2" --padding "2 4" \
