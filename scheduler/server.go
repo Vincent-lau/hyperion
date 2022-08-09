@@ -96,7 +96,11 @@ func (sched *Scheduler) AsServer() {
 
 }
 
-// SayHello implements helloworld.GreeterServer
+func (sched *Scheduler) Ping (ctx context.Context, in *pb.EmptyRequest) (*pb.EmptyReply, error) {
+	return &pb.EmptyReply{}, nil
+}
+
+
 func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()

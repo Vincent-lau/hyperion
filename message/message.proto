@@ -23,6 +23,7 @@ package message;
 service RatioConsensus {
   rpc SayHello (HelloRequest) returns (HelloReply) {}
   rpc sendConData (ConDataRequest) returns (EmptyReply) {}
+  rpc Ping (EmptyRequest) returns (EmptyReply) {}
 }
 
 service SchedReg {

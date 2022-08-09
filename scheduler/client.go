@@ -164,6 +164,11 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 			defer cancel()
 			sched.mu.Unlock()
 			r, err = stub.SayHello(ctx, &pb.HelloRequest{Name: sched.hostname})
+			t := time.Now()
+			stub.Ping(context.Background(), &pb.EmptyRequest{})
+			MetricsLogger.WithFields(log.Fields{
+				"ping time": time.Since(t).Microseconds(),
+			}).Info("ping latency")
 			sched.mu.Lock()
 			if err != nil {
 				log.WithFields(log.Fields{
