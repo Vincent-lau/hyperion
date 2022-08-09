@@ -12,6 +12,7 @@ func init() {
 
 
 var (
-	Cpuprofile = flag.String("cpuprofile", "", "write cpu profile to file")
+	CpuProfile = flag.String("cpuprofile", "", "write cpu profile to file")
+	MemProfile = flag.String("memprofile", "", "write memory profile to file")
 )
 

@@ -254,6 +254,24 @@ func (sched *Scheduler) LocalComp() {
 }
 
 func (sched *Scheduler) LoopConsensus() {
+	if *config.CpuProfile != "" {
+		f, err := os.Create(*config.CpuProfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+	}
+
+	if *config.MemProfile != "" {
+		f, err := os.Create(*config.MemProfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.WriteHeapProfile(f)
+		f.Close()
+		return
+	}
+
 	for {
 
 		log.WithFields(log.Fields{
@@ -269,19 +287,15 @@ func (sched *Scheduler) LoopConsensus() {
 		}
 		sched.mu.Unlock()
 
+		if *config.CpuProfile != "" && sched.trial > config.MaxTrials {
+			pprof.StopCPUProfile()
+		}
+
 	}
 
 }
 
 func (sched *Scheduler) Consensus() {
-	if *config.CpuProfile != "" {
-		f, err := os.Create(*config.CpuProfile)
-		if err != nil {
-			log.Fatal(err)
-		}
-		pprof.StartCPUProfile(f)
-		defer pprof.StopCPUProfile()
-	}
 
 	ts := make([]int64, 0)
 
