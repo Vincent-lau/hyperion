@@ -13,9 +13,9 @@ ret = v1.list_pod_for_all_namespaces(watch=False)
 k = 0
 for i in ret.items:
     if i.metadata.name.startswith("my-scheduler-"):
-      os.system(f'kubectl cp kube-system/{i.metadata.name}:sched.prof profiles/sched{k}.prof')
+      os.system(f'kubectl cp {i.metadata.name}:sched.prof measure/profiles/sched{k}.prof')
       print(f'copied from {i.metadata.name} to sched{k}.prof')
       k += 1
-    if k > 1:
+    if k > 5:
       break
 
