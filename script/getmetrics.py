@@ -1,7 +1,8 @@
 #!/usr/bin/env python3
 
+import json, datetime, os
+
 from kubernetes import client, config
-import json
 
 # Configs can be set in Configuration class directly or using helper utility
 config.load_kube_config()
@@ -69,4 +70,10 @@ for i in ret.items:
                         m[sched_name][sn] = d[sn]
 
 
-print(json.dumps(metrics))
+
+name = datetime.datetime.now().isoformat()[:-7].replace(':', '-')
+dir = f"measure/data/{name}/"
+os.mkdir(dir)
+
+with open(f"{dir}/metrics.json", 'w') as f:
+    json.dump(metrics, f)
