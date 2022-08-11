@@ -128,7 +128,7 @@ func (sched *Scheduler) sendOne(to int, stub pb.RatioConsensusClient, done chan<
 
 		data := &pb.ConDataRequest{
 			K:    int32(sched.k),
-			Me: int32(sched.me),
+			Me:   int32(sched.me),
 			Data: sched.MyData(),
 		}
 
@@ -280,6 +280,7 @@ func (sched *Scheduler) LoopConsensus() {
 		}).Info("new trial is starting")
 
 		sched.Consensus()
+		sched.reset()
 
 		sched.mu.Lock()
 		for !sched.setup {
@@ -321,6 +322,7 @@ func (sched *Scheduler) Consensus() {
 		}).Debug("time of this iteration")
 	}
 
+
 	var tot int64
 	for _, t := range ts {
 		tot += t
@@ -343,7 +345,6 @@ func (sched *Scheduler) Consensus() {
 		"msg sent total": sched.msgRcv,
 	}).Info("consensus message exchanged")
 
-	sched.reset()
 	sched.sendFin()
 
 }
@@ -366,7 +367,7 @@ func (sched *Scheduler) sendFin() {
 		trial := int32(sched.trial)
 		sched.mu.Unlock()
 
-		_, err := sched.ctlStub.FinConsensus(ctx, &pb.FinRequest{
+		_, err := sched.ctlRegStub.FinConsensus(ctx, &pb.FinRequest{
 			Me:    me,
 			Trial: trial,
 		})
@@ -382,20 +383,5 @@ func (sched *Scheduler) sendFin() {
 			break
 		}
 	}
-
-}
-
-func (sched *Scheduler) reset() {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
-
-	sched.k = 0
-	sched.done = false
-
-	sched.conData = make(map[int]map[int]*pb.ConData)
-	sched.setup = false
-
-	sched.msgRcv = 0
-	sched.msgSent = 0
 
 }
