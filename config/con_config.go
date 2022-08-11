@@ -16,8 +16,9 @@ func init() {
 }
 
 var (
+	Mode = flag.String("mode", "dev", "Environment to run in")	
 	NumSchedulers = flag.Int("schednum", 9, "Number of schedulers")
-	MaxTrials = 10
+	MaxTrials = 1
 
 	Tolerance = flag.Float64("tolerance", 1e-5, "Tolerance for the convergence")
 	Delay     = flag.Int("tau", 1, "Delay")

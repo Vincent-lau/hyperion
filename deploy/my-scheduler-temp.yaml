@@ -79,6 +79,8 @@ spec:
       - command:
         - /usr/local/bin/kube-scheduler
         - -schednum=%REPLICAS%
+        - -mode=prod
+        # - -cpuprofile=sched.prof
         image: cuso4/my-sched:latest
         imagePullPolicy: Always
         ports:

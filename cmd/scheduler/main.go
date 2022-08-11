@@ -1,6 +1,7 @@
 package main
 
 import (
+	"example/dist_sched/config"
 	"example/dist_sched/scheduler"
 	"flag"
 	"math/rand"
@@ -9,21 +10,17 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-const (
-	environment = "dev"
-)
-
 func init() {
 	flag.Parse()
 	// log.SetReportCaller(true)
 	rand.Seed(time.Now().UnixNano())
 
-	if environment == "dev" {
+	if *config.Mode == "dev" {
 		log.SetLevel(log.DebugLevel)
 		log.SetFormatter(&log.TextFormatter{
 			ForceColors: true,
 		})
-	} else if environment == "prod" {
+	} else if *config.Mode == "prod" {
 		log.SetLevel(log.InfoLevel)
 		log.SetFormatter(&log.JSONFormatter{})
 	} else {
@@ -35,7 +32,8 @@ func init() {
 func main() {
 
 	sched := scheduler.New()
-	sched.LoopConsensus()
+	sched.Consensus()
+	sched.Placement()
 
 	for {
 		time.Sleep(10 * time.Second)
