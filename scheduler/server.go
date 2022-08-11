@@ -160,7 +160,7 @@ func (sched *Scheduler) Watch(in *grpc_health_v1.HealthCheckRequest, stream grpc
 	return errors.New("not implemented")
 }
 
-func (sched *Scheduler) Start(ctx context.Context, in *pb.StartRequest) (*pb.EmptyReply, error) {
+func (sched *Scheduler) StartConsensus(ctx context.Context, in *pb.StartRequest) (*pb.EmptyReply, error) {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
@@ -176,9 +176,25 @@ func (sched *Scheduler) Start(ctx context.Context, in *pb.StartRequest) (*pb.Emp
 	MetricsLogger = MetricsLogger.WithFields(log.Fields{
 		"trial": in.GetTrial(),
 	})
+	PlLogger = PlLogger.WithFields(log.Fields{
+		"trial": in.GetTrial(),
+	})
 
-	sched.setup = true
 	sched.startCond.Broadcast()
+	sched.setup = true
 
 	return &pb.EmptyReply{}, nil
+}
+
+func (sched *Scheduler) StartPlace(ctx context.Context, in *pb.EmptyRequest) (*pb.EmptyReply, error) {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
+	log.Debug("received start placement from controller")
+
+	sched.startCond.Broadcast()
+	sched.allDone = true
+
+	return &pb.EmptyReply{}, nil
+
 }

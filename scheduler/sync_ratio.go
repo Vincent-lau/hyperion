@@ -27,6 +27,9 @@ func (sched *Scheduler) InitMyConData(l, u, pi float64) {
 		Flag: false,
 	}
 
+	sched.u = u
+	sched.pi = pi
+
 	log.WithFields(log.Fields{
 		"data": sched.MyData(),
 	}).Debug("initialized conData")

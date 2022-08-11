@@ -34,13 +34,20 @@ type Scheduler struct {
 
 	conData map[int]map[int]*pb.ConData
 
+	/* for job fetching */
+	pi      float64 // capacity
+	u       float64 // used
+	ratio   float64 // (rho + u) / pi after consensus
+	w       float64 // remaining capacity = z * pi - u
+	allDone bool    // all schedulers have sent finish to controller
+
 	/* used by central controller */
-	me        int
-	trial     int
-	setup     bool
-	startCond *sync.Cond
-	ctlStub   pb.SchedRegClient
-	pb.UnimplementedSchedStartServer
+	me         int
+	trial      int
+	setup      bool // all scheduler connected and ready for consensus
+	startCond  *sync.Cond
+	ctlRegStub pb.SchedRegClient
+	ctlPlStub  pb.JobPlacementClient
 
 	/* metrics */
 	msgRcv  int
@@ -48,6 +55,7 @@ type Scheduler struct {
 
 	/* implementing the gRPC server */
 	pb.UnimplementedRatioConsensusServer
+	pb.UnimplementedSchedStartServer
 	grpc_health_v1.UnimplementedHealthServer
 }
 
@@ -57,6 +65,7 @@ const (
 
 var (
 	MetricsLogger = log.WithFields(log.Fields{"prefix": "metrics"})
+	PlLogger      = log.WithFields(log.Fields{"prefix": "placement"})
 )
 
 func New() *Scheduler {
@@ -80,6 +89,9 @@ func New() *Scheduler {
 
 		setup: false,
 
+		/* placement */
+		allDone: false,
+
 		// metrics
 		msgSent: 0,
 		msgRcv:  0,
@@ -96,5 +108,23 @@ func New() *Scheduler {
 	}).Info("setup done")
 
 	return sched
+
+}
+
+func (sched *Scheduler) reset() {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
+	sched.k = 0
+	sched.done = false
+
+	sched.conData = make(map[int]map[int]*pb.ConData)
+	sched.setup = false
+
+	/* placement */
+	sched.allDone = false
+
+	sched.msgRcv = 0
+	sched.msgSent = 0
 
 }

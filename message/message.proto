@@ -34,8 +34,24 @@ service SchedReg {
 }
 
 service SchedStart {
-  rpc Start(StartRequest) returns (EmptyReply) {}
+  rpc StartConsensus(StartRequest) returns (EmptyReply) {}
+  rpc StartPlace(EmptyRequest) returns (EmptyReply) {}
 }
+
+service JobPlacement {
+  rpc GetJob(JobRequest) returns (JobReply) {}
+}
+
+message JobRequest {
+  int32 trial = 1;
+  double size = 2; // requested size
+  int32 me = 3;
+}
+
+message JobReply {
+  double size = 1; // actual job size
+}
+
 
 message FinRequest {
   int32 me = 1;

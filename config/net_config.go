@@ -7,6 +7,7 @@ import (
 var (
 	SchedPort = flag.String("port", "50051", "The server port")
 	CtlPort   = flag.String("ctlport", "50052", "The controller port")
+	PlacementPort = "50053"
 	SchedDNS  = flag.String("scheduler dns", "scheduler-headless.dist-sched.svc.cluster.local", "DNS server")
 	CtlDNS    = flag.String("controller dns", "controller-svc.dist-sched.svc.cluster.local", "controller DNS server")
 

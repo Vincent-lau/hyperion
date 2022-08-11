@@ -5,14 +5,13 @@ import (
 	"errors"
 	"example/dist_sched/config"
 	pb "example/dist_sched/message"
-	"math/rand"
-	"net"
 	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
 
+	"github.com/Workiva/go-datastructures/queue"
 	"golang.org/x/exp/slices"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -33,34 +32,18 @@ type Controller struct {
 	finSched map[int]bool
 	trial    int
 
+	/* for placement */
+	jobQueue []*queue.Queue
+	fetched  int
+
 	pb.UnimplementedSchedRegServer
+	pb.UnimplementedJobPlacementServer
 	grpc_health_v1.UnimplementedHealthServer
-}
-
-func (ctl *Controller) AsServer() {
-	ctl.healthSrv()
-
-	lis, err := net.Listen("tcp", ":"+*config.CtlPort)
-	if err != nil {
-		log.Fatalf("failed to listen: %v", err)
-	}
-
-	s := grpc.NewServer()
-	pb.RegisterSchedRegServer(s, ctl)
-
-	log.Printf("server listening at %v", lis.Addr())
-
-	if err := s.Serve(lis); err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Fatalf("failed to serve")
-	}
-
 }
 
 func New() *Controller {
 
-	return &Controller{
+	ctl := &Controller{
 		schedulers: make([]string, 0),
 		schedIP:    make(map[string]string),
 		readySched: make(map[int]bool),
@@ -72,7 +55,15 @@ func New() *Controller {
 		cap:        make([]float64, *config.NumSchedulers),
 		finSched:   make(map[int]bool),
 		trial:      0,
+		jobQueue:   make([]*queue.Queue, 3),
+		fetched:    0,
 	}
+
+	for i := range ctl.jobQueue {
+		ctl.jobQueue[i] = queue.New(0)
+	}
+
+	return ctl
 }
 
 func (ctl *Controller) connSched(in *pb.RegRequest) {
@@ -197,10 +188,10 @@ func (ctl *Controller) FinConsensus(ctx context.Context, in *pb.FinRequest) (*pb
 
 	if int(in.GetTrial()) != ctl.trial || len(ctl.finSched) == *config.NumSchedulers {
 		log.WithFields(log.Fields{
-			"from":            in.GetMe(),
-			"sched trial":     in.GetTrial(),
-			"ctl trial":       ctl.trial,
-			"number finished": len(ctl.finSched),
+			"from":        in.GetMe(),
+			"sched trial": in.GetTrial(),
+			"ctl trial":   ctl.trial,
+			"finished":    len(ctl.finSched) == *config.NumSchedulers,
 		}).Debug("wrong trial or already finished")
 		return &pb.EmptyReply{}, nil
 	}
@@ -210,45 +201,16 @@ func (ctl *Controller) FinConsensus(ctx context.Context, in *pb.FinRequest) (*pb
 	if len(ctl.finSched) == *config.NumSchedulers {
 		log.WithFields(log.Fields{
 			"from": in.GetMe(),
-		}).Debug("all schedulers finished, sleep before a new trial")
-		// we should lock while we sleep here because we don't want to do anything else
-		ctl.mu.Unlock()
-		time.Sleep(10 * time.Second)
-		ctl.mu.Lock()
-		go ctl.newTrial()
-	} 
-	// else {
-	// 	log.WithFields(log.Fields{
-	// 		"from":     in.GetMe(),
-	// 		"finished": len(ctl.finSched),
-	// 		"expected": *config.NumSchedulers,
-	// 	}).Debug("not all schedulers finished")
-	// }
+		}).Debug("all schedulers finished")
+
+		go ctl.Placement()
+	}
 
 	return &pb.EmptyReply{}, nil
 
 }
 
-func (ctl *Controller) Check(ctx context.Context, in *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {
-	return &grpc_health_v1.HealthCheckResponse{Status: grpc_health_v1.HealthCheckResponse_SERVING}, nil
-}
-
-func (ctl *Controller) Watch(in *grpc_health_v1.HealthCheckRequest, stream grpc_health_v1.Health_WatchServer) error {
-	return errors.New("not implemented")
-}
-
-/* private functions */
-
-func (ctl *Controller) gen_load() {
-	maxCap := 10
-
-	for i := range ctl.load {
-		ctl.load[i] = float64(rand.Intn(maxCap + 1))
-		ctl.used[i] = float64(rand.Intn(maxCap + 1 - int(ctl.load[i])))
-		ctl.cap[i] = float64(maxCap)
-	}
-
-}
+/* --private functions-- */
 
 func (ctl *Controller) newTrial() {
 	ctl.mu.Lock()
@@ -263,7 +225,7 @@ func (ctl *Controller) newTrial() {
 
 	ctl.trial++
 	ctl.finSched = make(map[int]bool)
-	ctl.gen_load()
+	ctl.GenLoad()
 
 	log.WithFields(log.Fields{
 		"load":  ctl.load,
@@ -289,12 +251,11 @@ func (ctl *Controller) newTrial() {
 }
 
 func (ctl *Controller) bcastStart() {
-
 	log.Debug("broadcasting start")
 
 	for i, s := range ctl.schedulers {
 		go func(i int, s string, trial int, l, u, pi float64) {
-			_, err := ctl.schedStub[s].Start(context.Background(),
+			_, err := ctl.schedStub[s].StartConsensus(context.Background(),
 				&pb.StartRequest{
 					Trial: int32(trial),
 					L:     l,
@@ -308,30 +269,4 @@ func (ctl *Controller) bcastStart() {
 			}
 		}(i, s, ctl.trial, ctl.load[i], ctl.used[i], ctl.cap[i])
 	}
-}
-
-func (ctl *Controller) healthSrv() {
-
-	lis, err := net.Listen("tcp", ":"+*config.LivenessPort)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Fatalf("failed to serve health server")
-	}
-
-	s := grpc.NewServer()
-	grpc_health_v1.RegisterHealthServer(s, ctl)
-
-	log.WithFields(log.Fields{
-		"at": lis.Addr(),
-	}).Debug("health server listening")
-
-	go func() {
-		if err := s.Serve(lis); err != nil {
-			log.WithFields(log.Fields{
-				"error": err,
-			}).Fatalf("failed to serve health server")
-		}
-	}()
-
 }

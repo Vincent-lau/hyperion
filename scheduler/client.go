@@ -19,53 +19,43 @@ import (
 func (sched *Scheduler) AsClient() {
 	ctlAddr := findCtlAddr()
 
+	sched.regWithCtl(ctlAddr)
+	sched.connectToPl(ctlAddr)
+
+	neighbours := sched.getNeighbours()
+	sched.connectNeigh(neighbours)
+	sched.waitForFinish()
+}
+
+func (sched *Scheduler) connectToPl(ctlAddr net.IP) {
+	conn, err := grpc.Dial(ctlAddr.String()+":"+config.PlacementPort,
+		grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+			"for":   "placement",
+		}).Fatal("Could not connect to controller")
+	}
+	sched.mu.Lock()
+	sched.ctlPlStub = pb.NewJobPlacementClient(conn)
+	sched.mu.Unlock()
+
+}
+
+func (sched *Scheduler) regWithCtl(ctlAddr net.IP) {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
+
 	conn, err := grpc.Dial(ctlAddr.String()+":"+*config.CtlPort,
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
+			"for":   "registration",
 		}).Fatal("Could not connect to controller")
 	}
 
-	sched.ctlStub = pb.NewSchedRegClient(conn)
-	sched.regWithCtl()
-
-	neighbours := sched.getNeighbours()
-
-	sched.connectNeigh(neighbours)
-
-	sched.waitForFinish()
-}
-
-func getOutboundIP() net.IP {
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		log.Fatal(err)
-	}
-	defer conn.Close()
-
-	localAddr := conn.LocalAddr().(*net.UDPAddr)
-
-	return localAddr.IP
-}
-
-func findCtlAddr() net.IP {
-	for {
-		ips, err := net.LookupIP(*config.CtlDNS)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"error": err,
-			}).Debug("Could not get IPs")
-			time.Sleep(time.Second * 5)
-		} else {
-			return ips[0]
-		}
-	}
-}
-
-func (sched *Scheduler) regWithCtl() {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
+	sched.ctlRegStub = pb.NewSchedRegClient(conn)
 
 	host, err := os.Hostname()
 	myIP := getOutboundIP()
@@ -81,7 +71,7 @@ func (sched *Scheduler) regWithCtl() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 		defer cancel()
 		sched.mu.Unlock()
-		r, err = sched.ctlStub.Reg(ctx, &pb.RegRequest{
+		r, err = sched.ctlRegStub.Reg(ctx, &pb.RegRequest{
 			Name: host,
 			Ip:   myIP.String(),
 		})
@@ -115,7 +105,7 @@ func (sched *Scheduler) getNeighbours() []string {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 		sched.mu.Unlock()
-		r, err := sched.ctlStub.GetNeighbours(ctx, &pb.NeighboursRequest{
+		r, err := sched.ctlRegStub.GetNeighbours(ctx, &pb.NeighboursRequest{
 			Me: int32(sched.me),
 		})
 		sched.mu.Lock()
@@ -132,7 +122,7 @@ func (sched *Scheduler) getNeighbours() []string {
 			sched.expectedIn = int(r.GetInNeighbours())
 
 			log.WithFields(log.Fields{
-				"neighbours": r.GetNeigh(),
+				"neighbours":  r.GetNeigh(),
 				"expected in": r.GetInNeighbours(),
 			}).Debug("got neighbours")
 			return r.GetNeigh()
@@ -145,7 +135,7 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 	defer sched.mu.Unlock()
 
 	for _, n := range neighbours {
-		conn, err := grpc.Dial(n+":"+*config.SchedPort, 
+		conn, err := grpc.Dial(n+":"+*config.SchedPort,
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 			grpc.WithKeepaliveParams(keepalive.ClientParameters{}))
 
@@ -193,7 +183,7 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 	// now wait for all neighbours to connect to me
 	for sched.expectedIn != sched.inNeighbours {
 		log.WithFields(log.Fields{
-			"expected in": sched.expectedIn,
+			"expected in":   sched.expectedIn,
 			"in neighbours": sched.inNeighbours,
 		}).Debug("waiting for all neighbours to connect to me")
 		sched.neighCond.Wait()
@@ -211,7 +201,7 @@ func (sched *Scheduler) waitForFinish() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 		sched.mu.Unlock()
-		r, err := sched.ctlStub.FinSetup(ctx, &pb.SetupRequest{
+		r, err := sched.ctlRegStub.FinSetup(ctx, &pb.SetupRequest{
 			Me:           int32(sched.me),
 			InNeighbours: int64(sched.inNeighbours),
 		})
@@ -238,4 +228,30 @@ func (sched *Scheduler) waitForFinish() {
 		"in nieghbours": sched.inNeighbours,
 	}).Debug("received finish setup from controller, all schedulers are connected")
 
+}
+
+func getOutboundIP() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP
+}
+
+func findCtlAddr() net.IP {
+	for {
+		ips, err := net.LookupIP(*config.CtlDNS)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Debug("Could not get IPs")
+			time.Sleep(time.Second * 5)
+		} else {
+			return ips[0]
+		}
+	}
 }
