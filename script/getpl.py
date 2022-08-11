@@ -7,14 +7,9 @@ import json
 config.load_kube_config()
 
 
-stats_name = ['msg rcv total',
-              'msg sent total',
-              'comp time per iter',
-              'xchg time per iter',
-              'avg time per iter',
-              'total time',
-              'total iter',
-              'setup time']
+stats_name = ['got jobs',
+              'initial w',
+              'final w' ]
 
 '''
 We analyse the following per pod:
@@ -47,8 +42,8 @@ for i in ret.items:
         if i.metadata.name.startswith('my-scheduler-'):
             sched_name = i.metadata.name
         for line in lines.split('\n'):
-            if sched_name.startswith('my-sched') and line.startswith('{') and line.find("metrics") != -1 \
-                    and line.find("trial") != -1:
+            if sched_name.startswith('my-sched') and line.startswith('{') and line.find("placement") != -1 \
+                and line.find("trial") != -1:
                 d = json.loads(line)
 
                 trial = int(d['trial']) - 1
@@ -59,12 +54,6 @@ for i in ret.items:
                     m[sched_name] = {}
 
                 for sn in stats_name:
-                    # if sn.endswith('per iter'):
-                    #     if not sn in m[sched_name]:
-                    #         m[sched_name][sn] = []
-                    #     if sn in d:
-                    #         m[sched_name][sn].append(d[sn])
-                    # else:
                     if sn in d:
                         m[sched_name][sn] = d[sn]
 
