@@ -12,10 +12,7 @@ main/main
 *.pb.go
 ctl
 sched
-data/
 log/
-old_data/
-graphs/
 profiles/
 scratch.txt
 my-scheduler-deploy.yaml
