@@ -3,10 +3,6 @@
 
 echo "===================deploying scheduler==================="
 
-# compile the protobuf
-protoc --go_out=. --go_opt=paths=source_relative \
-    --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-    message/message.proto
 
 
 go build -o ./bin/sched cmd/scheduler/main.go && \
