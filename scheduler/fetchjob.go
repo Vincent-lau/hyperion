@@ -41,7 +41,7 @@ func (sched *Scheduler) fetchJobs() {
 
 		if int(r.GetSize()) == 0 {
 			log.Debug("no job available")
-		} else if int(r.GetSize()) == -1 {
+		} else if int(r.GetSize()) < 0 {
 			log.Debug("no more jobs")
 			break
 		} else {
