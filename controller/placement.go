@@ -6,15 +6,20 @@ import (
 	"example/dist_sched/config"
 	pb "example/dist_sched/message"
 	"example/dist_sched/util"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 )
+
+var plStart time.Time
 
 func (ctl *Controller) Placement() {
 	ctl.mu.Lock()
 	defer ctl.mu.Unlock()
 
 	ctl.populateQueue()
+	plStart = time.Now()
+
 	go ctl.bcastPl()
 }
 
@@ -33,7 +38,6 @@ func getQueueIdx(size float64) int {
 	medium := float64(config.MaxCap) * 0.7
 	large := float64(config.MaxCap) * 1
 
-
 	if size >= medium && size < large {
 		return 0
 	} else if size >= small && size < medium {
@@ -44,8 +48,6 @@ func getQueueIdx(size float64) int {
 		panic("invalid size")
 	}
 }
-
-
 
 // put jobs into multiple queues
 func (ctl *Controller) populateQueue() {
@@ -103,9 +105,11 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 					elementsLeft = append(elementsLeft, v[0].(float64))
 				}
 			}
-			log.WithFields(log.Fields{
+			PlLogger.WithFields(log.Fields{
 				"prefix":        "placement",
+				"trial":         ctl.trial,
 				"left elements": elementsLeft,
+				"time taken": 	time.Since(plStart).Milliseconds(),
 			}).Info("all jobs fetched, queue elements left")
 		}
 		return &pb.JobReply{}, nil
@@ -126,6 +130,8 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 			continue
 		}
 
+		// We put elements that is not accepted to the tail of the queue, might not be
+		// the best way
 		/* power of 2 choices */
 		if q.Len() >= 2 {
 			ps, err := q.Get(2)
