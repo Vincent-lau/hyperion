@@ -79,7 +79,7 @@ spec:
       - command:
         - /usr/local/bin/kube-scheduler
         - -schednum=%REPLICAS%
-        - -mode=prod
+        - -mode=dev
         # - -cpuprofile=sched.prof
         image: cuso4/my-sched:latest
         imagePullPolicy: Always
@@ -92,7 +92,7 @@ spec:
         name: kube-second-scheduler
         resources:
           requests:
-            cpu: '0.05'
+            cpu: "5m"
         securityContext:
           privileged: true
         volumeMounts:
