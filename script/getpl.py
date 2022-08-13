@@ -1,7 +1,10 @@
 #!/usr/bin/env python3
 
 from kubernetes import client, config
-import json, datetime, os
+import json
+import datetime
+import os
+import sys
 
 # Configs can be set in Configuration class directly or using helper utility
 config.load_kube_config()
@@ -9,7 +12,9 @@ config.load_kube_config()
 
 stats_name = ['got jobs',
               'initial w',
-              'final w' ]
+              'final w',
+              "left elements",
+              "time taken"]
 
 '''
 We analyse the following per pod:
@@ -39,11 +44,10 @@ for i in ret.items:
             name=i.metadata.name, namespace=i.metadata.namespace)
 
         sched_name = ""
-        if i.metadata.name.startswith('my-scheduler-'):
+        if i.metadata.name.startswith('my-scheduler-') or i.metadata.name.startswith('my-controller'):
             sched_name = i.metadata.name
         for line in lines.split('\n'):
-            if sched_name.startswith('my-sched') and line.startswith('{') and line.find("placement") != -1 \
-                and line.find("trial") != -1:
+            if line.startswith('{') and line.find("placement") != -1 and line.find("trial") != -1:
                 d = json.loads(line)
 
                 trial = int(d['trial']) - 1
@@ -61,7 +65,9 @@ for i in ret.items:
 name = datetime.datetime.now().isoformat()[:-7].replace(':', '-')
 dir = f"measure/data/{name}/"
 os.mkdir(dir)
-fname = f"{dir}/placement-300pods-60cap-1cjson"
+
+pods = int(sys.argv[1])
+fname = f"{dir}placement-{pods}pods-60cap-2c.json"
 
 with open(fname, 'w') as f:
     json.dump(metrics, f)
