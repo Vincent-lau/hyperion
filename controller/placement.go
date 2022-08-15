@@ -11,7 +11,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-var plStart time.Time
+
 
 func (ctl *Controller) Placement() {
 	ctl.mu.Lock()
@@ -86,11 +86,11 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 		return nil, errors.New("wrong trial")
 	}
 
-	// TODO remove lock when we don't look at the queue elements
-	ctl.mu.Lock()
-	defer ctl.mu.Unlock()
 
 	if in.GetSize() < 0 {
+		ctl.mu.Lock()
+		defer ctl.mu.Unlock()
+
 		ctl.fetched++
 		if ctl.fetched == *config.NumSchedulers {
 			elementsLeft := make([]float64, 0)
@@ -109,17 +109,21 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 				"prefix":        "placement",
 				"trial":         ctl.trial,
 				"left elements": elementsLeft,
-				"time taken": 	time.Since(plStart).Milliseconds(),
+				"time taken": 	time.Since(plStart).Microseconds(),
 			}).Info("all jobs fetched, queue elements left")
+
+			go ctl.newTrial()
 		}
+
+
 		return &pb.JobReply{}, nil
 	}
 
 	log.WithFields(log.Fields{
 		"size":        in.GetSize(),
-		"smallQueue":  ctl.jobQueue[2],
-		"mediumQueue": ctl.jobQueue[1],
-		"largeQueue":  ctl.jobQueue[0],
+		"smallQueue":  ctl.jobQueue[2].Len(),
+		"mediumQueue": ctl.jobQueue[1].Len(),
+		"largeQueue":  ctl.jobQueue[0].Len(),
 	}).Debug("got request")
 
 	for i, q := range ctl.jobQueue {
@@ -176,7 +180,7 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 					"prefix":       "placement",
 					"found job":    p,
 					"other choice": op,
-				}).Info("power of two choices job fetched")
+				}).Debug("power of two choices job fetched")
 				return &pb.JobReply{Size: p}, nil
 			}
 

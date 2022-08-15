@@ -2,12 +2,14 @@ package scheduler
 
 import (
 	"os"
+	"runtime/pprof"
 	"sync"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/health/grpc_health_v1"
 
+	"example/dist_sched/config"
 	pb "example/dist_sched/message"
 )
 
@@ -108,7 +110,6 @@ func New() *Scheduler {
 	}).Info("setup done")
 
 	return sched
-
 }
 
 func (sched *Scheduler) reset() {
@@ -126,5 +127,50 @@ func (sched *Scheduler) reset() {
 
 	sched.msgRcv = 0
 	sched.msgSent = 0
+
+}
+
+func (sched *Scheduler) Schedule() {
+
+	if *config.CpuProfile != "" {
+		f, err := os.Create(*config.CpuProfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.StartCPUProfile(f)
+	}
+
+	if *config.MemProfile != "" {
+		f, err := os.Create(*config.MemProfile)
+		if err != nil {
+			log.Fatal(err)
+		}
+		pprof.WriteHeapProfile(f)
+		f.Close()
+		return
+	}
+
+	for {
+
+		log.WithFields(log.Fields{
+			"name":  sched.hostname,
+			"trial": sched.trial,
+		}).Info("new trial is starting")
+
+		sched.Consensus()
+		sched.Placement()
+		sched.reset()
+
+		sched.mu.Lock()
+		for !sched.setup {
+			sched.startCond.Wait()
+		}
+		sched.mu.Unlock()
+
+		if *config.CpuProfile != "" && sched.trial >= config.MaxTrials {
+			pprof.StopCPUProfile()
+		}
+
+	}
 
 }

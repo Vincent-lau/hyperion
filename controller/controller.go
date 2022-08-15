@@ -17,6 +17,15 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 )
 
+var (
+	PlLogger = log.New()
+
+	consensusStart time.Time
+	plStart time.Time
+	start time.Time
+
+)
+
 type Controller struct {
 	mu         sync.Mutex
 	schedulers []string
@@ -212,6 +221,15 @@ func (ctl *Controller) FinConsensus(ctx context.Context, in *pb.FinRequest) (*pb
 
 /* --private functions-- */
 
+func (ctl *Controller) reset() {
+	ctl.fetched = 0
+	ctl.finSched = make(map[int]bool)
+	for i := range ctl.jobQueue {
+		ctl.jobQueue[i] = queue.New(0)
+	}
+
+}
+
 func (ctl *Controller) newTrial() {
 	ctl.mu.Lock()
 	defer ctl.mu.Unlock()
@@ -224,7 +242,7 @@ func (ctl *Controller) newTrial() {
 	}
 
 	ctl.trial++
-	ctl.finSched = make(map[int]bool)
+	ctl.reset()
 	ctl.GenLoad()
 
 	log.WithFields(log.Fields{
