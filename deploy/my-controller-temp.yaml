@@ -21,6 +21,7 @@ spec:
   - command:
     - ./ctl
     - -schednum=%REPLICAS%
+    - -mode=%MODE%
     name: my-controller
     image: cuso4/my-ctl:latest
     imagePullPolicy: Always

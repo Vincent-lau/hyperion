@@ -4,7 +4,6 @@ import (
 	"example/dist_sched/config"
 	"example/dist_sched/scheduler"
 	"flag"
-	"math/rand"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -13,7 +12,6 @@ import (
 func init() {
 	flag.Parse()
 	// log.SetReportCaller(true)
-	rand.Seed(time.Now().UnixNano())
 
 	if *config.Mode == "dev" {
 		log.SetLevel(log.DebugLevel)
@@ -32,8 +30,7 @@ func init() {
 func main() {
 
 	sched := scheduler.New()
-	sched.Consensus()
-	sched.Placement()
+	sched.Schedule()
 
 	for {
 		time.Sleep(10 * time.Second)

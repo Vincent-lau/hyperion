@@ -1,10 +1,10 @@
 package main
 
 import (
+	"example/dist_sched/config"
 	"example/dist_sched/controller"
 	"flag"
 	"math/rand"
-	"time"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -12,12 +12,24 @@ import (
 func init() {
 	flag.Parse()
 	// log.SetReportCaller(true)
-	rand.Seed(time.Now().UnixNano())
+	rand.Seed(42)
 
-	log.SetFormatter(&log.TextFormatter{
-		ForceColors: true,
-	})
-	log.SetLevel(log.DebugLevel)
+	if *config.Mode == "dev" {
+		log.SetFormatter(&log.TextFormatter{
+			ForceColors: true,
+		})
+		log.SetLevel(log.DebugLevel)
+		controller.PlLogger.SetFormatter(&log.TextFormatter{
+			ForceColors: true,
+		})
+	} else if *config.Mode == "prod" {
+		log.SetLevel(log.InfoLevel)
+		log.SetFormatter(&log.JSONFormatter{})
+		controller.PlLogger.SetFormatter(&log.JSONFormatter{})
+	} else {
+		panic("unknown environment")
+	}
+
 }
 
 func main() {
