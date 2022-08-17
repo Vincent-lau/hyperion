@@ -14,7 +14,10 @@ stats_name = ['got jobs',
               'initial w',
               'final w',
               "left elements",
-              "time taken"]
+              "time taken",
+              "smallQueue",
+              "mediumQueue",
+              "largeQueue"]
 
 '''
 We analyse the following per pod:

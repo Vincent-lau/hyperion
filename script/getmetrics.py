@@ -25,8 +25,9 @@ placement_stats_name = [
     "initial w",
     "final w",
     "left elements",
+    "scheduled elements",
     "time taken",
-    "generated jobs size"
+    "generated jobs"
 ]
 
 '''
@@ -54,6 +55,11 @@ dir = f"measure/data/{name}"
 os.mkdir(dir)
 
 
+
+pods = int(sys.argv[1])
+jobs = float(sys.argv[2])
+
+
 def read_pl():
     ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
     for i in ret.items:
@@ -79,8 +85,7 @@ def read_pl():
                     for sn in placement_stats_name:
                         if sn in d:
                             m[sched_name][sn] = d[sn]
-    pods = int(sys.argv[1])
-    fname = f"{dir}/placement-{pods}pods-60cap-2c.json"
+    fname = f"{dir}/placement-{pods}pods-{jobs}jobs.json"
 
     with open(fname, 'w') as f:
         json.dump(metrics, f)
@@ -121,13 +126,32 @@ def read_con():
                         if sn in d:
                             m[sched_name][sn] = d[sn]
 
-    pods = int(sys.argv[1])
-    fname = f"{dir}/consensus-{pods}pods.json"
+    fname = f"{dir}/consensus-{pods}pods-{jobs}jobs.json"
     with open(fname, 'w') as f:
         json.dump(metrics, f)
 
     print(f"{fname} is created for consensus")
 
 
+def read_all_log():
+    ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
+    data = ""
+    for i in ret.items:
+        if i.metadata.name.startswith("my-scheduler-") or i.metadata.name.startswith("my-controller"):
+            # print(f"{i.metadata.name} {i.status.pod_ip}")
+            lines = v1.read_namespaced_pod_log(
+                name=i.metadata.name, namespace=i.metadata.namespace)
+
+            data += lines
+
+    pods = int(sys.argv[1])
+    fname = f"{dir}/logs-{pods}pods-{jobs}jobs.txt"
+    with open(fname, 'w') as f:
+        f.write(data)
+
+    print(f"{fname} is created for all logs")
+
+
 read_con()
 read_pl()
+read_all_log()
