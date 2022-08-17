@@ -18,12 +18,11 @@ import (
 )
 
 var (
-	PlLogger = log.New()
-
-	consensusStart time.Time
-	plStart time.Time
-	start time.Time
-
+	PlLogger = log.WithFields(log.Fields{
+		"prefix": "placement",
+		"trial":  0,
+	})
+	plStart  time.Time
 )
 
 type Controller struct {
@@ -37,6 +36,7 @@ type Controller struct {
 	load       []float64
 	used       []float64
 	cap        []float64
+	jobs       []float64
 
 	finSched map[int]bool
 	trial    int
@@ -62,6 +62,7 @@ func New() *Controller {
 		load:       make([]float64, *config.NumSchedulers),
 		used:       make([]float64, *config.NumSchedulers),
 		cap:        make([]float64, *config.NumSchedulers),
+		jobs:       make([]float64, 0),
 		finSched:   make(map[int]bool),
 		trial:      0,
 		jobQueue:   make([]*queue.Queue, 3),
@@ -223,6 +224,7 @@ func (ctl *Controller) FinConsensus(ctx context.Context, in *pb.FinRequest) (*pb
 
 func (ctl *Controller) reset() {
 	ctl.fetched = 0
+	ctl.jobs = make([]float64, 0)
 	ctl.finSched = make(map[int]bool)
 	for i := range ctl.jobQueue {
 		ctl.jobQueue[i] = queue.New(0)
@@ -234,7 +236,7 @@ func (ctl *Controller) newTrial() {
 	ctl.mu.Lock()
 	defer ctl.mu.Unlock()
 
-	if ctl.trial >= config.MaxTrials {
+	if ctl.trial >= *config.MaxTrials {
 		log.WithFields(log.Fields{
 			"trial": ctl.trial,
 		}).Info("max trials reached")
@@ -242,8 +244,12 @@ func (ctl *Controller) newTrial() {
 	}
 
 	ctl.trial++
+	PlLogger = PlLogger.WithFields(log.Fields{
+		"trial": ctl.trial,
+	})
+
 	ctl.reset()
-	ctl.GenLoad()
+	ctl.GenParam()
 
 	log.WithFields(log.Fields{
 		"load":  ctl.load,
