@@ -19,13 +19,9 @@ func init() {
 			ForceColors: true,
 		})
 		log.SetLevel(log.DebugLevel)
-		controller.PlLogger.SetFormatter(&log.TextFormatter{
-			ForceColors: true,
-		})
 	} else if *config.Mode == "prod" {
 		log.SetLevel(log.InfoLevel)
 		log.SetFormatter(&log.JSONFormatter{})
-		controller.PlLogger.SetFormatter(&log.JSONFormatter{})
 	} else {
 		panic("unknown environment")
 	}

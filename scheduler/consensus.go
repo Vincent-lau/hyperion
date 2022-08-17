@@ -260,6 +260,7 @@ func (sched *Scheduler) LoopConsensus() {
 			log.Fatal(err)
 		}
 		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
 	}
 
 	if *config.MemProfile != "" {
@@ -288,9 +289,6 @@ func (sched *Scheduler) LoopConsensus() {
 		}
 		sched.mu.Unlock()
 
-		if *config.CpuProfile != "" && sched.trial >= config.MaxTrials {
-			pprof.StopCPUProfile()
-		}
 
 	}
 
@@ -319,7 +317,7 @@ func (sched *Scheduler) Consensus() {
 			"xchg time per iter": t1.Sub(t).Microseconds(),
 			"comp time per iter": t2.Sub(t1).Microseconds(),
 			"time per iteration": ts[len(ts)-1],
-		}).Debug("time of this iteration")
+		}).Info("time of this iteration")
 	}
 
 

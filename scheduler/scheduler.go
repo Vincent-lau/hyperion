@@ -138,6 +138,7 @@ func (sched *Scheduler) Schedule() {
 			log.Fatal(err)
 		}
 		pprof.StartCPUProfile(f)
+		defer pprof.StopCPUProfile()
 	}
 
 	if *config.MemProfile != "" {
@@ -166,10 +167,6 @@ func (sched *Scheduler) Schedule() {
 			sched.startCond.Wait()
 		}
 		sched.mu.Unlock()
-
-		if *config.CpuProfile != "" && sched.trial >= config.MaxTrials {
-			pprof.StopCPUProfile()
-		}
 
 	}
 

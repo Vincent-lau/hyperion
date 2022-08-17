@@ -30,7 +30,7 @@ func (sched *Scheduler) fetchJobs() {
 	gotJobs := make([]float64, 0)
 	sw := sched.w
 
-	for sched.w > 1e-3 {
+	for sched.w >= 1e-2 {
 		req := &pb.JobRequest{
 			Size:  sched.w,
 			Trial: int32(sched.trial),
@@ -55,7 +55,7 @@ func (sched *Scheduler) fetchJobs() {
 
 	util.MakeRPC(&pb.JobRequest{
 		Trial: int32(sched.trial),
-		Size: -1,
+		Size:  -1,
 	}, sched.ctlPlStub.GetJob)
 
 	PlLogger.WithFields(log.Fields{

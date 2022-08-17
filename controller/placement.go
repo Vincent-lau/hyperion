@@ -11,8 +11,6 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-
-
 func (ctl *Controller) Placement() {
 	ctl.mu.Lock()
 	defer ctl.mu.Unlock()
@@ -34,11 +32,10 @@ func (ctl *Controller) bcastPl() {
 }
 
 func getQueueIdx(size float64) int {
-	small := float64(config.MaxCap) * 0.3
-	medium := float64(config.MaxCap) * 0.7
-	large := float64(config.MaxCap) * 1
+	small := config.Mean - config.Std  // x < mu - std
+	medium := config.Mean + config.Std // mu-std < x < mu + std
 
-	if size >= medium && size < large {
+	if size >= medium {
 		return 0
 	} else if size >= small && size < medium {
 		return 1
@@ -51,9 +48,8 @@ func getQueueIdx(size float64) int {
 
 // put jobs into multiple queues
 func (ctl *Controller) populateQueue() {
-	jobs := ctl.genJobs()
 	done := make(chan int)
-	for _, j := range jobs {
+	for _, j := range ctl.jobs {
 		go func(s float64) {
 			i := getQueueIdx(s)
 			if err := ctl.jobQueue[i].Put(s); err != nil {
@@ -65,15 +61,49 @@ func (ctl *Controller) populateQueue() {
 		}(j)
 	}
 
-	for range jobs {
+	for range ctl.jobs {
 		<-done
 	}
 
-	log.WithFields(log.Fields{
+	PlLogger.WithFields(log.Fields{
 		"smallQueue":  ctl.jobQueue[2],
 		"mediumQueue": ctl.jobQueue[1],
 		"largeQueue":  ctl.jobQueue[0],
 	}).Debug("populated queue")
+
+}
+
+func (ctl *Controller) finPl() {
+	elementsLeft := make([]float64, 0)
+	jobSched := make([]float64, 0)
+	s := make(map[float64]bool)
+
+	for _, q := range ctl.jobQueue {
+		for !q.Empty() {
+			v, err := q.Get(1)
+			if err != nil {
+				log.WithFields(log.Fields{
+					"error": err,
+				}).Error("failed to get job from queue")
+			}
+			elementsLeft = append(elementsLeft, v[0].(float64))
+			s[v[0].(float64)] = true
+		}
+	}
+
+	for _, j := range ctl.jobs {
+		if !s[j] {
+			jobSched = append(jobSched, j)
+		}
+	}
+
+	PlLogger.WithFields(log.Fields{
+		"left elements":      elementsLeft,
+		"scheduled elements": jobSched,
+		"time taken":         time.Since(plStart).Microseconds(),
+	}).Info("all jobs fetched, queue elements left")
+
+	go ctl.newTrial()
 
 }
 
@@ -85,53 +115,42 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 		}).Debug("wrong trial")
 		return nil, errors.New("wrong trial")
 	}
-
+	// TODO remove this lock
+	ctl.mu.Lock()
+	defer ctl.mu.Unlock()
 
 	if in.GetSize() < 0 {
-		ctl.mu.Lock()
-		defer ctl.mu.Unlock()
-
 		ctl.fetched++
 		if ctl.fetched == *config.NumSchedulers {
-			elementsLeft := make([]float64, 0)
-			for _, q := range ctl.jobQueue {
-				for !q.Empty() {
-					v, err := q.Get(1)
-					if err != nil {
-						log.WithFields(log.Fields{
-							"error": err,
-						}).Error("failed to get job from queue")
-					}
-					elementsLeft = append(elementsLeft, v[0].(float64))
-				}
-			}
-			PlLogger.WithFields(log.Fields{
-				"prefix":        "placement",
-				"trial":         ctl.trial,
-				"left elements": elementsLeft,
-				"time taken": 	time.Since(plStart).Microseconds(),
-			}).Info("all jobs fetched, queue elements left")
-
-			go ctl.newTrial()
+			ctl.finPl()
 		}
-
 
 		return &pb.JobReply{}, nil
 	}
 
 	log.WithFields(log.Fields{
-		"size":        in.GetSize(),
 		"smallQueue":  ctl.jobQueue[2].Len(),
 		"mediumQueue": ctl.jobQueue[1].Len(),
 		"largeQueue":  ctl.jobQueue[0].Len(),
-	}).Debug("got request")
+	}).Debug("got request, current queue status")
 
 	for i, q := range ctl.jobQueue {
 		k := getQueueIdx(in.GetSize())
 		if q.Empty() || i < k {
 			// queues are ordered from large to small
 			// so if the desired index is larger, we want smaller elements than the current queue
+			log.WithFields(log.Fields{
+				"queue index":    i,
+				"desired index":  k,
+				"requested size": in.GetSize(),
+				"is empty":       q.Empty(),
+			}).Debug("wrong queue")
 			continue
+		} else {
+			log.WithFields(log.Fields{
+				"queue index":    i,
+				"requested size": in.GetSize(),
+			}).Debug("right queue")
 		}
 
 		// We put elements that is not accepted to the tail of the queue, might not be
@@ -177,10 +196,11 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 
 			if p > 0 {
 				log.WithFields(log.Fields{
-					"prefix":       "placement",
-					"found job":    p,
-					"other choice": op,
+					"found job":      p,
+					"other choice":   op,
+					"requested size": in.GetSize(),
 				}).Debug("power of two choices job fetched")
+
 				return &pb.JobReply{Size: p}, nil
 			}
 
@@ -198,9 +218,9 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 			if p <= in.GetSize() {
 
 				log.WithFields(log.Fields{
-					"requested size":       in.GetSize(),
-					"actual returned size": p,
-				}).Debug("found job")
+					"found job":      p,
+					"requested size": in.GetSize(),
+				}).Debug("one choice job fetched")
 
 				return &pb.JobReply{
 					Size: p,
@@ -212,12 +232,17 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 				}).Debug("requested size too small, putting head of queue to tail")
 				q.Put(p)
 			}
-
 		}
-
 	}
 	// TODO here we signal no more jobs when the head of the queue cannot satisfy
 	// the requirement, it might not be the case
+	log.WithFields(log.Fields{
+		"requested size": in.GetSize(),
+		"smallQueue":     ctl.jobQueue[2],
+		"mediumQueue":    ctl.jobQueue[1],
+		"largeQueue":     ctl.jobQueue[0],
+	}).Debug("no job found, ask scheduler to stop")
+
 	return &pb.JobReply{
 		Size: -1,
 	}, nil
