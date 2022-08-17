@@ -22,6 +22,8 @@ spec:
     - ./ctl
     - -schednum=%REPLICAS%
     - -mode=%MODE%
+    - -jobfactor=%JOBS%
+    - -maxtrials=%TRIALS%
     name: my-controller
     image: cuso4/my-ctl:latest
     imagePullPolicy: Always

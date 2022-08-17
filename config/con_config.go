@@ -18,7 +18,13 @@ func init() {
 var (
 	Mode = flag.String("mode", "dev", "Environment to run in")	
 	NumSchedulers = flag.Int("schednum", 9, "Number of schedulers")
-	MaxTrials = 1
+
+	JobFactor = flag.Float64("jobfactor", 0.5, "Number of jobs per scheduler")
+	MaxTrials = flag.Int("maxtrials", 1, "Maximum number of trials")
+	MaxCap = 60.0
+
+	Mean = 10.0
+	Std = 4.0
 
 	Tolerance = flag.Float64("tolerance", 1e-5, "Tolerance for the convergence")
 	Delay     = flag.Int("tau", 1, "Delay")
