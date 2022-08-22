@@ -14,6 +14,7 @@ ctl
 sched
 log/
 profiles/
+traces/
 my-scheduler-deploy.yaml
 my-controller-pod.yaml
 
