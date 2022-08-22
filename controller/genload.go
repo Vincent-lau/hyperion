@@ -6,6 +6,7 @@ import (
 	"math/rand"
 
 	log "github.com/sirupsen/logrus"
+	"gonum.org/v1/gonum/stat/distuv"
 )
 
 func (ctl *Controller) GenParam() {
@@ -15,7 +16,11 @@ func (ctl *Controller) GenParam() {
 
 func (ctl *Controller) loadFromJobs() {
 	if len(ctl.jobs) < *config.NumSchedulers {
-		splitSz := *config.NumSchedulers/len(ctl.jobs) + 1
+		splitSz := *config.NumSchedulers / len(ctl.jobs)
+		if *config.NumSchedulers%len(ctl.jobs) != 0 {
+			splitSz++
+		}
+
 		i := 0
 		k := 0
 		for i < len(ctl.jobs) {
@@ -86,7 +91,7 @@ func (ctl *Controller) genLoad() {
 		avail += ctl.cap[i] - ctl.used[i]
 	}
 
-	ctl.genJobs("gaussian", int(*config.JobFactor*float64(*config.NumSchedulers)), avail)
+	ctl.genJobs("skew normal", int(*config.JobFactor*float64(*config.NumSchedulers)), avail)
 	ctl.loadFromJobs()
 }
 
@@ -97,15 +102,26 @@ func (ctl *Controller) genUsed() {
 	}
 }
 
-func (ctl *Controller) genJobs(distribtuion string, numJobs int, avail float64) {
+func (ctl *Controller) genJobs(distribution string, numJobs int, avail float64) {
 
 	log.WithFields(log.Fields{
 		"avail": avail,
 	}).Debug("available capacity")
 
 	// TODO tune 0.6 and 0.4
-	config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
-	config.Std = config.Mean * 0.4
+	var poi distuv.Poisson
+	if distribution == "gaussian" {
+		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
+		config.Std = config.Mean * 0.4
+	} else if distribution == "poisson" {
+		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.3
+		config.Std = math.Sqrt(config.Mean)
+		poi = distuv.Poisson{Lambda: config.Mean}
+	} else if distribution == "skew normal" {
+		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
+		config.Std = config.Mean * 0.4
+		config.Skew = 4 // TODO tune this
+	}
 
 	PlLogger.WithFields(log.Fields{
 		"mean":           config.Mean,
@@ -117,10 +133,14 @@ func (ctl *Controller) genJobs(distribtuion string, numJobs int, avail float64) 
 	c := 0
 	for generated+config.Std < avail && c < numJobs {
 		var v float64
-		if distribtuion == "gaussian" {
+		if distribution == "gaussian" {
 			v = rand.NormFloat64()*float64(config.Std) + float64(config.Mean)
-		} else if distribtuion == "normal" {
+		} else if distribution == "normal" {
 			v = rand.Float64() * float64(config.MaxCap)
+		} else if distribution == "poisson" {
+			v = poi.Rand()
+		} else if distribution == "skew normal"{
+			v = skewNorm(config.Skew) * float64(config.Std) + float64(config.Mean)
 		} else {
 			panic("unknown distribution")
 		}
@@ -138,10 +158,23 @@ func (ctl *Controller) genJobs(distribtuion string, numJobs int, avail float64) 
 		"number of jobs":       len(ctl.jobs),
 		"total size":           generated,
 		"number of schedulers": *config.NumSchedulers,
-		"distribtuion":         distribtuion,
+		"distribution":         distribution,
 	}).Info("generated jobs")
 
 }
+
+func skewNorm(a float64) float64 {
+
+	x1 := rand.NormFloat64()
+	x2 := rand.NormFloat64()
+
+	x3 := (a*math.Abs(x1) + x2) / math.Sqrt(1+a*a)	
+
+	return x3
+
+}
+
+
 
 func (ctl *Controller) randGen() {
 
@@ -163,30 +196,3 @@ func (ctl *Controller) preComp() {
 		ctl.cap[i] = float64(config.MaxCap)
 	}
 }
-
-// generate jobs such that it mataches the generated workload
-// func (ctl *Controller) genJobs() {
-// 	jobs := make([]float64, 0)
-
-// 	rand.Shuffle(len(ctl.load), func(i, j int) {
-// 		ctl.load[i], ctl.load[j] = ctl.load[j], ctl.load[i]
-// 	})
-
-// 	for _, l := range ctl.load {
-// 		left := l
-// 		for left > 1e-2 {
-// 			n := float64(rand.Intn(int(left)) + 1)
-// 			left -= n
-// 			jobs = append(jobs, n)
-// 		}
-// 	}
-
-// 	log.WithFields(log.Fields{
-// 		"jobs":                jobs,
-// 		"generated jobs size": len(jobs),
-// 		"prefix":              "placement",
-// 		"trial":               ctl.trial,
-// 	}).Info("generated jobs")
-
-// 	ctl.jobs = jobs
-// }
