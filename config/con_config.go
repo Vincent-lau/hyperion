@@ -25,7 +25,7 @@ var (
 
 	Mean = 10.0
 	Std = 4.0
-	Skew = 4.0
+	Skew = -4.0
 
 	Tolerance = flag.Float64("tolerance", 1e-5, "Tolerance for the convergence")
 	Delay     = flag.Int("tau", 1, "Delay")

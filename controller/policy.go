@@ -109,6 +109,13 @@ func powerOf2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
 			"error": err,
 		}).Fatal("failed to get job from queue")
 	}
+
+	if len(ps) < 2 {
+		log.WithFields(log.Fields{
+			"ps len": len(ps),
+		}).Warn("not enough elements after checking, maybe went before us")
+		return &pb.JobReply{Size: -1}	
+	}
 	pf := make([]float64, 2)
 	pf[0] = ps[0].(float64)
 	pf[1] = ps[1].(float64)

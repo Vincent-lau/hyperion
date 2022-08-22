@@ -120,7 +120,7 @@ func (ctl *Controller) genJobs(distribution string, numJobs int, avail float64) 
 	} else if distribution == "skew normal" {
 		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
 		config.Std = config.Mean * 0.4
-		config.Skew = 4 // TODO tune this
+		config.Skew = -4.0 // TODO tune this
 	}
 
 	PlLogger.WithFields(log.Fields{
@@ -139,13 +139,14 @@ func (ctl *Controller) genJobs(distribution string, numJobs int, avail float64) 
 			v = rand.Float64() * float64(config.MaxCap)
 		} else if distribution == "poisson" {
 			v = poi.Rand()
-		} else if distribution == "skew normal"{
-			v = skewNorm(config.Skew) * float64(config.Std) + float64(config.Mean)
+		} else if distribution == "skew normal" {
+			v = skewNorm(config.Skew)*float64(config.Std) + float64(config.Mean)
 		} else {
 			panic("unknown distribution")
 		}
 
 		if v < 0 || v >= config.MaxCap {
+			log.WithFields(log.Fields{"v": v}).Warn("generated value out of bounds")
 			continue
 		}
 		ctl.jobs = append(ctl.jobs, v)
@@ -168,13 +169,11 @@ func skewNorm(a float64) float64 {
 	x1 := rand.NormFloat64()
 	x2 := rand.NormFloat64()
 
-	x3 := (a*math.Abs(x1) + x2) / math.Sqrt(1+a*a)	
+	x3 := (a*math.Abs(x1) + x2) / math.Sqrt(1+a*a)
 
 	return x3
 
 }
-
-
 
 func (ctl *Controller) randGen() {
 
