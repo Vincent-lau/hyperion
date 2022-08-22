@@ -76,10 +76,11 @@ func (ctl *Controller) populateQueue() {
 func (ctl *Controller) finPl() {
 	elementsLeft := make([]float64, 0)
 	jobSched := make([]float64, 0)
-	s := make(map[float64]bool)
+	s := make(map[float64]int)
 
 	for _, q := range ctl.jobQueue {
 		for !q.Empty() {
+			// TODO use q drain
 			v, err := q.Get(1)
 			if err != nil {
 				log.WithFields(log.Fields{
@@ -87,12 +88,18 @@ func (ctl *Controller) finPl() {
 				}).Error("failed to get job from queue")
 			}
 			elementsLeft = append(elementsLeft, v[0].(float64))
-			s[v[0].(float64)] = true
+			if _, ok := s[v[0].(float64)]; !ok {
+				s[v[0].(float64)] = 1
+			} else {
+				s[v[0].(float64)]++
+			}
 		}
 	}
 
 	for _, j := range ctl.jobs {
-		if !s[j] {
+		if _, ok := s[j]; ok && s[j] > 0 {
+			s[j]--
+		} else {
 			jobSched = append(jobSched, j)
 		}
 	}
@@ -116,10 +123,10 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 		return nil, errors.New("wrong trial")
 	}
 	// TODO remove this lock
-	ctl.mu.Lock()
-	defer ctl.mu.Unlock()
 
 	if in.GetSize() < 0 {
+		ctl.mu.Lock()
+		defer ctl.mu.Unlock()
 		ctl.fetched++
 		if ctl.fetched == *config.NumSchedulers {
 			ctl.finPl()
@@ -134,116 +141,19 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 		"largeQueue":  ctl.jobQueue[0].Len(),
 	}).Debug("got request, current queue status")
 
-	for i, q := range ctl.jobQueue {
-		k := getQueueIdx(in.GetSize())
-		if q.Empty() || i < k {
-			// queues are ordered from large to small
-			// so if the desired index is larger, we want smaller elements than the current queue
-			log.WithFields(log.Fields{
-				"queue index":    i,
-				"desired index":  k,
-				"requested size": in.GetSize(),
-				"is empty":       q.Empty(),
-			}).Debug("wrong queue")
-			continue
-		} else {
-			log.WithFields(log.Fields{
-				"queue index":    i,
-				"requested size": in.GetSize(),
-			}).Debug("right queue")
-		}
+	r, _ := ctl.Large2Small(in)
 
-		// We put elements that is not accepted to the tail of the queue, might not be
-		// the best way
-		/* power of 2 choices */
-		if q.Len() >= 2 {
-			ps, err := q.Get(2)
-			if err != nil {
-				log.WithFields(log.Fields{
-					"error": err,
-				}).Fatal("failed to get job from queue")
-			}
-			pf := make([]float64, 2)
-			pf[0] = ps[0].(float64)
-			pf[1] = ps[1].(float64)
-			var li int
-			p := -1.0
-			op := -1.0
-
-			if pf[0] > pf[1] {
-				li = 0
-			} else {
-				li = 1
-			}
-			si := 1 - li
-
-			if pf[li] <= in.GetSize() {
-				p = pf[li]
-				op = pf[si]
-				q.Put(pf[si])
-			} else if pf[si] <= in.GetSize() {
-				p = pf[si]
-				op = pf[li]
-				q.Put(pf[li])
-			} else {
-				err := q.Put(pf[0], pf[1])
-				if err != nil {
-					log.WithFields(log.Fields{
-						"error": err,
-					}).Error("failed to put job into queue")
-				}
-			}
-
-			if p > 0 {
-				log.WithFields(log.Fields{
-					"found job":      p,
-					"other choice":   op,
-					"requested size": in.GetSize(),
-				}).Debug("power of two choices job fetched")
-
-				return &pb.JobReply{Size: p}, nil
-			}
-
-		} else {
-
-			ps, err := q.Get(1)
-			if err != nil {
-				log.WithFields(log.Fields{
-					"error": err,
-				}).Fatal("cannot get item from queue")
-			}
-
-			p := ps[0].(float64)
-
-			if p <= in.GetSize() {
-
-				log.WithFields(log.Fields{
-					"found job":      p,
-					"requested size": in.GetSize(),
-				}).Debug("one choice job fetched")
-
-				return &pb.JobReply{
-					Size: p,
-				}, nil
-			} else {
-				log.WithFields(log.Fields{
-					"size":               in.GetSize(),
-					"queue element size": p,
-				}).Debug("requested size too small, putting head of queue to tail")
-				q.Put(p)
-			}
-		}
-	}
 	// TODO here we signal no more jobs when the head of the queue cannot satisfy
-	// the requirement, it might not be the case
-	log.WithFields(log.Fields{
-		"requested size": in.GetSize(),
-		"smallQueue":     ctl.jobQueue[2],
-		"mediumQueue":    ctl.jobQueue[1],
-		"largeQueue":     ctl.jobQueue[0],
-	}).Debug("no job found, ask scheduler to stop")
+	// if r.GetSize() < 0 {
+	// 	// the requirement, it might not be the case
+	// 	log.WithFields(log.Fields{
+	// 		"requested size": in.GetSize(),
+	// 		"smallQueue":     ctl.jobQueue[2],
+	// 		"mediumQueue":    ctl.jobQueue[1],
+	// 		"largeQueue":     ctl.jobQueue[0],
+	// 	}).Debug("no job found, ask scheduler to stop")
+	// }
 
-	return &pb.JobReply{
-		Size: -1,
-	}, nil
+	return r, nil
+
 }
