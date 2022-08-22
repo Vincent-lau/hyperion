@@ -4,9 +4,11 @@ import (
 	"context"
 	"example/dist_sched/config"
 	pb "example/dist_sched/message"
+	"fmt"
 	"math"
 	"os"
 	"runtime/pprof"
+	"runtime/trace"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -165,6 +167,36 @@ func (sched *Scheduler) MsgXchg() {
 
 	done := make(chan int)
 
+	if *config.Trace != "" {
+		s := fmt.Sprintf("trace/trace-s%d-t%d.out", sched.me, sched.trial)
+		if err := os.MkdirAll("trace", os.ModePerm); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Warn("error creating trace directory")
+		}
+		f, err := os.Create(s)
+		if err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Fatal("error creating trace file")
+		}
+
+		if err := trace.Start(f); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Fatal("error starting trace")
+		}
+
+		defer func() {
+			if err := f.Close(); err != nil {
+				log.WithFields(log.Fields{
+					"error": err,
+				}).Fatal("failed to close trace file")
+			}
+		}()
+
+	}
+
 	for _, you := range sched.outConns {
 		go sched.sendOne(you, sched.stubs[you], done)
 	}
@@ -194,11 +226,17 @@ func (sched *Scheduler) MsgXchg() {
 			"k":            sched.k,
 		}).Debug("waiting for all responses")
 
-		for len(sched.CurData())-1 != sched.inNeighbours {
-			sched.neighCond.Wait()
-		}
+		// for len(sched.CurData())-1 != sched.inNeighbours {
+		sched.neighCond.Wait()
+		// }
 
 	}
+
+	if *config.Trace != "" {
+		trace.Stop()
+
+	}
+
 	log.Debug("finished waiting for all responses")
 
 }
@@ -278,6 +316,7 @@ func (sched *Scheduler) LoopConsensus() {
 		log.WithFields(log.Fields{
 			"name":  sched.hostname,
 			"trial": sched.trial,
+			"me":    sched.me,
 		}).Info("new trial is starting")
 
 		sched.Consensus()
@@ -288,7 +327,6 @@ func (sched *Scheduler) LoopConsensus() {
 			sched.startCond.Wait()
 		}
 		sched.mu.Unlock()
-
 
 	}
 
@@ -319,7 +357,6 @@ func (sched *Scheduler) Consensus() {
 			"time per iteration": ts[len(ts)-1],
 		}).Info("time of this iteration")
 	}
-
 
 	var tot int64
 	for _, t := range ts {

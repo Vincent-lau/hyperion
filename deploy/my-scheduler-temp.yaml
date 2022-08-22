@@ -80,6 +80,7 @@ spec:
         - /usr/local/bin/kube-scheduler
         - -schednum=%REPLICAS%
         - -mode=%MODE%
+        # - -trace=trace.out
         # - -cpuprofile=sched.prof
         image: cuso4/my-sched:latest
         imagePullPolicy: Always

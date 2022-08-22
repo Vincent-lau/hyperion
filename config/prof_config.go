@@ -14,5 +14,7 @@ func init() {
 var (
 	CpuProfile = flag.String("cpuprofile", "", "write cpu profile to file")
 	MemProfile = flag.String("memprofile", "", "write memory profile to file")
+
+	Trace = flag.String("trace", "", "write trace to file")
 )
 
