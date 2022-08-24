@@ -1,3 +1,118 @@
+{"level":"info","lock time":2832,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2815,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2861,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2890,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2887,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2905,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2906,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2914,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2939,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2910,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2905,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2637,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2644,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2602,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2582,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2466,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2511,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2472,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2429,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2313,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":2367,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":1703,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":1455,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":1026,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":808,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+{"level":"info","lock time":0,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
+
+
+
+
+
+{"k":5,"level":"info","me":12,"missing from":[54,82,97,60,11,70,17,29,34,48,51],"missing no":11,"msg":"waiting for all responses","time":"2022-08-23T12:43:03Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-08-23T12:43:03Z","took":126323}
+{"comp time per iter":15,"iteration":6,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-08-23T12:43:03Z","time per iteration":138923,"trial":9,"xchg time per iter":138907}
+
+[54,82,97,60,11,70,17,29,34,48,51]
+
+[97,70,17,29,42,48]
+
+
+trial 9 {"k":5,"level":"info","me":54,"missing from":[66,16,78,29,44],"missing no":5,"msg":"waiting for all responses","time":"2022-08-23T12:43:03Z"}
+66,16,78,29,44
+
+
+e per iter":27422}
+{"comp time per iter":10,"iteration":9,"level":"info","msg":"time of this iteration","pref
+ix":"metrics","time":"2022-08-23T09:32:30Z","time per iteration":12867,"trial":5,"xchg tim
+e per iter":12857}
+{"comp time per iter":16,"iteration":10,"level":"info","msg":"time of this iteration","pre
+fix":"metrics","time":"2022-08-23T09:32:30Z","time per iteration":25264,"trial":5,"xchg ti
+me per iter":25248}
+{"comp time per iter":11,"iteration":11,"level":"info","msg":"time of this iteration","pre
+fix":"metrics","time":"2022-08-23T09:32:30Z","time per iteration":13095,"trial":5,"xchg ti
+me per iter":13084}
+{"k":11,"level":"info","me":81,"missing from":[4],"missing no":1,"msg":"waiting for all re
+sponses","time":"2022-08-23T09:32:30Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-08-23T09:32:30Z","
+took":468}
+{"comp time per iter":12,"iteration":12,"level":"info","msg":"time of this iteration","pre
+fix":"metrics","time":"2022-08-23T09:32:30Z","time per iteration":8127,"trial":5,"xchg tim
+e per iter":8115}
+{"k":12,"level":"info","me":81,"missing from":[84,4,88,7,93,14,96,18,22,78,80,33,34,39,50,
+0],"missing no":16,"msg":"waiting for all responses","time":"2022-08-23T09:32:30Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-08-23T09:32:31Z","
+took":197639}
+{"comp time per iter":10,"iteration":13,"level":"info","msg":"time of this iteration","pre
+fix":"metrics","time":"2022-08-23T09:32:31Z","time per iteration":201005,"trial":5,"xchg t
+ime per iter":200995}
+{"k":13,"level":"info","me":81,"missing from":[88,96,22,78,80,34,39,0],"missing no":8,"msg
+":"waiting for all responses","time":"2022-08-23T09:32:31Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-08-23T09:32:31Z","
+took":14446}
+
+[84,4,7,93,14,18,33,50]
+
+
+{"k":11,"level":"info","me":84,"missing from":[97,24,79],"missing no":3,"msg":"waiting for all responses","time":"2022-08-23T09:32:30Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-08-23T09:32:31Z","took":178400}
+{"comp time per iter":18,"iteration":12,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-08-23T09:32:31Z","time per iteration":188101,"trial":5,"xchg time per iter":188082}
+[97,24,79]
+
+my-scheduler-6758894476-6wlb2
+{"comp time per iter":21,"iteration":10,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-08-23T09:32:30Z","time per iteration":20805,"trial":5,"xchg time per iter":20783}
+{"comp time per iter":16,"iteration":11,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-08-23T09:32:31Z","time per iteration":210640,"trial":5,"xchg time per iter":210623}
+
+
+
+[88,96,22,78,80,34,39,0]
+
+{"comp time per iter":31,"iteration":11,"level":"info","msg":"time of this iteration","
+prefix":"metrics","time":"2022-08-22T16:07:17Z","time per iteration":202927,"trial":9,"
+xchg time per iter":202895}
+{"comp time per iter":9,"iteration":12,"level":"info","msg":"time of this iteration","p
+refix":"metrics","time":"2022-08-22T16:07:17Z","time per iteration":9259,"trial":9,"xch
+g time per iter":9249}
+{"comp time per iter":10,"iteration":13,"level":"info","msg":"time of this iteration","
+prefix":"metrics","time":"2022-08-22T16:07:17Z","time per iteration":33974,"trial":9,"x
+chg time per iter":33964}
+{"comp time per iter":9,"iteration":14,"level":"info","msg":"time of this iteration","p
+refix":"metrics","time":"2022-08-22T16:07:17Z","time per iteration":19946,"trial":9,"xc
+hg time per iter":19936}
+{"comp time per iter":10,"iteration":15,"level":"info","msg":"time of this iteration","
+prefix":"metrics","time":"2022-08-22T16:07:17Z","time per iteration":22044,"trial":9,"x
+chg time per iter":22034}
+{"comp time per iter":9,"iteration":15,"level":"info","msg":"time of this iteration","p
+refix":"metrics","time":"2022-08-22T16:07:17Z","time per iteration":13714,"trial":9,"xc
+hg time per iter":13705}
+{"average consensus":0.43278940959277945,"data":{"p":0.07692307692307693,"y":24.2828261
+4763002,"z":56.10771800187587,"mm":0.43278940959277945,"m":0.43278940959277945,"flag":t
+rue},"iteration":15,"level":"info","msg":"consensus done!","time":"2022-08-22T16:07:17Z
+"}
+{"avg time per iter":32634.6875,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-08-22T16:07:17Z","total iter":15,"total time":522155,"trial":9}
+
+
+
  one is consistently higher than the other
  3339059 3348666 3352734 3310279 3362748 3363700 3371609 3342324 3355526
  3324836 3330644 3374169 3357086 3366049 3325955 3378376 3327085 3363301
