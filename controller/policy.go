@@ -3,6 +3,7 @@ package controller
 import (
 	pb "example/dist_sched/message"
 	"math/rand"
+	"time"
 
 	"github.com/Workiva/go-datastructures/queue"
 	log "github.com/sirupsen/logrus"
@@ -34,16 +35,15 @@ func (ctl *Controller) RandomInAvail(in *pb.JobRequest) (*pb.JobReply, error) {
 		"randomised index": rk,
 	}).Debug("pick a random queue from all available")
 
-
 	for ; rk < len(ctl.jobQueue); rk++ {
 		q := ctl.jobQueue[rk]
 		if q.Len() >= 2 {
-			r = powerOf2(in, q)
+			r = choose2(in, q)
 			if r.GetSize() != -1 {
 				return r, nil
 			}
 		} else if q.Len() == 1 {
-			r = getOne(in, q)
+			r = choose1(in, q)
 			if r.GetSize() != -1 {
 				return r, nil
 			}
@@ -82,40 +82,44 @@ func (ctl *Controller) Large2Small(in *pb.JobRequest) (*pb.JobReply, error) {
 		// 	}).Debug("right queue")
 		// }
 
-		// We put elements that is not accepted to the tail of the queue, might not be
-		// the best way
-		/* power of 2 choices */
+		// checking the length does not provide any guarantee, we just use this to speed
+		// things up
 		if q.Len() >= 2 {
-			r = powerOf2(in, q)
+			r = choose2(in, q)
 			if r.GetSize() != -1 {
 				break
 			}
-		} else {
-			r = getOne(in, q)
+		} else if q.Len() >= 1 {
+			r = choose1(in, q)
 			if r.GetSize() != -1 {
 				break
 			}
 		}
+
 	}
 
 	return r, nil
 
 }
 
-func powerOf2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
-	ps, err := q.Get(2)
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-		}).Fatal("failed to get job from queue")
-	}
-
-	if len(ps) < 2 {
+func choose2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
+	ps, err := q.Poll(2, time.Millisecond)
+	if err != nil || len(ps) < 2 {
 		log.WithFields(log.Fields{
 			"ps len": len(ps),
-		}).Warn("not enough elements after checking, maybe went before us")
-		return &pb.JobReply{Size: -1}	
+			"error":  err,
+		}).Debug("not enough elements or queue disposed or timeout")
+
+		if len(ps) > 0 {
+			if err := q.Put(ps[0]); err != nil {
+				log.WithFields(log.Fields{
+					"error": err,
+				}).Warn("cannot put back elements")
+			}
+		}
+		return &pb.JobReply{Size: -1}
 	}
+
 	pf := make([]float64, 2)
 	pf[0] = ps[0].(float64)
 	pf[1] = ps[1].(float64)
@@ -130,6 +134,7 @@ func powerOf2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
 	}
 	si := 1 - li
 
+	// ! We put elements that is not accepted to the tail of the queue, might not be appropriate
 	if pf[li] <= in.GetSize() {
 		p = pf[li]
 		op = pf[si]
@@ -139,8 +144,7 @@ func powerOf2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
 		op = pf[li]
 		q.Put(pf[li])
 	} else {
-		err := q.Put(pf[0], pf[1])
-		if err != nil {
+		if err := q.Put(pf[0], pf[1]); err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
 			}).Error("failed to put job into queue")
@@ -152,7 +156,7 @@ func powerOf2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
 			"found job":      p,
 			"other choice":   op,
 			"requested size": in.GetSize(),
-		}).Debug("power of two choices job fetched")
+		}).Debug("two choices job fetched")
 
 		return &pb.JobReply{Size: p}
 	} else {
@@ -161,19 +165,19 @@ func powerOf2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
 
 }
 
-func getOne(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
+func choose1(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
 
-	ps, err := q.Get(1)
+	ps, err := q.Poll(1, time.Millisecond)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
-		}).Fatal("cannot get item from queue")
+		}).Warn("cannot get even one item from queue")
+		return &pb.JobReply{Size: -1}
 	}
 
 	p := ps[0].(float64)
 
 	if p <= in.GetSize() {
-
 		log.WithFields(log.Fields{
 			"found job":      p,
 			"requested size": in.GetSize(),
