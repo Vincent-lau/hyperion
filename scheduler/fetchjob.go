@@ -30,20 +30,33 @@ func (sched *Scheduler) fetchJobs() {
 	gotJobs := make([]float64, 0)
 	sw := sched.w
 
+	fail1 := false
+
 	for sched.w >= 1e-2 {
 		req := &pb.JobRequest{
 			Size:  sched.w,
 			Trial: int32(sched.trial),
 		}
 		sched.mu.Unlock()
-		r := util.MakeRPC(req, sched.ctlPlStub.GetJob)
+		r, err := util.MakeRPC(req, sched.ctlPlStub.GetJob)
 		sched.mu.Lock()
 
-		if int(r.GetSize()) == 0 {
-			log.Debug("no job available")
-		} else if int(r.GetSize()) < 0 {
-			log.Debug("no more jobs")
-			break
+		if int(r.GetSize()) < 0 || err != nil {
+			if !fail1 {
+				log.WithFields(log.Fields{
+					"error": err,
+				}).Info("failed to get job the first time")
+				fail1 = true
+			} else {
+				log.WithFields(log.Fields{
+					"error": err,
+				}).Info("failed to get jobs the second time")
+				break
+			}
+		} else if r.GetSize() == 0 {
+			log.WithFields(log.Fields{
+				"size": r.GetSize(),
+			}).Warn("getting job of size 0")
 		} else {
 			PlLogger.WithFields(log.Fields{
 				"job": r.GetSize(),
@@ -53,7 +66,7 @@ func (sched *Scheduler) fetchJobs() {
 		sched.w -= r.GetSize()
 	}
 
-	util.MakeRPC(&pb.JobRequest{
+	util.RetryRPC(&pb.JobRequest{
 		Trial: int32(sched.trial),
 		Size:  -1,
 	}, sched.ctlPlStub.GetJob)
