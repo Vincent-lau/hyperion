@@ -146,7 +146,7 @@ func (ctl *Controller) genJobs(distribution string, numJobs int, avail float64) 
 		}
 
 		if v < 0 || v >= config.MaxCap {
-			log.WithFields(log.Fields{"v": v}).Warn("generated value out of bounds")
+			log.WithFields(log.Fields{"v": v}).Debug("generated value out of bounds")
 			continue
 		}
 		ctl.jobs = append(ctl.jobs, v)
