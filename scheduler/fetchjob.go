@@ -45,12 +45,12 @@ func (sched *Scheduler) fetchJobs() {
 			if !fail1 {
 				log.WithFields(log.Fields{
 					"error": err,
-				}).Info("failed to get job the first time")
+				}).Debug("failed to get job the first time")
 				fail1 = true
 			} else {
 				log.WithFields(log.Fields{
 					"error": err,
-				}).Info("failed to get jobs the second time")
+				}).Debug("failed to get job the second time")
 				break
 			}
 		} else if r.GetSize() == 0 {
@@ -62,8 +62,8 @@ func (sched *Scheduler) fetchJobs() {
 				"job": r.GetSize(),
 			}).Debug("got a job")
 			gotJobs = append(gotJobs, r.GetSize())
+			sched.w -= r.GetSize()
 		}
-		sched.w -= r.GetSize()
 	}
 
 	util.RetryRPC(&pb.JobRequest{

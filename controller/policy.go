@@ -97,9 +97,7 @@ func (ctl *Controller) Large2Small(in *pb.JobRequest) (*pb.JobReply, error) {
 		}
 
 	}
-
 	return r, nil
-
 }
 
 func choose2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {

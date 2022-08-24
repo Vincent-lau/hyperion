@@ -150,7 +150,6 @@ func (sched *Scheduler) sendOne(to int, stub pb.RatioConsensusClient, data *pb.C
 		}
 	}
 
-	// TODO -> debug
 	log.WithFields(log.Fields{
 		"me":        sched.me,
 		"to":        to,
@@ -233,13 +232,12 @@ func (sched *Scheduler) MsgXchg() {
 			}
 		}
 
-		// TODO change this to debug
 		log.WithFields(log.Fields{
 			"me":           sched.me,
 			"missing no":   sched.inNeighbours - (len(sched.CurData()) - 1),
 			"missing from": missing,
 			"k":            sched.k,
-		}).Info("waiting for all responses")
+		}).Debug("waiting for all responses")
 
 		t := time.Now()
 
@@ -247,10 +245,9 @@ func (sched *Scheduler) MsgXchg() {
 		sched.neighCond.Wait()
 		// }
 
-		// TODO change this to debug
 		log.WithFields(log.Fields{
 			"took": time.Since(t).Microseconds(),
-		}).Info("finished waiting for all responses")
+		}).Debug("finished waiting for all responses")
 
 	}
 
