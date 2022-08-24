@@ -6,15 +6,13 @@ import (
 	"example/dist_sched/config"
 	pb "example/dist_sched/message"
 	"example/dist_sched/util"
+	"sync/atomic"
 	"time"
 
 	log "github.com/sirupsen/logrus"
 )
 
 func (ctl *Controller) Placement() {
-	ctl.mu.Lock()
-	defer ctl.mu.Unlock()
-
 	ctl.populateQueue()
 	plStart = time.Now()
 
@@ -26,7 +24,7 @@ func (ctl *Controller) bcastPl() {
 
 	for _, s := range ctl.schedulers {
 		go func(s string) {
-			util.MakeRPC(&pb.EmptyRequest{}, ctl.schedStub[s].StartPlace)
+			util.RetryRPC(&pb.EmptyRequest{}, ctl.schedStub[s].StartPlace)
 		}(s)
 	}
 }
@@ -74,24 +72,23 @@ func (ctl *Controller) populateQueue() {
 }
 
 func (ctl *Controller) finPl() {
+	PlLogger.WithFields(log.Fields{
+		"time taken": time.Since(plStart).Microseconds(),
+	}).Info("placement time")
+
 	elementsLeft := make([]float64, 0)
 	jobSched := make([]float64, 0)
 	s := make(map[float64]int)
 
+	t := time.Now()
 	for _, q := range ctl.jobQueue {
-		for !q.Empty() {
-			// TODO use q drain
-			v, err := q.Get(1)
-			if err != nil {
-				log.WithFields(log.Fields{
-					"error": err,
-				}).Error("failed to get job from queue")
-			}
-			elementsLeft = append(elementsLeft, v[0].(float64))
-			if _, ok := s[v[0].(float64)]; !ok {
-				s[v[0].(float64)] = 1
+		vs := q.Dispose()
+		for _, v := range vs {
+			elementsLeft = append(elementsLeft, v.(float64))
+			if _, ok := s[v.(float64)]; !ok {
+				s[v.(float64)] = 1
 			} else {
-				s[v[0].(float64)]++
+				s[v.(float64)]++
 			}
 		}
 	}
@@ -105,9 +102,10 @@ func (ctl *Controller) finPl() {
 	}
 
 	PlLogger.WithFields(log.Fields{
-		"left elements":      elementsLeft,
-		"scheduled elements": jobSched,
-		"time taken":         time.Since(plStart).Microseconds(),
+		"left elements":       elementsLeft,
+		"scheduled elements":  jobSched,
+		"each job fetch time": ctl.tq.Dispose(),
+		"drain time":          time.Since(t).Microseconds(),
 	}).Info("all jobs fetched, queue elements left")
 
 	go ctl.newTrial()
@@ -122,16 +120,14 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 		}).Debug("wrong trial")
 		return nil, errors.New("wrong trial")
 	}
-	// TODO remove this lock
+	t := time.Now()
 
 	if in.GetSize() < 0 {
-		ctl.mu.Lock()
-		defer ctl.mu.Unlock()
-		ctl.fetched++
-		if ctl.fetched == *config.NumSchedulers {
+		v := atomic.AddInt32(&ctl.fetched, 1)
+
+		if atomic.AddInt32(&v, int32(-*config.NumSchedulers)) == 0{
 			ctl.finPl()
 		}
-
 		return &pb.JobReply{}, nil
 	}
 
@@ -142,6 +138,8 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 	}).Debug("got request, current queue status")
 
 	r, _ := ctl.Large2Small(in)
+
+	ctl.tq.Put(time.Since(t).Microseconds())
 
 	// TODO here we signal no more jobs when the head of the queue cannot satisfy
 	// if r.GetSize() < 0 {

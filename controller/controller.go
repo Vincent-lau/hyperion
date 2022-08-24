@@ -43,7 +43,10 @@ type Controller struct {
 
 	/* for placement */
 	jobQueue []*queue.Queue
-	fetched  int
+	fetched  int32
+
+	/* for profiling */
+	tq *queue.Queue
 
 	pb.UnimplementedSchedRegServer
 	pb.UnimplementedJobPlacementServer
@@ -67,6 +70,7 @@ func New() *Controller {
 		trial:      0,
 		jobQueue:   make([]*queue.Queue, 3),
 		fetched:    0,
+		tq: queue.New(0),
 	}
 
 	for i := range ctl.jobQueue {
@@ -229,6 +233,7 @@ func (ctl *Controller) reset() {
 	for i := range ctl.jobQueue {
 		ctl.jobQueue[i] = queue.New(0)
 	}
+	ctl.tq = queue.New(0)
 
 }
 

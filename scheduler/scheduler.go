@@ -52,8 +52,8 @@ type Scheduler struct {
 	ctlPlStub  pb.JobPlacementClient
 
 	/* metrics */
-	msgRcv  int
-	msgSent int
+	msgRcv  uint64
+	msgSent uint64
 
 	/* implementing the gRPC server */
 	pb.UnimplementedRatioConsensusServer

@@ -9,10 +9,10 @@ import (
 	"os"
 	"runtime/pprof"
 	"runtime/trace"
+	"sync/atomic"
 	"time"
 
 	log "github.com/sirupsen/logrus"
-
 	"google.golang.org/protobuf/proto"
 )
 
@@ -114,10 +114,13 @@ func (sched *Scheduler) CheckCvg() bool {
 
 }
 
-func (sched *Scheduler) sendOne(to int, stub pb.RatioConsensusClient, done chan<- int) {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
+type sendTime struct {
+	to   int
+	time int64
+}
 
+func (sched *Scheduler) sendOne(to int, stub pb.RatioConsensusClient, data *pb.ConDataRequest, done chan int, info chan sendTime) {
+	t := time.Now()
 	for {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
@@ -125,21 +128,13 @@ func (sched *Scheduler) sendOne(to int, stub pb.RatioConsensusClient, done chan<
 		log.WithFields(log.Fields{
 			"to":   to,
 			"k":    sched.k,
-			"data": sched.MyData(),
+			"data": data,
 		}).Debug("sending data in sendOne")
 
-		data := &pb.ConDataRequest{
-			K:    int32(sched.k),
-			Me:   int32(sched.me),
-			Data: sched.MyData(),
-		}
+		s := uint64(proto.Size(data))
+		atomic.AddUint64(&sched.msgSent, s)
 
-		s := proto.Size(data)
-		sched.msgSent += s
-
-		sched.mu.Unlock()
 		_, err := stub.SendConData(ctx, data)
-		sched.mu.Lock()
 
 		if err != nil {
 			log.WithFields(log.Fields{
@@ -148,17 +143,23 @@ func (sched *Scheduler) sendOne(to int, stub pb.RatioConsensusClient, done chan<
 				"iteration":          sched.k,
 			}).Warn("error send conData")
 
-			sched.mu.Unlock()
-			time.Sleep(time.Second * 2)
-			sched.mu.Lock()
+			time.Sleep(time.Second)
 
 		} else {
 			break
 		}
 	}
 
-	done <- 1
-
+	// TODO -> debug
+	log.WithFields(log.Fields{
+		"me":        sched.me,
+		"to":        to,
+		"trial":     sched.trial,
+		"iteration": sched.k,
+		"took":      time.Since(t).Microseconds(),
+	}).Debug("time taken to sendOne")
+	done <- to
+	info <- sendTime{to: to, time: time.Since(t).Microseconds()}
 }
 
 func (sched *Scheduler) MsgXchg() {
@@ -166,9 +167,10 @@ func (sched *Scheduler) MsgXchg() {
 	defer sched.mu.Unlock()
 
 	done := make(chan int)
+	info := make(chan sendTime)
 
 	if *config.Trace != "" {
-		s := fmt.Sprintf("trace/trace-s%d-t%d.out", sched.me, sched.trial)
+		s := fmt.Sprintf("trace/trace-s%d-t%d-r%d.out", sched.me, sched.trial, sched.k)
 		if err := os.MkdirAll("trace", os.ModePerm); err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
@@ -194,22 +196,33 @@ func (sched *Scheduler) MsgXchg() {
 				}).Fatal("failed to close trace file")
 			}
 		}()
+	}
 
+	data := &pb.ConDataRequest{
+		K:    int32(sched.k),
+		Me:   int32(sched.me),
+		Data: sched.MyData(),
 	}
 
 	for _, you := range sched.outConns {
-		go sched.sendOne(you, sched.stubs[you], done)
+		go sched.sendOne(you, sched.stubs[you], data, done, info)
 	}
 
-	log.WithFields(log.Fields{
-		"to": sched.outConns,
-	}).Debug("waiting for goroutine to finish sendOne")
+	t := time.Now()
 
+	sendTimes := make([]sendTime, 0)
 	sched.mu.Unlock()
 	for range sched.outConns {
 		<-done
+		sendTimes = append(sendTimes, <-info)
 	}
 	sched.mu.Lock()
+
+	log.WithFields(log.Fields{
+		"to":        sched.outConns,
+		"took":      time.Since(t).Microseconds(),
+		"sendTimes": sendTimes,
+	}).Info("finished waiting for goroutine to finish sendOne")
 
 	for len(sched.CurData())-1 != sched.inNeighbours {
 
@@ -220,15 +233,24 @@ func (sched *Scheduler) MsgXchg() {
 			}
 		}
 
+		// TODO change this to debug
 		log.WithFields(log.Fields{
+			"me":           sched.me,
 			"missing no":   sched.inNeighbours - (len(sched.CurData()) - 1),
 			"missing from": missing,
 			"k":            sched.k,
-		}).Debug("waiting for all responses")
+		}).Info("waiting for all responses")
+
+		t := time.Now()
 
 		// for len(sched.CurData())-1 != sched.inNeighbours {
 		sched.neighCond.Wait()
 		// }
+
+		// TODO change this to debug
+		log.WithFields(log.Fields{
+			"took": time.Since(t).Microseconds(),
+		}).Info("finished waiting for all responses")
 
 	}
 
@@ -236,8 +258,6 @@ func (sched *Scheduler) MsgXchg() {
 		trace.Stop()
 
 	}
-
-	log.Debug("finished waiting for all responses")
 
 }
 
@@ -351,7 +371,7 @@ func (sched *Scheduler) Consensus() {
 
 		ts = append(ts, time.Since(t).Microseconds())
 		MetricsLogger.WithFields(log.Fields{
-			"iteration":          sched.k,
+			"iteration":          sched.k - 1,
 			"xchg time per iter": t1.Sub(t).Microseconds(),
 			"comp time per iter": t2.Sub(t1).Microseconds(),
 			"time per iteration": ts[len(ts)-1],

@@ -140,7 +140,7 @@ func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) 
 		"currently received": len(sched.CurData()) - 1,
 	}).Debug("received data")
 
-	s := proto.Size(in)
+	s := uint64(proto.Size(in))
 	sched.msgRcv += s
 
 	if len(sched.CurData())-1 == sched.inNeighbours {
