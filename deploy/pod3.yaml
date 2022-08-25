@@ -4,10 +4,8 @@ metadata:
   name: annotation-second-scheduler
   labels:
     name: multischeduler-example
-  
 spec:
-  schedulerName: my-scheduler
-  
+  schedulerName: my-controller
   containers:
   - name: pod-with-second-annotation-container
     image: k8s.gcr.io/pause:2.0
