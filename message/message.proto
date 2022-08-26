@@ -46,6 +46,7 @@ message JobRequest {
   int32 trial = 1;
   double size = 2; // requested size
   int32 me = 3;
+  string node = 4;
 }
 
 message JobReply {

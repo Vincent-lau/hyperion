@@ -11,7 +11,7 @@ import (
 
 // this file implements different policies for job assignment
 
-func (ctl *Controller) RandomInAvail(in *pb.JobRequest) (*pb.JobReply, error) {
+func (ctl *Controller) RandomInAvail(in *pb.JobRequest) *Job {
 
 	k := getQueueIdx(in.GetSize())
 
@@ -23,9 +23,9 @@ func (ctl *Controller) RandomInAvail(in *pb.JobRequest) (*pb.JobReply, error) {
 		}
 	}
 
-	r := &pb.JobReply{Size: -1}
+	r := &Job{id: -1, size: -1}
 	if len(indices) == 0 {
-		return r, nil
+		return r
 	}
 
 	rk := indices[rand.Intn(len(indices))]
@@ -39,18 +39,18 @@ func (ctl *Controller) RandomInAvail(in *pb.JobRequest) (*pb.JobReply, error) {
 		q := ctl.jobQueue[rk]
 		if q.Len() >= 2 {
 			r = choose2(in, q)
-			if r.GetSize() != -1 {
-				return r, nil
+			if r.Size() != -1 {
+				return r
 			}
 		} else if q.Len() == 1 {
 			r = choose1(in, q)
-			if r.GetSize() != -1 {
-				return r, nil
+			if r.Size() != -1 {
+				return r
 			}
 		}
 	}
 
-	return r, nil
+	return r
 
 }
 
@@ -58,10 +58,10 @@ func (ctl *Controller) RandomInAvail(in *pb.JobRequest) (*pb.JobReply, error) {
 	We look at queues from large to small, and pick the first one that is available
 	We also look at the first two elements of the queue when possilbe
 */
-func (ctl *Controller) Large2Small(in *pb.JobRequest) (*pb.JobReply, error) {
+func (ctl *Controller) Large2Small(in *pb.JobRequest) *Job {
 
 	k := getQueueIdx(in.GetSize())
-	r := &pb.JobReply{Size: -1}
+	r := &Job{id: -1, size: -1}
 
 	for i, q := range ctl.jobQueue {
 		if q.Empty() || i < k {
@@ -75,32 +75,26 @@ func (ctl *Controller) Large2Small(in *pb.JobRequest) (*pb.JobReply, error) {
 			// }).Debug("wrong queue")
 			continue
 		}
-		//  else {
-		// 	log.WithFields(log.Fields{
-		// 		"queue index":    i,
-		// 		"requested size": in.GetSize(),
-		// 	}).Debug("right queue")
-		// }
 
 		// checking the length does not provide any guarantee, we just use this to speed
 		// things up
 		if q.Len() >= 2 {
 			r = choose2(in, q)
-			if r.GetSize() != -1 {
+			if r.Size() != -1 {
 				break
 			}
 		} else if q.Len() >= 1 {
 			r = choose1(in, q)
-			if r.GetSize() != -1 {
+			if r.Size() != -1 {
 				break
 			}
 		}
 
 	}
-	return r, nil
+	return r
 }
 
-func choose2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
+func choose2(in *pb.JobRequest, q *queue.Queue) *Job {
 	ps, err := q.Poll(2, time.Millisecond)
 	if err != nil || len(ps) < 2 {
 		log.WithFields(log.Fields{
@@ -115,17 +109,17 @@ func choose2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
 				}).Warn("cannot put back elements")
 			}
 		}
-		return &pb.JobReply{Size: -1}
+		return &Job{size: -1, id: -1}
 	}
 
-	pf := make([]float64, 2)
-	pf[0] = ps[0].(float64)
-	pf[1] = ps[1].(float64)
+	pj := make([]*Job, 2)
+	pj[0] = ps[0].(*Job)
+	pj[1] = ps[1].(*Job)
 	var li int
-	p := -1.0
-	op := -1.0
+	p := &Job{size: -1, id: -1}
+	op := &Job{size: -1, id: -1}
 
-	if pf[0] > pf[1] {
+	if pj[0].Size() > pj[1].Size() {
 		li = 0
 	} else {
 		li = 1
@@ -133,56 +127,59 @@ func choose2(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
 	si := 1 - li
 
 	// ! We put elements that is not accepted to the tail of the queue, might not be appropriate
-	if pf[li] <= in.GetSize() {
-		p = pf[li]
-		op = pf[si]
-		q.Put(pf[si])
-	} else if pf[si] <= in.GetSize() {
-		p = pf[si]
-		op = pf[li]
-		q.Put(pf[li])
+	if pj[li].Size() <= in.GetSize() {
+		p = pj[li]
+		op = pj[si]
+		q.Put(pj[si])
+	} else if pj[si].Size() <= in.GetSize() {
+		p = pj[si]
+		op = pj[li]
+		q.Put(pj[li])
 	} else {
-		if err := q.Put(pf[0], pf[1]); err != nil {
+		if err := q.Put(pj[0], pj[1]); err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
 			}).Error("failed to put job into queue")
 		}
 	}
 
-	if p > 0 {
+	if p.Size() > 0 {
 		log.WithFields(log.Fields{
 			"found job":      p,
 			"other choice":   op,
 			"requested size": in.GetSize(),
+			"to":             in.GetNode(),
 		}).Debug("two choices job fetched")
 
-		return &pb.JobReply{Size: p}
+		return &Job{size: p.Size(), id: p.Id()}
 	} else {
-		return &pb.JobReply{Size: -1}
+		return &Job{size: -1, id: -1}
 	}
 
 }
 
-func choose1(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
+func choose1(in *pb.JobRequest, q *queue.Queue) *Job {
 
 	ps, err := q.Poll(1, time.Millisecond)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Warn("cannot get even one item from queue")
-		return &pb.JobReply{Size: -1}
+		return &Job{size: -1, id: -1}
 	}
 
-	p := ps[0].(float64)
+	p := ps[0].(*Job)
 
-	if p <= in.GetSize() {
+	if p.Size() <= in.GetSize() {
 		log.WithFields(log.Fields{
 			"found job":      p,
 			"requested size": in.GetSize(),
+			"to":             in.GetNode(),
 		}).Debug("one choice job fetched")
 
-		return &pb.JobReply{
-			Size: p,
+		return &Job{
+			size: p.Size(),
+			id:   p.Id(),
 		}
 	} else {
 		log.WithFields(log.Fields{
@@ -192,6 +189,6 @@ func choose1(in *pb.JobRequest, q *queue.Queue) *pb.JobReply {
 		q.Put(p)
 	}
 
-	return &pb.JobReply{Size: -1}
+	return &Job{size: -1, id: -1}
 
 }

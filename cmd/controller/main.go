@@ -32,5 +32,4 @@ func main() {
 
 	ctl := controller.New()
 	ctl.AsServer()
-
 }

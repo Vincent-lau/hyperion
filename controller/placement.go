@@ -47,19 +47,19 @@ func getQueueIdx(size float64) int {
 // put jobs into multiple queues
 func (ctl *Controller) populateQueue() {
 	done := make(chan int)
-	for _, j := range ctl.jobs {
-		go func(s float64) {
+	for i, j := range ctl.jobDemand {
+		go func(id int, s float64) {
 			i := getQueueIdx(s)
-			if err := ctl.jobQueue[i].Put(s); err != nil {
+			if err := ctl.jobQueue[i].Put(&Job{id: id, size: s}); err != nil {
 				log.WithFields(log.Fields{
 					"error": err,
 				}).Error("failed to put job into queue")
 			}
 			done <- 1
-		}(j)
+		}(i, j)
 	}
 
-	for range ctl.jobs {
+	for range ctl.jobDemand {
 		<-done
 	}
 
@@ -78,24 +78,20 @@ func (ctl *Controller) finPl() {
 
 	elementsLeft := make([]float64, 0)
 	jobSched := make([]float64, 0)
-	s := make(map[float64]int)
+	s := make(map[int]bool)
 
 	t := time.Now()
 	for _, q := range ctl.jobQueue {
 		vs := q.Dispose()
 		for _, v := range vs {
-			elementsLeft = append(elementsLeft, v.(float64))
-			if _, ok := s[v.(float64)]; !ok {
-				s[v.(float64)] = 1
-			} else {
-				s[v.(float64)]++
-			}
+			elementsLeft = append(elementsLeft, v.(*Job).Size())
+			s[v.(*Job).Id()] = true
 		}
 	}
 
-	for _, j := range ctl.jobs {
-		if _, ok := s[j]; ok && s[j] > 0 {
-			s[j]--
+	for i, j := range ctl.jobDemand {
+		if _, ok := s[i]; ok && s[i] {
+			s[i] = false
 		} else {
 			jobSched = append(jobSched, j)
 		}
@@ -125,33 +121,36 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 	if in.GetSize() < 0 {
 		v := atomic.AddInt32(&ctl.fetched, 1)
 
-		if atomic.AddInt32(&v, int32(-*config.NumSchedulers)) == 0{
+		if atomic.AddInt32(&v, int32(-*config.NumSchedulers)) == 0 {
 			ctl.finPl()
 		}
 		return &pb.JobReply{}, nil
 	}
 
 	log.WithFields(log.Fields{
+		"from":        in.GetNode(),
 		"smallQueue":  ctl.jobQueue[2].Len(),
 		"mediumQueue": ctl.jobQueue[1].Len(),
 		"largeQueue":  ctl.jobQueue[0].Len(),
 	}).Debug("got request, current queue status")
 
-	r, _ := ctl.Large2Small(in)
+	j := ctl.Large2Small(in)
 
 	ctl.tq.Put(time.Since(t).Microseconds())
 
-	// TODO here we signal no more jobs when the head of the queue cannot satisfy
-	// if r.GetSize() < 0 {
-	// 	// the requirement, it might not be the case
+	if j.Size() > 0 {
+		ctl.placePodToNode(ctl.nodeMap[in.GetNode()], ctl.jobPod[j.Id()])
+	}
+
 	// 	log.WithFields(log.Fields{
 	// 		"requested size": in.GetSize(),
 	// 		"smallQueue":     ctl.jobQueue[2],
 	// 		"mediumQueue":    ctl.jobQueue[1],
 	// 		"largeQueue":     ctl.jobQueue[0],
 	// 	}).Debug("no job found, ask scheduler to stop")
-	// }
 
-	return r, nil
+	// TODO here we signal no more jobs when the head of the queue cannot satisfy
+
+	return &pb.JobReply{Size: j.Size()}, nil
 
 }

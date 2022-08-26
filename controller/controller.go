@@ -15,6 +15,10 @@ import (
 	"golang.org/x/exp/slices"
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/health/grpc_health_v1"
+
+	v1 "k8s.io/api/core/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/rest"
 )
 
 var (
@@ -22,7 +26,7 @@ var (
 		"prefix": "placement",
 		"trial":  0,
 	})
-	plStart  time.Time
+	plStart time.Time
 )
 
 type Controller struct {
@@ -36,7 +40,7 @@ type Controller struct {
 	load       []float64
 	used       []float64
 	cap        []float64
-	jobs       []float64
+	jobDemand  []float64
 
 	finSched map[int]bool
 	trial    int
@@ -44,6 +48,11 @@ type Controller struct {
 	/* for placement */
 	jobQueue []*queue.Queue
 	fetched  int32
+
+	/* interfacing with k8s api */
+	jobPod  []*v1.Pod // mapping from job id to pod
+	nodeMap map[string]*v1.Node
+	clientset *kubernetes.Clientset
 
 	/* for profiling */
 	tq *queue.Queue
@@ -65,17 +74,38 @@ func New() *Controller {
 		load:       make([]float64, *config.NumSchedulers),
 		used:       make([]float64, *config.NumSchedulers),
 		cap:        make([]float64, *config.NumSchedulers),
-		jobs:       make([]float64, 0),
+		jobDemand:  make([]float64, 0),
+		jobPod:     make([]*v1.Pod, 0),
 		finSched:   make(map[int]bool),
 		trial:      0,
 		jobQueue:   make([]*queue.Queue, 3),
+		nodeMap:    make(map[string]*v1.Node),
 		fetched:    0,
-		tq: queue.New(0),
+		tq:         queue.New(0),
 	}
 
 	for i := range ctl.jobQueue {
 		ctl.jobQueue[i] = queue.New(0)
 	}
+
+	config, err := rest.InClusterConfig()
+
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("error getting config")
+	}
+
+	clientset, err := kubernetes.NewForConfig(config)
+	ctl.clientset = clientset
+
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Error("error getting config")
+	}
+
+	ctl.findNodes()
 
 	return ctl
 }
@@ -228,7 +258,8 @@ func (ctl *Controller) FinConsensus(ctx context.Context, in *pb.FinRequest) (*pb
 
 func (ctl *Controller) reset() {
 	ctl.fetched = 0
-	ctl.jobs = make([]float64, 0)
+	ctl.jobDemand = make([]float64, 0)
+	ctl.jobPod = make([]*v1.Pod, 0)
 	ctl.finSched = make(map[int]bool)
 	for i := range ctl.jobQueue {
 		ctl.jobQueue[i] = queue.New(0)

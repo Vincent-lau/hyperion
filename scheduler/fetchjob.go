@@ -34,6 +34,7 @@ func (sched *Scheduler) fetchJobs() {
 
 	for sched.w >= 1e-2 {
 		req := &pb.JobRequest{
+			Node:  sched.onNode,
 			Size:  sched.w,
 			Trial: int32(sched.trial),
 		}
@@ -67,6 +68,7 @@ func (sched *Scheduler) fetchJobs() {
 	}
 
 	util.RetryRPC(&pb.JobRequest{
+		Node:  sched.onNode,
 		Trial: int32(sched.trial),
 		Size:  -1,
 	}, sched.ctlPlStub.GetJob)

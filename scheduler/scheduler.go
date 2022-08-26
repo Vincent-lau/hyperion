@@ -10,6 +10,7 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 
 	"example/dist_sched/config"
+	"example/dist_sched/controller"
 	pb "example/dist_sched/message"
 )
 
@@ -55,15 +56,14 @@ type Scheduler struct {
 	msgRcv  uint64
 	msgSent uint64
 
+	/* interface with k8s */
+	onNode string
+
 	/* implementing the gRPC server */
 	pb.UnimplementedRatioConsensusServer
 	pb.UnimplementedSchedStartServer
 	grpc_health_v1.UnimplementedHealthServer
 }
-
-const (
-	schedulerName = "my-scheduler"
-)
 
 var (
 	MetricsLogger = log.WithFields(log.Fields{"prefix": "metrics"})
@@ -77,6 +77,17 @@ func New() *Scheduler {
 	if err != nil {
 		log.Fatalf("could not get hostname: %v", err)
 	}
+	node, err := controller.MyNode(hostname)
+
+	if err != nil {
+		log.WithFields(log.Fields{
+			"error": err,
+		}).Fatal("could not get node")
+	}
+
+	log.WithFields(log.Fields{
+		"node": node.Name,
+	}).Debug("found my node")
 
 	sched := &Scheduler{
 		hostname:      hostname,
@@ -97,6 +108,9 @@ func New() *Scheduler {
 		// metrics
 		msgSent: 0,
 		msgRcv:  0,
+
+		/* interface with k8s */
+		onNode: node.Name,
 	}
 	sched.neighCond = sync.NewCond(&sched.mu)
 	sched.startCond = sync.NewCond(&sched.mu)
