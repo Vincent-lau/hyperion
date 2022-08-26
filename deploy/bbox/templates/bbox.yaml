@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ .Release.Name }}
+  labels:
+    sleep: "{{ .Values.sleep }}"
+spec:
+  schedulerName: {{ .Values.schedulerName }}
+  containers:
+  - name: busybox
+    image: busybox
+    command:
+      - sleep
+      - "{{ .Values.sleep }}"
+    ports:
+    - containerPort: 80
+    resources:
+      requests:
+        cpu: "{{ .Values.sleep }}m"
