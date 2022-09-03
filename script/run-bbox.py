@@ -27,6 +27,7 @@ def gen_sample(n: int):
 def install():
     with open(f'{data_dir}/sample.txt') as f:
         ts = [float(t) for t in f.read().split(',')]
+        print(f"installing {len(ts)} bboxs")
 
     for i, t in enumerate(ts):
         os.system(
