@@ -5,7 +5,7 @@
 
 sleep: 5
 # schedulerName: my-controller
-schedulerName: kube-scheduler
+schedulerName: default-scheduler
 
 
 # ------ auto gen ------- #

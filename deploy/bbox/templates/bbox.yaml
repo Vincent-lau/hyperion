@@ -9,11 +9,12 @@ spec:
   containers:
   - name: busybox
     image: busybox
-    command:
-      - sleep
-      - "{{ .Values.sleep }}"
+    command: ["bin/sh"]
+    args: ["-c", "sleep {{ .Values.sleep }}; echo 'slept for {{ .Values.sleep }} seconds'"]
+    imagePullPolicy: IfNotPresent
     ports:
     - containerPort: 80
     resources:
       requests:
         cpu: "{{ .Values.sleep }}m"
+  restartPolicy: Never
