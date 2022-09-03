@@ -6,6 +6,7 @@ import (
 	"example/dist_sched/config"
 	pb "example/dist_sched/message"
 	"example/dist_sched/util"
+	"math/rand"
 	"sync/atomic"
 	"time"
 
@@ -17,6 +18,54 @@ func (ctl *Controller) Placement() {
 	plStart = time.Now()
 
 	go ctl.bcastPl()
+}
+
+func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobReply, error) {
+	if ctl.trial != int(in.GetTrial()) {
+		log.WithFields(log.Fields{
+			"sched trial": in.GetTrial(),
+			"ctl trial":   ctl.trial,
+		}).Debug("wrong trial")
+		return nil, errors.New("wrong trial")
+	}
+	t := time.Now()
+
+	if in.GetSize() < 0 {
+		v := atomic.AddInt32(&ctl.fetched, 1)
+
+		if atomic.AddInt32(&v, int32(-*config.NumSchedulers)) == 0 {
+			ctl.randPlace()
+			ctl.finPl()
+		}
+		return &pb.JobReply{}, nil
+	}
+
+	log.WithFields(log.Fields{
+		"from":        in.GetNode(),
+		"smallQueue":  ctl.jobQueue[2].Len(),
+		"mediumQueue": ctl.jobQueue[1].Len(),
+		"largeQueue":  ctl.jobQueue[0].Len(),
+	}).Debug("got request, current queue status")
+
+	j := ctl.Large2Small(in)
+
+	ctl.tq.Put(time.Since(t).Microseconds())
+
+	if j.Size() > 0 {
+		go ctl.placePodToNode(in.GetNode(), j.Id())
+	}
+
+	// 	log.WithFields(log.Fields{
+	// 		"requested size": in.GetSize(),
+	// 		"smallQueue":     ctl.jobQueue[2],
+	// 		"mediumQueue":    ctl.jobQueue[1],
+	// 		"largeQueue":     ctl.jobQueue[0],
+	// 	}).Debug("no job found, ask scheduler to stop")
+
+	// TODO here we signal no more jobs when the head of the queue cannot satisfy
+
+	return &pb.JobReply{Size: j.Size()}, nil
+
 }
 
 func (ctl *Controller) bcastPl() {
@@ -105,52 +154,29 @@ func (ctl *Controller) finPl() {
 	}).Info("all jobs fetched, queue elements left")
 
 	go ctl.newTrial()
-
 }
 
-func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobReply, error) {
-	if ctl.trial != int(in.GetTrial()) {
-		log.WithFields(log.Fields{
-			"sched trial": in.GetTrial(),
-			"ctl trial":   ctl.trial,
-		}).Debug("wrong trial")
-		return nil, errors.New("wrong trial")
-	}
-	t := time.Now()
-
-	if in.GetSize() < 0 {
-		v := atomic.AddInt32(&ctl.fetched, 1)
-
-		if atomic.AddInt32(&v, int32(-*config.NumSchedulers)) == 0 {
-			ctl.finPl()
-		}
-		return &pb.JobReply{}, nil
-	}
+func (ctl *Controller) randPlace() {
 
 	log.WithFields(log.Fields{
-		"from":        in.GetNode(),
 		"smallQueue":  ctl.jobQueue[2].Len(),
 		"mediumQueue": ctl.jobQueue[1].Len(),
 		"largeQueue":  ctl.jobQueue[0].Len(),
-	}).Debug("got request, current queue status")
+	}).Debug("random placement")
 
-	j := ctl.Large2Small(in)
-
-	ctl.tq.Put(time.Since(t).Microseconds())
-
-	if j.Size() > 0 {
-		ctl.placePodToNode(ctl.nodeMap[in.GetNode()], ctl.jobPod[j.Id()])
+	ns := make([]string, 0)
+	for k := range ctl.nodeMap {
+		ns = append(ns, k)
 	}
 
-	// 	log.WithFields(log.Fields{
-	// 		"requested size": in.GetSize(),
-	// 		"smallQueue":     ctl.jobQueue[2],
-	// 		"mediumQueue":    ctl.jobQueue[1],
-	// 		"largeQueue":     ctl.jobQueue[0],
-	// 	}).Debug("no job found, ask scheduler to stop")
+	log.WithFields(log.Fields{
+		"nodes": ns,
+	}).Debug("got nodes")
 
-	// TODO here we signal no more jobs when the head of the queue cannot satisfy
-
-	return &pb.JobReply{Size: j.Size()}, nil
-
+	for _, q := range ctl.jobQueue {
+		vs := q.Dispose()
+		for _, v := range vs {
+			go ctl.placePodToNode(ns[rand.Intn(*config.NumSchedulers)], v.(*Job).Id())
+		}
+	}
 }

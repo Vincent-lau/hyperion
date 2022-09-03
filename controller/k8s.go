@@ -111,7 +111,11 @@ func getJobDemand(pod *v1.Pod) float64 {
 	return float64(tot)
 }
 
-func (ctl *Controller) placePodToNode(node *v1.Node, pod *v1.Pod) error {
+func (ctl *Controller) placePodToNode(n string, j int) error {
+	node := ctl.nodeMap[n]
+	ctl.mu.Lock()
+	pod := ctl.jobPod[j]
+	ctl.mu.Unlock()
 
 	ctl.clientset.CoreV1().Pods(pod.Namespace).Bind(context.TODO(), &v1.Binding{
 		ObjectMeta: metav1.ObjectMeta{
@@ -156,92 +160,4 @@ func (ctl *Controller) placePodToNode(node *v1.Node, pod *v1.Pod) error {
 
 }
 
-// func (ctl *Controller) PlacePod() {
-// 	// creates the in-cluster config
-// 	config, err := rest.InClusterConfig()
-// 	if err != nil {
-// 		panic(err.Error())
-// 	}
-// 	// creates the clientset
-// 	clientset, err := kubernetes.NewForConfig(config)
-// 	if err != nil {
-// 		panic(err.Error())
-// 	}
 
-// 	for {
-// 		// get pods in all the namespaces by omitting namespace
-// 		// Or specify namespace to get pods in particular namespace
-
-// 		pods, err := clientset.CoreV1().Pods("").List(context.TODO(), metav1.ListOptions{})
-// 		if err != nil {
-// 			panic(err.Error())
-// 		}
-// 		log.WithFields(log.Fields{
-// 			"number of pods": len(pods.Items),
-// 		}).Debug("There are pods in the cluster")
-
-// 		watch, err := clientset.CoreV1().Pods("").Watch(context.TODO(), metav1.ListOptions{
-// 			FieldSelector: fmt.Sprintf("spec.schedulerName=%s,spec.nodeName=", schedulerName),
-// 		})
-// 		if err != nil {
-// 			panic(err.Error())
-// 		}
-
-// 		for event := range watch.ResultChan() {
-// 			if event.Type != "ADDED" {
-// 				continue
-// 			}
-// 			p := event.Object.(*v1.Pod)
-// 			log.WithFields(log.Fields{
-// 				"pod name":      p.Name,
-// 				"pod namespace": p.Namespace,
-// 			}).Debug("found a pod to schedule")
-
-// 			toBind, err := findNode(clientset)
-// 			if err != nil {
-// 				panic(err.Error())
-// 			}
-
-// 			clientset.CoreV1().Pods(p.Namespace).Bind(context.TODO(), &v1.Binding{
-// 				ObjectMeta: metav1.ObjectMeta{
-// 					Name:      p.Name,
-// 					Namespace: p.Namespace,
-// 				},
-// 				Target: v1.ObjectReference{
-// 					APIVersion: "v1",
-// 					Kind:       "Node",
-// 					Name:       toBind.Name,
-// 				},
-// 			}, metav1.CreateOptions{})
-
-// 			log.WithFields(log.Fields{
-// 				"pod name":  p.Name,
-// 				"node name": toBind.Name,
-// 			}).Debug("binding pod to node")
-
-// 			timestamp := time.Now().UTC()
-// 			clientset.CoreV1().Events(p.Namespace).Create(context.TODO(), &v1.Event{
-// 				Count:          1,
-// 				Message:        "binding pod to node",
-// 				Reason:         "Scheduled",
-// 				LastTimestamp:  metav1.NewTime(timestamp),
-// 				FirstTimestamp: metav1.NewTime(timestamp),
-// 				Type:           "Normal",
-// 				Source: v1.EventSource{
-// 					Component: schedulerName,
-// 				},
-// 				InvolvedObject: v1.ObjectReference{
-// 					Kind:      "Pod",
-// 					Name:      p.Name,
-// 					Namespace: p.Namespace,
-// 					UID:       p.UID,
-// 				},
-// 				ObjectMeta: metav1.ObjectMeta{
-// 					GenerateName: p.Name + "-",
-// 				},
-// 			}, metav1.CreateOptions{})
-
-// 		}
-// 	}
-
-// }
