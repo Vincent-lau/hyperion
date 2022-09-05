@@ -12,6 +12,7 @@ main/main
 *.pb.go
 ctl
 sched
+rand
 log/
 profiles/
 traces/
