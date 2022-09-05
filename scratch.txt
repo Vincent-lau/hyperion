@@ -1,3 +1,67 @@
+default_scheduelr
+803, 1574, 2121, 3172
+
+one manifest file
+826,1598, 2220, 3295
+
+
+my-scheduer
+810, 1554, 2164, 3202, 4240, 5244, 6315, 7318, 8318
+buffered channel
+807, 1556, 2153, 
+
+one manifest
+811, 1550, 2086, 3100, 4124, 5131, 6123, 7139, 8169, 8808
+
+
+
+rand-scheduler
+801, 1531, 2094, 
+
+
+task_usage/part-?????-of-?????.csv.gz,1,start time,INTEGER,YES
+task_usage/part-?????-of-?????.csv.gz,2,end time,INTEGER,YES
+task_usage/part-?????-of-?????.csv.gz,3,job ID,INTEGER,YES
+task_usage/part-?????-of-?????.csv.gz,4,task index,INTEGER,YES
+task_usage/part-?????-of-?????.csv.gz,5,machine ID,INTEGER,YES
+task_usage/part-?????-of-?????.csv.gz,6,CPU rate,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,7,canonical memory usage,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,8,assigned memory usage,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,9,unmapped page cache,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,10,total page cache,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,11,maximum memory usage,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,12,disk I/O time,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,13,local disk space usage,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,14,maximum CPU rate,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,15,maximum disk IO time,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,16,cycles per instruction,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,17,memory accesses per instruction,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,18,sample portion,FLOAT,NO
+task_usage/part-?????-of-?????.csv.gz,19,aggregation type,BOOLEAN,NO
+task_usage/part-?????-of-?????.csv.gz,20,sampled CPU usage,FLOAT,NO
+
+
+
+
+default-scheduler
+
+36 pods
+434
+
+jobs 36 completions
+343
+
+======================
+
+my-controller
+
+36 jobs
+444 -- 466
+
+jobs 36 completions
+283
+
+
 {"level":"info","lock time":2832,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
 {"level":"info","lock time":2815,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
 {"level":"info","lock time":2861,"msg":"lock time","time":"2022-08-24T10:33:39Z"}
