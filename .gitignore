@@ -18,6 +18,7 @@ profiles/
 traces/
 my-scheduler-deploy.yaml
 my-controller-pod.yaml
+*.csv
 
 # Test binary, built with `go test -c`
 *.test
