@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bbox-many
+  namespace: dist-sched
+spec:
+  parallelism: %NUM_JOBS%
+  completions: %NUM_JOBS%
+  template:
+    spec:
+      # schedulerName: my-controller
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["bin/sh"]
+        args: ["-c", "sleep 5; echo 'slept for 5 seconds'"]
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: %CPU%
+      restartPolicy: Never
+  backoffLimit: 4

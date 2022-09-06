@@ -1,0 +1,22 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: bbox-many-sleep{{ st }}
+  namespace: dist-sched
+spec:
+  parallelism: {{ num_jobs }}
+  completions: {{ num_jobs }}
+  template:
+    spec:
+      schedulerName: {{ scheduler_name }}
+      containers:
+      - name: busybox
+        image: busybox
+        command: ["bin/sh"]
+        args: ["-c", "sleep {{ st }}; echo 'slept for {{ st }} seconds'"]
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "{{ cpu }}m"
+      restartPolicy: Never
+  backoffLimit: 4
