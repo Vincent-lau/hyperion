@@ -20,6 +20,10 @@ my-scheduler-deploy.yaml
 my-controller-pod.yaml
 *.csv
 
+# generated yaml
+deploy/bbox-job.yaml
+deploy/bbox-pod.yaml
+
 # Test binary, built with `go test -c`
 *.test
 
