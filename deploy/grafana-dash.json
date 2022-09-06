@@ -764,6 +764,95 @@
       "type": "stat"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 12,
+        "w": 21,
+        "x": 0,
+        "y": 8
+      },
+      "id": 15,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "sum by(namespace) (kube_pod_completion_time - kube_pod_start_time)",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "pod exe time",
+      "type": "timeseries"
+    },
+    {
       "aliasColors": {},
       "bars": false,
       "dashLength": 10,
@@ -782,7 +871,7 @@
         "h": 11,
         "w": 24,
         "x": 0,
-        "y": 8
+        "y": 20
       },
       "height": "",
       "hiddenSeries": false,
@@ -919,7 +1008,7 @@
         "h": 13,
         "w": 24,
         "x": 0,
-        "y": 19
+        "y": 31
       },
       "hiddenSeries": false,
       "id": 11,
@@ -1047,7 +1136,7 @@
         "h": 9,
         "w": 24,
         "x": 0,
-        "y": 32
+        "y": 44
       },
       "hiddenSeries": false,
       "id": 12,
@@ -1145,7 +1234,7 @@
         "h": 13,
         "w": 24,
         "x": 0,
-        "y": 41
+        "y": 53
       },
       "hiddenSeries": false,
       "id": 13,
@@ -1435,6 +1524,6 @@
   "timezone": "browser",
   "title": "1. Kubernetes Deployment Statefulset Daemonset metrics",
   "uid": "oWe9aYxmk",
-  "version": 8,
+  "version": 5,
   "weekStart": ""
 }
