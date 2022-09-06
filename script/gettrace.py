@@ -12,13 +12,11 @@ ret = v1.list_pod_for_all_namespaces(watch=False)
 
 k = 0
 name = datetime.datetime.now().isoformat()[:-7].replace(':', '-')
-dir = f"measure/trace/{name}"
+dir = f"/local/scratch/sl955/dist_sched/measure/trace/{name}"
 os.mkdir(dir)
 for i in ret.items:
     if i.metadata.name.startswith("my-scheduler-"):
       os.system(f'kubectl cp {i.metadata.name}:trace/ {dir}/trace/{i.metadata.name}/')
       print(f'copied from {i.metadata.name} to {dir}/trace{k}.out')
       k += 1
-    if k > 10:
-      break
 
