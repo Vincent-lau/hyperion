@@ -48,10 +48,11 @@ type Controller struct {
 	/* for placement */
 	jobQueue []*queue.Queue
 	fetched  int32
+	placed   chan int
 
 	/* interfacing with k8s api */
-	jobPod  []*v1.Pod // mapping from job id to pod
-	nodeMap map[string]*v1.Node
+	jobPod    []*v1.Pod // mapping from job id to pod
+	nodeMap   map[string]*v1.Node
 	clientset *kubernetes.Clientset
 
 	/* for profiling */
@@ -81,6 +82,7 @@ func New() *Controller {
 		jobQueue:   make([]*queue.Queue, 3),
 		nodeMap:    make(map[string]*v1.Node),
 		fetched:    0,
+		placed:     make(chan int),
 		tq:         queue.New(0),
 	}
 

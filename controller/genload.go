@@ -92,7 +92,7 @@ func (ctl *Controller) genLoad() {
 		avail += ctl.cap[i] - ctl.used[i]
 	}
 
-	numJobs := int(*config.JobFactor*float64(*config.NumSchedulers))
+	numJobs := int(*config.JobFactor * float64(*config.NumSchedulers))
 	// ctl.genJobs("skew normal", numJobs, avail)
 	ctl.getJobsFromK8s(numJobs, avail)
 	ctl.loadFromJobs()
@@ -120,6 +120,10 @@ func (ctl *Controller) getJobsFromK8s(numJobs int, avail float64) {
 
 		t += d
 		if t >= avail {
+			log.WithFields(log.Fields{
+				"total demand": t,
+				"avail":        avail,
+			}).Debug("avail exceeded")
 			break
 		}
 
@@ -186,8 +190,8 @@ func (ctl *Controller) genJobs(distribution string, numJobs int, avail float64) 
 	}
 
 	PlLogger.WithFields(log.Fields{
-		"generated jobDemand":       ctl.jobDemand,
-		"number of jobDemand":       len(ctl.jobDemand),
+		"generated jobDemand":  ctl.jobDemand,
+		"number of jobDemand":  len(ctl.jobDemand),
 		"total size":           generated,
 		"number of schedulers": *config.NumSchedulers,
 		"distribution":         distribution,

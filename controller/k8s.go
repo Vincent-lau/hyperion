@@ -51,7 +51,6 @@ func (ctl *Controller) findNodes() {
 
 	ctl.nodeMap = nMap
 	log.WithFields(log.Fields{
-		"node map":        ctl.nodeMap,
 		"number of nodes": len(nodes.Items),
 	}).Debug("found nodes")
 }
@@ -113,26 +112,37 @@ func getJobDemand(pod *v1.Pod) float64 {
 
 func (ctl *Controller) placePodToNode(n string, j int) error {
 	node := ctl.nodeMap[n]
-	ctl.mu.Lock()
 	pod := ctl.jobPod[j]
-	ctl.mu.Unlock()
 
-	ctl.clientset.CoreV1().Pods(pod.Namespace).Bind(context.TODO(), &v1.Binding{
-		ObjectMeta: metav1.ObjectMeta{
-			Name:      pod.Name,
-			Namespace: pod.Namespace,
-		},
-		Target: v1.ObjectReference{
-			APIVersion: "v1",
-			Kind:       "Node",
-			Name:       node.Name,
-		},
-	}, metav1.CreateOptions{})
+	for {
+		err := ctl.clientset.CoreV1().Pods(pod.Namespace).Bind(context.TODO(), &v1.Binding{
+			ObjectMeta: metav1.ObjectMeta{
+				Name:      pod.Name,
+				Namespace: pod.Namespace,
+			},
+			Target: v1.ObjectReference{
+				APIVersion: "v1",
+				Kind:       "Node",
+				Name:       node.Name,
+			},
+		}, metav1.CreateOptions{})
 
-	log.WithFields(log.Fields{
-		"pod name":  pod.Name,
-		"node name": node.Name,
-	}).Debug("binding pod to node")
+		if err != nil {
+			log.WithFields(log.Fields{
+				"pod name":  pod.Name,
+				"node name": node.Name,
+				"error":     err,
+			}).Warn("error binding pod to node")
+		} else {
+			log.WithFields(log.Fields{
+				"pod name":  pod.Name,
+				"node name": node.Name,
+			}).Debug("successfully binding pod to node")
+			break
+		}
+	}
+
+	ctl.placed <- j
 
 	timestamp := time.Now().UTC()
 	ctl.clientset.CoreV1().Events(pod.Namespace).Create(context.TODO(), &v1.Event{

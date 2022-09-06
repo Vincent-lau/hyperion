@@ -18,6 +18,7 @@ func (ctl *Controller) Placement() {
 	plStart = time.Now()
 
 	go ctl.bcastPl()
+	go ctl.waitForPl()
 }
 
 func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobReply, error) {
@@ -35,7 +36,6 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 
 		if atomic.AddInt32(&v, int32(-*config.NumSchedulers)) == 0 {
 			ctl.randPlace()
-			ctl.finPl()
 		}
 		return &pb.JobReply{}, nil
 	}
@@ -120,6 +120,19 @@ func (ctl *Controller) populateQueue() {
 
 }
 
+func (ctl *Controller) waitForPl() {
+
+	numJobs := len(ctl.jobDemand)
+	for i := 0; i < numJobs; i++ {
+		<-ctl.placed	
+	}
+
+	log.Debug("all pods placed")
+	ctl.finPl()
+
+
+}
+
 func (ctl *Controller) finPl() {
 	PlLogger.WithFields(log.Fields{
 		"time taken": time.Since(plStart).Microseconds(),
@@ -176,7 +189,19 @@ func (ctl *Controller) randPlace() {
 	for _, q := range ctl.jobQueue {
 		vs := q.Dispose()
 		for _, v := range vs {
-			go ctl.placePodToNode(ns[rand.Intn(*config.NumSchedulers)], v.(*Job).Id())
+			j := v.(*Job).Id()
+			ctl.mu.Lock()
+			pod := ctl.jobPod[j]
+			ctl.mu.Unlock()
+
+			ri := rand.Intn(*config.NumSchedulers)
+			log.WithFields(log.Fields{
+				"node": ns[ri],
+				"job":  j,
+				"name": pod.Name,
+			}).Debug("randomly placed job")
+
+			go ctl.placePodToNode(ns[ri], v.(*Job).Id())
 		}
 	}
 }
