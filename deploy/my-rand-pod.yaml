@@ -1,0 +1,106 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-rand-account
+  namespace: dist-sched
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: my-rand-as-kube-scheduler
+subjects:
+- kind: ServiceAccount
+  name: my-rand-account
+  namespace: dist-sched
+roleRef:
+  kind: ClusterRole
+  name: system:kube-scheduler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: my-rand-as-volume-scheduler
+subjects:
+- kind: ServiceAccount
+  name: my-rand-account
+  namespace: dist-sched
+roleRef:
+  kind: ClusterRole
+  name: system:volume-scheduler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-rand-config
+  namespace: dist-sched
+data:
+  my-rand-config.yaml: |
+    apiVersion: kubescheduler.config.k8s.io/v1beta2
+    kind: KubeSchedulerConfiguration
+    profiles:
+      - schedulerName: rand-scheduler
+    leaderElection:
+      leaderElect: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-rand
+  namespace: dist-sched
+  labels:
+    component: rand-sched
+    tier: control-plane
+    name: my-rand
+spec:
+  selector:
+    matchLabels:
+      component: scheduler
+      tier: control-plane
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: scheduler
+        tier: control-plane
+        name: my-rand
+    spec:
+      serviceAccountName: my-rand-account
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: NoSchedule
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: NoSchedule
+      containers:
+      - command:
+        - ./rand
+        name: my-rand
+        image: cuso4/my-rand:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 2379
+          name: grpc-probe
+        - containerPort: 3000
+          name: svc-dis
+        livenessProbe:
+          grpc:
+            port: 2379
+          initialDelaySeconds: 10
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/kubernetes/my-rand
+      restartPolicy: Always
+      hostNetwork: false
+      hostPID: false
+      volumes:
+        - name: config-volume
+          configMap:
+            name: my-rand-config
+      
