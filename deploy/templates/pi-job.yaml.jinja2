@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi-{{ digits }}
+  namespace: dist-sched
+spec:
+  completions: {{ num_jobs }}
+  parallelism: {{ num_jobs }}
+  template:
+    spec:
+      schedulerName: {{ scheduler_name }}
+      containers:
+      - name: pi
+        image: perl:5.34.0
+        command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi({{ digits }})"]
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "{{ cpu }}m"
+      restartPolicy: Never
+  backoffLimit: 4
