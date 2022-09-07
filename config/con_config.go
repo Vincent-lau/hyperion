@@ -21,7 +21,7 @@ var (
 
 	JobFactor = flag.Float64("jobfactor", 0.5, "Number of jobs per scheduler")
 	MaxTrials = flag.Int("maxtrials", 1, "Maximum number of trials")
-	MaxCap = 500.0
+	MaxCap = 50000.0
 
 	Mean = 10.0
 	Std = 4.0
