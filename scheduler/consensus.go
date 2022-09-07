@@ -221,7 +221,7 @@ func (sched *Scheduler) MsgXchg() {
 		"to":        sched.outConns,
 		"took":      time.Since(t).Microseconds(),
 		"sendTimes": sendTimes,
-	}).Info("finished waiting for goroutine to finish sendOne")
+	}).Debug("finished waiting for goroutine to finish sendOne")
 
 	for len(sched.CurData())-1 != sched.inNeighbours {
 
@@ -372,7 +372,7 @@ func (sched *Scheduler) Consensus() {
 			"xchg time per iter": t1.Sub(t).Microseconds(),
 			"comp time per iter": t2.Sub(t1).Microseconds(),
 			"time per iteration": ts[len(ts)-1],
-		}).Info("time of this iteration")
+		}).Debug("time of this iteration")
 	}
 
 	var tot int64
