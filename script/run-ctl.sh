@@ -7,7 +7,7 @@ protoc --go_out=. --go_opt=paths=source_relative \
     --go-grpc_out=. --go-grpc_opt=paths=source_relative \
     message/message.proto
 
-go build -race -o ./bin/ctl cmd/controller/main.go && \
+go build -o ./bin/ctl cmd/controller/main.go && \
 docker build -t my-ctl -f cmd/controller/Dockerfile . && \
 docker tag my-ctl cuso4/my-ctl && \
 docker push cuso4/my-ctl && \

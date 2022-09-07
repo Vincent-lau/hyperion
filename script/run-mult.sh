@@ -12,10 +12,10 @@ do
 
     case $MODE in
       dev)
-        TRIAL=1
+        TRIAL=10000
         ;;
       prod)
-        TRIAL=10
+        TRIAL=10000
         ;;
     esac
 
@@ -34,9 +34,9 @@ do
 
     case $MODE in
       "prod")
-        echo $MODE
-        gum style --foreground 214 "writing results to data-${i}pods-${j}jobs.json"
-        ./script/getmetrics.py ${i} ${j}
+        # ./script/gettrace.py
+        # gum style --foreground 214 "writing results to data-${i}pods-${j}jobs.json"
+        # ./script/getmetrics.py ${i} ${j}
         ;;
       *)
         ;;
