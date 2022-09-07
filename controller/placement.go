@@ -164,7 +164,7 @@ func (ctl *Controller) finPl() {
 		"scheduled elements":  jobSched,
 		"each job fetch time": ctl.tq.Dispose(),
 		"drain time":          time.Since(t).Microseconds(),
-	}).Info("all jobs fetched, queue elements left")
+	}).Debug("all jobs fetched, queue elements left")
 
 	go ctl.newTrial()
 }
