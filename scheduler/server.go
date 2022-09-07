@@ -2,8 +2,8 @@ package scheduler
 
 import (
 	"context"
-	"errors"
 	"example/dist_sched/config"
+	"io"
 	"net"
 
 	log "github.com/sirupsen/logrus"
@@ -121,44 +121,47 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 	return &pb.HelloReply{Me: int32(sched.me)}, nil
 }
 
-func (sched *Scheduler) SendConData(ctx context.Context, in *pb.ConDataRequest) (*pb.EmptyReply, error) {
+func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) error {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
-	k := int(in.GetK())
-	if _, ok := sched.conData[k]; !ok {
-		sched.conData[k] = make(map[int]*pb.ConData)
+	for {
+		sched.mu.Unlock()
+		in, err := stream.Recv()
+		sched.mu.Lock()
+
+		if err == io.EOF {
+			return stream.SendAndClose(&pb.EmptyReply{})
+		}
+
+		k := int(in.GetK())
+		if _, ok := sched.conData[k]; !ok {
+			sched.conData[k] = make(map[int]*pb.ConData)
+		}
+		sched.conData[k][int(in.GetMe())] = in.GetData()
+
+		log.WithFields(log.Fields{
+			"from":               in.GetMe(),
+			"scheduler k":        sched.k,
+			"received k":         in.GetK(),
+			"data":               in.GetData(),
+			"expecting total":    sched.inNeighbours,
+			"currently received": len(sched.CurData()) - 1,
+		}).Debug("received data")
+
+		s := uint64(proto.Size(in))
+		sched.msgRcv += s
+
+		if len(sched.CurData())-1 == sched.inNeighbours {
+			// received from all inbound neighbours
+			log.Debug("received from all inbound neighbours, broadcasting")
+			sched.neighCond.Broadcast()
+		}
+
 	}
-	sched.conData[k][int(in.GetMe())] = in.GetData()
 
-	log.WithFields(log.Fields{
-		"from":               in.GetMe(),
-		"scheduler k":        sched.k,
-		"received k":         in.GetK(),
-		"data":               in.GetData(),
-		"expecting total":    sched.inNeighbours,
-		"currently received": len(sched.CurData()) - 1,
-	}).Debug("received data")
-
-	s := uint64(proto.Size(in))
-	sched.msgRcv += s
-
-	if len(sched.CurData())-1 == sched.inNeighbours {
-		// received from all inbound neighbours
-		log.Debug("received from all inbound neighbours, broadcasting")
-		sched.neighCond.Broadcast()
-	}
-
-	return &pb.EmptyReply{}, nil
 }
 
-func (sched *Scheduler) Check(ctx context.Context, in *grpc_health_v1.HealthCheckRequest) (*grpc_health_v1.HealthCheckResponse, error) {
-	return &grpc_health_v1.HealthCheckResponse{Status: grpc_health_v1.HealthCheckResponse_SERVING}, nil
-}
-
-func (sched *Scheduler) Watch(in *grpc_health_v1.HealthCheckRequest, stream grpc_health_v1.Health_WatchServer) error {
-	return errors.New("not implemented")
-}
 
 func (sched *Scheduler) StartConsensus(ctx context.Context, in *pb.StartRequest) (*pb.EmptyReply, error) {
 	sched.mu.Lock()

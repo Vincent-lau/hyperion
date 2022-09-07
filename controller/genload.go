@@ -93,8 +93,8 @@ func (ctl *Controller) genLoad() {
 	}
 
 	numJobs := int(*config.JobFactor * float64(*config.NumSchedulers))
-	// ctl.genJobs("skew normal", numJobs, avail)
-	ctl.getJobsFromK8s(numJobs, avail)
+	ctl.genJobs("normal", numJobs, avail)
+	// ctl.getJobsFromK8s(numJobs, avail)
 	ctl.loadFromJobs()
 }
 
@@ -145,7 +145,7 @@ func (ctl *Controller) genJobs(distribution string, numJobs int, avail float64) 
 
 	// TODO tune 0.6 and 0.4
 	var poi distuv.Poisson
-	if distribution == "gaussian" {
+	if distribution == "normal" {
 		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
 		config.Std = config.Mean * 0.4
 	} else if distribution == "poisson" {
@@ -168,9 +168,9 @@ func (ctl *Controller) genJobs(distribution string, numJobs int, avail float64) 
 	c := 0
 	for generated+config.Std < avail && c < numJobs {
 		var v float64
-		if distribution == "gaussian" {
+		if distribution == "normal" {
 			v = rand.NormFloat64()*float64(config.Std) + float64(config.Mean)
-		} else if distribution == "normal" {
+		} else if distribution == "uniform" {
 			v = rand.Float64() * float64(config.MaxCap)
 		} else if distribution == "poisson" {
 			v = poi.Rand()

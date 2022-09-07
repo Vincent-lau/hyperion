@@ -119,12 +119,9 @@ type sendTime struct {
 	time int64
 }
 
-func (sched *Scheduler) sendOne(to int, stub pb.RatioConsensusClient, data *pb.ConDataRequest, done chan int, info chan sendTime) {
+func (sched *Scheduler) sendOne(to int, stream pb.RatioConsensus_SendConDataClient, data *pb.ConDataRequest, done chan int, info chan sendTime) {
 	t := time.Now()
 	for {
-		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
-		defer cancel()
-
 		log.WithFields(log.Fields{
 			"to":   to,
 			"k":    sched.k,
@@ -134,9 +131,7 @@ func (sched *Scheduler) sendOne(to int, stub pb.RatioConsensusClient, data *pb.C
 		s := uint64(proto.Size(data))
 		atomic.AddUint64(&sched.msgSent, s)
 
-		_, err := stub.SendConData(ctx, data)
-
-		if err != nil {
+		if err := stream.Send(data); err != nil {
 			log.WithFields(log.Fields{
 				"error":              err,
 				"sending request to": to,
@@ -144,7 +139,6 @@ func (sched *Scheduler) sendOne(to int, stub pb.RatioConsensusClient, data *pb.C
 			}).Warn("error send conData")
 
 			time.Sleep(time.Second)
-
 		} else {
 			break
 		}
@@ -204,7 +198,7 @@ func (sched *Scheduler) MsgXchg() {
 	}
 
 	for _, you := range sched.outConns {
-		go sched.sendOne(you, sched.stubs[you], data, done, info)
+		go sched.sendOne(you, sched.streams[you], data, done, info)
 	}
 
 	t := time.Now()
@@ -353,6 +347,16 @@ func (sched *Scheduler) Consensus() {
 
 	ts := make([]int64, 0)
 
+	var err error
+	for you, stub := range sched.stubs {
+		if sched.streams[you], err = stub.SendConData(context.Background()); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+				"to":    you,
+			}).Fatal("failed to create stream")
+		}
+	}
+
 	for !sched.CheckCvg() && sched.k < *config.MaxIter {
 		t := time.Now()
 
@@ -378,6 +382,15 @@ func (sched *Scheduler) Consensus() {
 	var tot int64
 	for _, t := range ts {
 		tot += t
+	}
+
+	for you, s := range sched.streams {
+		if _, err = s.CloseAndRecv(); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+				"to":    you,
+			}).Fatal("failed to close stream")
+		}
 	}
 
 	log.WithFields(log.Fields{
