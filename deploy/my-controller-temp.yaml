@@ -83,7 +83,7 @@ spec:
         - -mode=%MODE%
         - -jobfactor=%JOBS%
         - -maxtrials=%TRIALS%
-        - -trace=trace.out
+        # - -trace=trace.out
         name: my-controller
         image: cuso4/my-ctl:latest
         imagePullPolicy: Always
