@@ -31,6 +31,7 @@ type Scheduler struct {
 	outConns      []int
 	outNeighbours int
 	stubs         map[int]pb.RatioConsensusClient // stubs of outNeighbours
+	streams       map[int]pb.RatioConsensus_SendConDataClient
 
 	k    int
 	done bool // this indicates termination, which is different from flag
@@ -95,6 +96,7 @@ func New() *Scheduler {
 		inNeighbours:  0,
 		expectedIn:    0,
 		stubs:         make(map[int]pb.RatioConsensusClient),
+		streams:       make(map[int]pb.RatioConsensus_SendConDataClient),
 		outConns:      make([]int, 0),
 		outNeighbours: 0,
 		k:             0,
@@ -173,7 +175,7 @@ func (sched *Scheduler) Schedule() {
 		}).Info("new trial is starting")
 
 		sched.Consensus()
-		sched.Placement()
+		// sched.Placement()
 		sched.reset()
 
 		sched.mu.Lock()
