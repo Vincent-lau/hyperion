@@ -19,6 +19,7 @@ import (
 	v1 "k8s.io/api/core/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/rest"
+	"k8s.io/client-go/util/flowcontrol"
 )
 
 var (
@@ -91,13 +92,14 @@ func New() *Controller {
 	}
 
 	config, err := rest.InClusterConfig()
-
+	// ! essentailly turning off rate limiter
+	// default value 5 and 10
+	config.RateLimiter = flowcontrol.NewTokenBucketRateLimiter(80, 100)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
 		}).Error("error getting config")
 	}
-
 	clientset, err := kubernetes.NewForConfig(config)
 	ctl.clientset = clientset
 
