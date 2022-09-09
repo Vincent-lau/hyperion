@@ -95,7 +95,8 @@ def render_pi(num_jobs: int, scheduler_name: str):
             out_file.write(content)
             out_file.write('\n---\n')
 
-def render_pod(num_pods: int) -> float:
+
+def render_pod(num_pods: int, scheduler_name: str) -> float:
     environment = Environment(loader=FileSystemLoader("deploy/templates"))
     template = environment.get_template("bbox-pod.yaml.jinja2")
     max_st = 0
@@ -108,8 +109,9 @@ def render_pod(num_pods: int) -> float:
                 max_st = max(max_st, sleep_time)
                 if cpu < 1:
                     continue
-                
+
                 content = template.render(
+                    scheduler_name=scheduler_name,
                     name=f'bbox-sleep{sleep_time}-{i}',
                     cpu=cpu,
                     sleep_time=sleep_time,
@@ -122,6 +124,7 @@ def render_pod(num_pods: int) -> float:
                     break
 
     return max_st
+
 
 def run_jobs():
     console = Console()
@@ -147,22 +150,24 @@ def run_jobs():
     console.print('done', style='blue')
 
 
-def run_pods():
+def run_pods(scheduler_name: str):
     console = Console()
+    job_factor = 36
     for i in range(1, 10):
-        console.print(f'Running {i} pods', style='green bold')
-        wt = render_pod(i) + 120
+        console.print(f'Running {i*job_factor} pods', style='green bold')
+        wt = render_pod(i*job_factor, scheduler_name) + 120
         os.system("kubectl apply -f deploy/bbox-pod.yaml")
 
-        console.print(f'sleeping for {wt} seconds', style='red bold')
         with suppress(TimeoutOccurred):
             inputimeout(prompt=':D', timeout=wt)
 
         os.system('kubectl delete -f deploy/bbox-pod.yaml')
 
-def main():
-    run_pods()
 
+def main():
+    schedulers = ['default-scheduler', 'my-controller']
+    scheduler_name = schedulers[1]
+    run_pods(scheduler_name)
 
 
 if __name__ == '__main__':
