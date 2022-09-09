@@ -1,3 +1,36 @@
+scheduler_scheduling_algorithm_duration_seconds_sum for [36,72,108,144,180] jobs
+
+[0.0279,0.0486,0.0648,0.0768,0.0976]
+
+my_scheduler_consensus_time
+
+[15666.888888888889, 25339.333333333336, 40259.0, 53331.0, 62602.88888888888]
+
+scheduler_pod_scheduling_duration_seconds_sum
+
+[1.69,3.59,4.76,6.79,8.34]
+
+
+==================================
+scheduler_scheduling_algorithm_duration_seconds_sum for [27, 54, 81, 108, 135] jobs
+
+[0.0216,0.0361,0.0523,0.0805,0.0858]
+
+scheduler_pod_scheduling_duration_seconds_sum
+
+[1.29,2.25,3.73,5.45,7.28]
+
+Consensus time for nine schedulers
+
+84 ms
+
+Placement time for 27 jobs (including pod binding time)
+
+3.4 s
+
+
+
+
 ----------default_scheduler----------
 scheduling latency
 
@@ -5,7 +38,6 @@ scheduling latency
 
 
 ----------my_scheduler------------
-
 
 
 

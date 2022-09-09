@@ -4,7 +4,7 @@ MODE=$(gum choose "dev" "prod" --limit=1 || echo "dev")
 CMD=$(gum choose "run.sh" "redeploy.sh" --limit=1 || echo "run.sh")
 for i in $(gum choose --no-limit 9 100 200 300 400 500 600)
 do
-  for j in $(gum choose --no-limit 0.5 1 2 3 4 5)
+  for j in $(gum choose --no-limit 1 2 3 4 5 0.5)
   do
     gum style --foreground 103 --border-foreground 212 --border double \
               --align center --width 50 --margin "1 2" --padding "2 4" \
@@ -12,7 +12,7 @@ do
 
     case $MODE in
       dev)
-        TRIAL=10000
+        TRIAL=10
         ;;
       prod)
         TRIAL=10000
