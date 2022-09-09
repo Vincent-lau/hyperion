@@ -3,7 +3,7 @@ kind: Pod
 metadata:
   name: {{ name }}
 spec:
-  # schedulerName: my-controller
+  schedulerName: {{ scheduler_name }}
   containers:
   - name: busybox
     image: busybox

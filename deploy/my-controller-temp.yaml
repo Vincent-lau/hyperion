@@ -85,6 +85,9 @@ spec:
         - -maxtrials=%TRIALS%
         # - -trace=trace.out
         name: my-controller
+        resources:
+          requests:
+            cpu: 100m
         image: cuso4/my-ctl:latest
         imagePullPolicy: Always
         ports:
@@ -104,6 +107,7 @@ spec:
       restartPolicy: Always
       hostNetwork: false
       hostPID: false
+      priorityClassName: system-node-critical
       volumes:
         - name: config-volume
           configMap:
