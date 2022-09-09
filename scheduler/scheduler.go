@@ -175,7 +175,7 @@ func (sched *Scheduler) Schedule() {
 		}).Info("new trial is starting")
 
 		sched.Consensus()
-		// sched.Placement()
+		sched.Placement()
 		sched.reset()
 
 		sched.mu.Lock()

@@ -379,11 +379,6 @@ func (sched *Scheduler) Consensus() {
 		}).Debug("time of this iteration")
 	}
 
-	var tot int64
-	for _, t := range ts {
-		tot += t
-	}
-
 	for you, s := range sched.streams {
 		if _, err = s.CloseAndRecv(); err != nil {
 			log.WithFields(log.Fields{
@@ -392,6 +387,14 @@ func (sched *Scheduler) Consensus() {
 			}).Fatal("failed to close stream")
 		}
 	}
+
+
+	var tot int64
+	for _, t := range ts {
+		tot += t
+	}
+
+
 
 	log.WithFields(log.Fields{
 		"iteration":         sched.k,
