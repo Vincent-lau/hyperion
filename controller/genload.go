@@ -93,8 +93,8 @@ func (ctl *Controller) genLoad() {
 	}
 
 	numJobs := int(*config.JobFactor * float64(*config.NumSchedulers))
-	ctl.genJobs("normal", numJobs, avail)
-	// ctl.getJobsFromK8s(numJobs, avail)
+	// ctl.genJobs("normal", numJobs, avail)
+	ctl.getJobsFromK8s(numJobs, avail)
 	ctl.loadFromJobs()
 }
 
