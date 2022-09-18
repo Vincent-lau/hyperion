@@ -12,7 +12,7 @@ do
 
     case $MODE in
       dev)
-        TRIAL=10
+        TRIAL=10000
         ;;
       prod)
         TRIAL=10000
