@@ -17,6 +17,6 @@ os.mkdir(dir)
 for i in ret.items:
     if i.metadata.name.startswith("my-scheduler-"):
       os.system(f'kubectl cp {i.metadata.name}:trace/ {dir}/trace/{i.metadata.name}/')
-      print(f'copied from {i.metadata.name} to {dir}/trace{k}.out')
+      print(f'copied from {i.metadata.name}:trace/ to {dir}/trace/{i.metadata.name}/')
       k += 1
 

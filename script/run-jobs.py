@@ -158,6 +158,7 @@ def run_pods(scheduler_name: str):
         wt = render_pod(i*job_factor, scheduler_name) + 120
         os.system("kubectl apply -f deploy/bbox-pod.yaml")
 
+        console.print(f'sleeping for {wt} seconds', style='red')
         with suppress(TimeoutOccurred):
             inputimeout(prompt=':D', timeout=wt)
 
