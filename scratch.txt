@@ -1,3 +1,148 @@
+0 -> 7 
+
+trial 9 iter 14
+
+
+{"k":14,"level":"info","me":0,"missing from":[7],"missing no":1,"msg":"waiting for all resp
+onses","time":"2022-09-17T20:41:21Z"}
+{"currently received":1,"data":{"p":0.3333333333333333,"y":63.531129964014454,"z":23144.661
+687385298,"mm":0.0027450859080177057,"m":0.002744702618423145},"elapsed":4920,"expecting to
+tal":2,"from":8,"level":"info","msg":"received data","received k":15,"scheduler k":14,"time
+":"2022-09-17T20:41:21Z"}
+{"currently received":2,"data":{"p":0.5,"y":207.36282055013265,"z":75567.19404606355,"mm":0
+.0027440852233276036,"m":0.0027440852233276036},"elapsed":3373,"expecting total":2,"from":7
+,"level":"info","msg":"received data","received k":14,"scheduler k":14,"time":"2022-09-17T2
+0:41:21Z"}
+{"currently received":2,"data":{"p":0.5,"y":207.52932960674065,"z":75631.07041033555,"mm":0
+.0027447602764499937,"m":0.0027400239495257834},"elapsed":2054,"expecting total":2,"from":7
+,"level":"info","msg":"received data","received k":15,"scheduler k":14,"time":"2022-09-17T2
+0:41:21Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-17T20:41:21Z","t
+ook":8863}
+{"comp time per iter":8,"iteration":14,"level":"info","msg":"time of this iteration","prefi
+x":"metrics","time":"2022-09-17T20:41:21Z","time per iteration":9070,"trial":10,"xchg time
+per iter":9061}
+
+
+
+
+
+5 -> 1 -> 2 -> 3 -> 0 -> (8),7 -> 6
+
+
+scheduler 7
+
+{"k":16,"level":"info","me":7,"missing from":[6,3],"missing no":2,"msg":"waiting for all re
+sponses","time":"2022-09-16T20:36:32Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-16T20:36:32Z","t
+ook":45579}
+{"comp time per iter":7,"iteration":16,"level":"info","msg":"time of this iteration","prefi
+x":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":46620,"trial":6,"xchg time
+per iter":46612}
+{"comp time per iter":8,"iteration":17,"level":"info","msg":"time of this iteration","prefi
+x":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":524,"trial":6,"xchg time pe
+r iter":516}
+{"comp time per iter":6,"iteration":18,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":456,"trial":6,"xchg time per iter":449}
+{"k":19,"level":"info","me":7,"missing from":[3],"missing no":1,"msg":"waiting for all responses","time":"2022-09-16T20:36:32Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-16T20:36:32Z","took":2374}
+{"comp time per iter":12,"iteration":19,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":3241,"trial":6,"xchg time per iter":3228}
+{"comp time per iter":21,"iteration":20,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":838,"trial":6,"xchg time per iter":817}
+{"comp time per iter":6,"iteration":21,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":638,"trial":6,"xchg time per iter":631}
+
+
+
+
+
+scheduler 6 zlhxb
+{"comp time per iter":10,"iteration":16,"level":"info","msg":"time of this iteration","pref
+ix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":2341,"trial":6,"xchg time
+per iter":2330}
+{"k":17,"level":"info","me":6,"missing from":[5],"missing no":1,"msg":"waiting for all resp
+onses","time":"2022-09-16T20:36:32Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-16T20:36:32Z","t
+ook":1236}
+{"comp time per iter":11,"iteration":17,"level":"info","msg":"time of this iteration","pref
+ix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":2323,"trial":6,"xchg time
+per iter":2312}
+{"k":18,"level":"info","me":6,"missing from":[5],"missing no":1,"msg":"waiting for all responses","time":"2022-09-16T20:36:32Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-16T20:36:32Z","took":144}
+{"comp time per iter":42,"iteration":18,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":1388,"trial":6,"xchg time per iter":1345}
+{"comp time per iter":12,"iteration":19,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":835,"trial":6,"xchg time per iter":822}
+{"k":20,"level":"info","me":6,"missing from":[5],"missing no":1,"msg":"waiting for all responses","time":"2022-09-16T20:36:32Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-16T20:36:32Z","took":2003}
+{"comp time per iter":12,"iteration":20,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":3051,"trial":6,"xchg time per iter":3038}
+{"comp time per iter":10,"iteration":21,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":797,"trial":6,"xchg time per iter":786}
+{"k":22,"level":"info","me":6,"missing from":[5],"missing no":1,"msg":"waiting for all responses","time":"2022-09-16T20:36:32Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-16T20:36:32Z","took":550}
+{"comp time per iter":11,"iteration":22,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":1664,"trial":6,"xchg time per iter":1652}
+{"k":23,"level":"info","me":6,"missing from":[5],"missing no":1,"msg":"waiting for all responses","time":"2022-09-16T20:36:32Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-16T20:36:32Z","took":44899}
+
+
+
+
+
+
+
+
+{"comp time per iter":12,"iteration":21,"level":"info","msg":"time of this iteration","pref
+ix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":1555,"trial":6,"xchg time
+per iter":1542}
+{"k":22,"level":"info","me":5,"missing from":[8],"missing no":1,"msg":"waiting for all resp
+onses","time":"2022-09-16T20:36:32Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-16T20:36:32Z","t
+ook":44346}
+{"comp time per iter":14,"iteration":22,"level":"info","msg":"time of this iteration","pref
+ix":"metrics","time":"2022-09-16T20:36:32Z","time per iteration":45841,"trial":6,"xchg time
+ per iter":45826}
+{"k":23,"level":"info","me":5,"missing from":[8],"missing no":1,"msg":"waiting for all resp
+onses","time":"2022-09-16T20:36:32Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-16T20:36:32Z","t
+ook":363}
+
+
+
+go tool trace -http=:6060 trace-s0-t5-r25.out
+go tool trace -http=:6061 trace-s0-t5-r26.out
+
+
+
+
+[[164.37522222   0.        ]
+ [148.55355556   0.        ]
+ [141.86444444   0.        ]
+ [196.17011111   0.        ]
+ [180.90644444   0.        ]
+ [177.63811111   0.        ]
+ [215.40444444   0.        ]
+ [239.34777778   0.        ]
+ [267.11755556   0.        ]
+ [229.13177778   0.        ]]
+
+
+
+Output exceeds the size limit. Open the full output data in a text editor
+0 1
+12593.666666666666
+1 3
+12252.444444444445
+11560.0
+3 6
+11117.555555555555
+9592.111111111111
+12059.222222222223
+6 10
+11728.666666666666
+11568.777777777777
+13415.222222222223
+15405.111111111111
+
+
+
+=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=
+
+
+
 scheduler_scheduling_algorithm_duration_seconds_sum for [36,72,108,144,180] jobs
 
 [0.0279,0.0486,0.0648,0.0768,0.0976]
