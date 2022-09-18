@@ -22,12 +22,13 @@ func readMat() [][]int {
 	for scanner.Scan() {
 		text := scanner.Text()
 		if strings.Contains(text, "Diameter") {
-			Diameter, err = strconv.Atoi(strings.Split(text, " ")[1])
+			D, err := strconv.Atoi(strings.Split(text, " ")[1])
 			if err != nil {
 				log.WithFields(log.Fields{
 					"error": err,
 				}).Fatal("cannot parse diameter")
 			}
+			Diameter = uint64(D)
 			continue
 		}
 

@@ -25,8 +25,6 @@ func (sched *Scheduler) Placement() {
 }
 
 func (sched *Scheduler) fetchJobs() {
-	// TODO use stream API?
-
 	gotJobs := make([]float64, 0)
 	sw := sched.w
 

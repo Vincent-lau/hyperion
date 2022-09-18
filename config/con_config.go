@@ -29,11 +29,11 @@ var (
 
 	Tolerance = flag.Float64("tolerance", 1e-5, "Tolerance for the convergence")
 	Delay     = flag.Int("tau", 1, "Delay")
-	MaxIter   = flag.Int("maxiter", 500, "Maximum number of iterations")
+	MaxIter   = flag.Uint64("maxiter", 500, "Maximum number of iterations")
 
 	MFile string
 
-	Diameter int
+	Diameter uint64
 
 	Network [][]int
 

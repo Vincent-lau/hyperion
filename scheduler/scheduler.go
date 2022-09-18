@@ -4,6 +4,7 @@ import (
 	"os"
 	"runtime/pprof"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -25,18 +26,19 @@ type Scheduler struct {
 	hostname string
 	// name of inNeighbours, N-, ones that we will receive data from
 	inConns      []int
-	inNeighbours int
-	expectedIn   int // expected number of inNeighbours, used for waiting
+	inNeighbours uint64
+	expectedIn   uint64 // expected number of inNeighbours, used for waiting
 	// number of out neighbours, N+, i.e. ones to which we will broadcast values
 	outConns      []int
 	outNeighbours int
 	stubs         map[int]pb.RatioConsensusClient // stubs of outNeighbours
 	streams       map[int]pb.RatioConsensus_SendConDataClient
 
-	k    int
-	done bool // this indicates termination, which is different from flag
+	k    uint64
+	done *atomic.Bool // this indicates termination, which is different from flag
 
-	conData map[int]map[int]*pb.ConData
+	conData sync.Map // iter -> scheduler no -> conData
+	conLen  sync.Map // iter -> number of received msg, including self
 
 	/* for job fetching */
 	pi      float64 // capacity
@@ -100,7 +102,9 @@ func New() *Scheduler {
 		outConns:      make([]int, 0),
 		outNeighbours: 0,
 		k:             0,
-		conData:       make(map[int]map[int]*pb.ConData),
+		done:          &atomic.Bool{},
+		conData:       sync.Map{},
+		conLen:        sync.Map{},
 
 		setup: false,
 
@@ -114,6 +118,7 @@ func New() *Scheduler {
 		/* interface with k8s */
 		onNode: node.Name,
 	}
+	sched.done.Store(false)
 	sched.neighCond = sync.NewCond(&sched.mu)
 	sched.startCond = sync.NewCond(&sched.mu)
 
@@ -133,9 +138,10 @@ func (sched *Scheduler) reset() {
 	defer sched.mu.Unlock()
 
 	sched.k = 0
-	sched.done = false
+	sched.done.Store(false)
 
-	sched.conData = make(map[int]map[int]*pb.ConData)
+	sched.conData = sync.Map{}
+	sched.conLen = sync.Map{}
 	sched.setup = false
 
 	/* placement */
@@ -175,7 +181,7 @@ func (sched *Scheduler) Schedule() {
 		}).Info("new trial is starting")
 
 		sched.Consensus()
-		sched.Placement()
+		// sched.Placement()
 		sched.reset()
 
 		sched.mu.Lock()

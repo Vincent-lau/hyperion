@@ -185,7 +185,7 @@ func (ctl *Controller) GetNeighbours(ctx context.Context, in *pb.NeighboursReque
 
 	return &pb.NeighboursReply{
 		Neigh:        neighbours,
-		InNeighbours: int32(len(ctl.rnetwork[in.GetMe()])),
+		InNeighbours: uint64(len(ctl.rnetwork[in.GetMe()])),
 	}, nil
 
 }

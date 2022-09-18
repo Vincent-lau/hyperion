@@ -4,11 +4,11 @@ import (
 	"context"
 	"example/dist_sched/config"
 	pb "example/dist_sched/message"
-	"fmt"
+	"example/dist_sched/util"
 	"math"
 	"os"
 	"runtime/pprof"
-	"runtime/trace"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -23,23 +23,24 @@ func (sched *Scheduler) timeToCheck() bool {
 func (sched *Scheduler) getPrevRoundFlag() bool {
 	if sched.k >= config.Diameter {
 
+		prevRound, _ := sched.conData.Load(sched.k - config.Diameter)
+		prevData, _ := prevRound.(*sync.Map).Load(sched.me)
+		prevFlag := prevData.(*pb.ConData).GetFlag()
+
 		log.WithFields(log.Fields{
 			"k":           sched.k,
 			"prev k":      sched.k - config.Diameter,
-			"prev k flag": sched.conData[sched.k-config.Diameter][sched.me].GetFlag(),
+			"prev k flag": prevFlag,
 		}).Debug("checking flag at previous round")
 
-		return sched.conData[sched.k-config.Diameter][sched.me].GetFlag()
+		return prevFlag
 	} else {
 		return false
 	}
 }
 
 func (sched *Scheduler) CheckCvg() bool {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
-
-	if sched.done {
+	if sched.done.Load() {
 		return true
 	}
 
@@ -69,14 +70,15 @@ func (sched *Scheduler) CheckCvg() bool {
 				"mu":   mu,
 			}).Debug("updating M and m")
 
-			sched.conData[sched.k][sched.me] = &pb.ConData{
+			kData, _ := sched.conData.Load(sched.k)
+			kData.(*sync.Map).Store(sched.me, &pb.ConData{
 				P:    myData.GetP(),
 				Y:    myData.GetY(),
 				Z:    myData.GetZ(),
 				Mm:   mu,
 				M:    mu,
 				Flag: flag,
-			}
+			})
 
 			// now check for termination
 			if sched.getPrevRoundFlag() && flag {
@@ -87,21 +89,23 @@ func (sched *Scheduler) CheckCvg() bool {
 					"ratio": sched.MyData().GetY() / sched.MyData().GetZ(),
 				}).Debug("termination reached")
 
-				sched.done = true
+				sched.done.Store(true)
 			}
 
 		}
 
 	} else { // flag == 1
 		if math.Abs(myData.GetMm()-myData.GetM()) >= *config.Tolerance {
-			sched.conData[sched.k][sched.me] = &pb.ConData{
+			kData, _ := sched.conData.Load(sched.k)
+			kData.(*sync.Map).Store(sched.me, &pb.ConData{
 				P:    myData.GetP(),
 				Y:    myData.GetY(),
 				Z:    myData.GetZ(),
 				Mm:   myData.GetMm(),
 				M:    myData.GetM(),
 				Flag: false,
-			}
+			})
+
 			log.WithFields(log.Fields{
 				"at":   sched.k,
 				"data": sched.MyData(),
@@ -144,13 +148,18 @@ func (sched *Scheduler) sendOne(to int, stream pb.RatioConsensus_SendConDataClie
 		}
 	}
 
-	log.WithFields(log.Fields{
-		"me":        sched.me,
-		"to":        to,
-		"trial":     sched.trial,
-		"iteration": sched.k,
-		"took":      time.Since(t).Microseconds(),
-	}).Debug("time taken to sendOne")
+	if *config.Mode == "dev" {
+		sched.mu.Lock()
+		log.WithFields(log.Fields{
+			"me":        sched.me,
+			"to":        to,
+			"trial":     sched.trial,
+			"iteration": sched.k,
+			"took":      time.Since(t).Microseconds(),
+		}).Debug("time taken to sendOne")
+		sched.mu.Unlock()
+	}
+
 	done <- to
 	info <- sendTime{to: to, time: time.Since(t).Microseconds()}
 }
@@ -162,37 +171,11 @@ func (sched *Scheduler) MsgXchg() {
 	done := make(chan int)
 	info := make(chan sendTime)
 
-	if *config.Trace != "" {
-		s := fmt.Sprintf("trace/trace-s%d-t%d-r%d.out", sched.me, sched.trial, sched.k)
-		if err := os.MkdirAll("trace", os.ModePerm); err != nil {
-			log.WithFields(log.Fields{
-				"error": err,
-			}).Warn("error creating trace directory")
-		}
-		f, err := os.Create(s)
-		if err != nil {
-			log.WithFields(log.Fields{
-				"error": err,
-			}).Fatal("error creating trace file")
-		}
-
-		if err := trace.Start(f); err != nil {
-			log.WithFields(log.Fields{
-				"error": err,
-			}).Fatal("error starting trace")
-		}
-
-		defer func() {
-			if err := f.Close(); err != nil {
-				log.WithFields(log.Fields{
-					"error": err,
-				}).Fatal("failed to close trace file")
-			}
-		}()
-	}
+	// TODO move this to a separate function
+	util.StartTrace(sched.me, sched.trial, sched.k)
 
 	data := &pb.ConDataRequest{
-		K:    int32(sched.k),
+		K:    sched.k,
 		Me:   int32(sched.me),
 		Data: sched.MyData(),
 	}
@@ -215,54 +198,64 @@ func (sched *Scheduler) MsgXchg() {
 		"to":        sched.outConns,
 		"took":      time.Since(t).Microseconds(),
 		"sendTimes": sendTimes,
-	}).Debug("finished waiting for goroutine to finish sendOne")
+	}).Debug("finished waiting for goroutines to finish sendOne")
 
-	for len(sched.CurData())-1 != sched.inNeighbours {
-
+	for {
 		missing := make([]int, 0)
 		for _, from := range sched.inConns {
-			if _, ok := sched.conData[sched.k][from]; !ok {
+			kData, _ := sched.conData.Load(sched.k)
+			if _, ok := kData.(*sync.Map).Load(from); !ok {
 				missing = append(missing, from)
 			}
 		}
 
+		x, _ := sched.conLen.Load(sched.k)
+		c := x.(uint64)
+
 		log.WithFields(log.Fields{
-			"me":           sched.me,
-			"missing no":   sched.inNeighbours - (len(sched.CurData()) - 1),
-			"missing from": missing,
-			"k":            sched.k,
-		}).Debug("waiting for all responses")
+			"me":              sched.me,
+			"k":               sched.k,
+			"missing no":      len(missing),
+			"missing from":    missing,
+			"received no":     c - 1,
+			"expecting total": sched.inNeighbours,
+		}).Info("data reception status")
+
+		if c-1 == sched.inNeighbours {
+			break
+		}
 
 		t := time.Now()
-
 		// for len(sched.CurData())-1 != sched.inNeighbours {
 		sched.neighCond.Wait()
 		// }
 
 		log.WithFields(log.Fields{
-			"took": time.Since(t).Microseconds(),
-		}).Debug("finished waiting for all responses")
-
+			"took": time.Since(t),
+		}).Info("finished waiting for all responses")
 	}
 
-	if *config.Trace != "" {
-		trace.Stop()
-
-	}
+	util.StopTrace()
 
 }
 
 func (sched *Scheduler) LocalComp() {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
-
 	myData := sched.MyData()
 	curData := sched.CurData()
 
+	l, _ := sched.conLen.Load(sched.k)
 	log.WithFields(log.Fields{
-		"iteration": sched.k,
-		"data":      myData,
+		"iteration":        sched.k,
+		"current data len": l,
 	}).Debug("current data")
+
+	sched.CurData().Range(func(key any, value any) bool {
+		log.WithFields(log.Fields{
+			"key": key.(int),
+			"val": value,
+		}).Debug("conData internal")
+		return true
+	})
 
 	newY := myData.GetY() * myData.GetP()
 	newZ := myData.GetZ() * myData.GetP()
@@ -270,19 +263,21 @@ func (sched *Scheduler) LocalComp() {
 	newm := myData.GetM()
 
 	for _, r := range sched.inConns {
-		newY += curData[r].GetY() * curData[r].GetP()
-		newZ += curData[r].GetZ() * curData[r].GetP()
+		log.WithFields(log.Fields{
+			"neighbour": r,
+		}).Debug("getting data from")
 
-		newM = math.Max(newM, curData[r].GetMm())
-		newm = math.Min(newm, curData[r].GetM())
+		t, _ := curData.Load(r)
+		rData := t.(*pb.ConData)
+
+		newY += rData.GetY() * rData.GetP()
+		newZ += rData.GetZ() * rData.GetP()
+
+		newM = math.Max(newM, rData.GetMm())
+		newm = math.Min(newm, rData.GetM())
 	}
 
-	// sched.k+1 might have been created by receiving response from other nodes
-	if _, ok := sched.conData[sched.k+1]; !ok {
-		sched.conData[sched.k+1] = make(map[int]*pb.ConData)
-	}
-
-	sched.conData[sched.k+1][sched.me] = &pb.ConData{
+	newData := &pb.ConData{
 		P:    myData.GetP(),
 		Y:    newY,
 		Z:    newZ,
@@ -291,13 +286,19 @@ func (sched *Scheduler) LocalComp() {
 		Flag: false,
 	}
 
+	// sched.k+1 might have been created by receiving response from other nodes
+	kData, _ := sched.conData.LoadOrStore(sched.k+1, &sync.Map{})
+	kData.(*sync.Map).Store(sched.me, newData)
+	c, _ := sched.conLen.LoadOrStore(sched.k+1, uint64(0))
+	sched.conLen.Store(sched.k+1, c.(uint64)+1)
+
 	log.WithFields(log.Fields{
 		"to":           sched.k + 1,
-		"updated data": sched.conData[sched.k+1][sched.me],
+		"updated data": newData,
 	}).Debug("awesome computation done, advancing iteration counter")
 
-	if !sched.done {
-		sched.k++
+	if !sched.done.Load() {
+		atomic.AddUint64(&sched.k, 1)
 	}
 
 }
@@ -376,7 +377,7 @@ func (sched *Scheduler) Consensus() {
 			"xchg time per iter": t1.Sub(t).Microseconds(),
 			"comp time per iter": t2.Sub(t1).Microseconds(),
 			"time per iteration": ts[len(ts)-1],
-		}).Debug("time of this iteration")
+		}).Info("time of this iteration")
 	}
 
 	for you, s := range sched.streams {
@@ -388,13 +389,10 @@ func (sched *Scheduler) Consensus() {
 		}
 	}
 
-
 	var tot int64
 	for _, t := range ts {
 		tot += t
 	}
-
-
 
 	log.WithFields(log.Fields{
 		"iteration":         sched.k,
@@ -417,12 +415,27 @@ func (sched *Scheduler) Consensus() {
 
 }
 
-func (sched *Scheduler) CurData() map[int]*pb.ConData {
-	return sched.conData[sched.k]
+func (sched *Scheduler) CurData() *sync.Map {
+	kData, ok := sched.conData.Load(sched.k)
+	if !ok {
+		log.WithFields(log.Fields{
+			"iteration": sched.k,
+		}).Fatal("failed to load current data")
+	}
+	return kData.(*sync.Map)
 }
 
 func (sched *Scheduler) MyData() *pb.ConData {
-	return sched.conData[sched.k][sched.me]
+	curData := sched.CurData()
+	mData, ok := curData.Load(sched.me)
+	if !ok {
+		log.WithFields(log.Fields{
+			"iteration": sched.k,
+			"me":        sched.me,
+		}).Fatal("failed to load my data")
+	}
+	return mData.(*pb.ConData)
+
 }
 
 func (sched *Scheduler) sendFin() {

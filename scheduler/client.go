@@ -119,7 +119,7 @@ func (sched *Scheduler) getNeighbours() []string {
 			wt *= 2
 			sched.mu.Lock()
 		} else {
-			sched.expectedIn = int(r.GetInNeighbours())
+			sched.expectedIn = r.GetInNeighbours()
 
 			log.WithFields(log.Fields{
 				"neighbours":  r.GetNeigh(),
@@ -203,7 +203,7 @@ func (sched *Scheduler) waitForFinish() {
 		sched.mu.Unlock()
 		r, err := sched.ctlRegStub.FinSetup(ctx, &pb.SetupRequest{
 			Me:           int32(sched.me),
-			InNeighbours: int64(sched.inNeighbours),
+			InNeighbours: sched.inNeighbours,
 		})
 		sched.mu.Lock()
 

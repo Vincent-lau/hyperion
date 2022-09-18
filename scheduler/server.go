@@ -5,6 +5,9 @@ import (
 	"example/dist_sched/config"
 	"io"
 	"net"
+	"sync"
+	"sync/atomic"
+	"time"
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/exp/slices"
@@ -105,7 +108,7 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 	defer sched.mu.Unlock()
 
 	if !slices.Contains(sched.inConns, int(in.GetMe())) {
-		sched.inNeighbours++
+		atomic.AddUint64(&sched.inNeighbours, 1)
 		sched.inConns = append(sched.inConns, int(in.GetMe()))
 	}
 
@@ -122,23 +125,29 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 }
 
 func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) error {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
-
 	for {
-		sched.mu.Unlock()
 		in, err := stream.Recv()
-		sched.mu.Lock()
+		t := time.Now()
 
 		if err == io.EOF {
 			return stream.SendAndClose(&pb.EmptyReply{})
+		} else if err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Fatal("failed to receive con data")
 		}
 
-		k := int(in.GetK())
-		if _, ok := sched.conData[k]; !ok {
-			sched.conData[k] = make(map[int]*pb.ConData)
-		}
-		sched.conData[k][int(in.GetMe())] = in.GetData()
+		k := in.GetK()
+
+		kData, _ := sched.conData.LoadOrStore(k, &sync.Map{})
+		kData.(*sync.Map).Store(int(in.GetMe()), in.GetData())
+		c, _ := sched.conLen.LoadOrStore(k, uint64(0))
+		sched.conLen.Store(k, c.(uint64)+1)
+
+		s := uint64(proto.Size(in))
+		atomic.AddUint64(&sched.msgRcv, s)
+
+		x, _ := sched.conLen.Load(sched.k)
 
 		log.WithFields(log.Fields{
 			"from":               in.GetMe(),
@@ -146,22 +155,20 @@ func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) 
 			"received k":         in.GetK(),
 			"data":               in.GetData(),
 			"expecting total":    sched.inNeighbours,
-			"currently received": len(sched.CurData()) - 1,
+			"currently received": x.(uint64) - 1,
+			"elapsed":            time.Since(t),
 		}).Debug("received data")
 
-		s := uint64(proto.Size(in))
-		sched.msgRcv += s
-
-		if len(sched.CurData())-1 == sched.inNeighbours {
+		if x.(uint64)-1 == sched.inNeighbours {
 			// received from all inbound neighbours
 			log.Debug("received from all inbound neighbours, broadcasting")
+			sched.mu.Lock()
 			sched.neighCond.Broadcast()
+			sched.mu.Unlock()
 		}
-
 	}
 
 }
-
 
 func (sched *Scheduler) StartConsensus(ctx context.Context, in *pb.StartRequest) (*pb.EmptyReply, error) {
 	sched.mu.Lock()
