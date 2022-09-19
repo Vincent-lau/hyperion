@@ -49,8 +49,8 @@ type Scheduler struct {
 
 	/* used by central controller */
 	me         int
-	trial      int
-	setup      bool // all scheduler connected and ready for consensus
+	trial      uint64
+	setup      *atomic.Bool // all scheduler connected and ready for consensus
 	startCond  *sync.Cond
 	ctlRegStub pb.SchedRegClient
 	ctlPlStub  pb.JobPlacementClient
@@ -106,7 +106,7 @@ func New() *Scheduler {
 		conData:       sync.Map{},
 		conLen:        sync.Map{},
 
-		setup: false,
+		setup: &atomic.Bool{},
 
 		/* placement */
 		allDone: false,
@@ -119,6 +119,8 @@ func New() *Scheduler {
 		onNode: node.Name,
 	}
 	sched.done.Store(false)
+	sched.setup.Store(false)
+
 	sched.neighCond = sync.NewCond(&sched.mu)
 	sched.startCond = sync.NewCond(&sched.mu)
 
@@ -137,18 +139,18 @@ func (sched *Scheduler) reset() {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
-	sched.k = 0
+	atomic.StoreUint64(&sched.k, 0)
 	sched.done.Store(false)
 
 	sched.conData = sync.Map{}
 	sched.conLen = sync.Map{}
-	sched.setup = false
+	sched.setup.Store(false)
 
 	/* placement */
 	sched.allDone = false
 
-	sched.msgRcv = 0
-	sched.msgSent = 0
+	atomic.StoreUint64(&sched.msgRcv, 0)
+	atomic.StoreUint64(&sched.msgSent, 0)
 
 }
 
@@ -177,7 +179,7 @@ func (sched *Scheduler) Schedule() {
 
 		log.WithFields(log.Fields{
 			"name":  sched.hostname,
-			"trial": sched.trial,
+			"trial": atomic.LoadUint64(&sched.trial),
 		}).Info("new trial is starting")
 
 		sched.Consensus()
@@ -185,7 +187,7 @@ func (sched *Scheduler) Schedule() {
 		sched.reset()
 
 		sched.mu.Lock()
-		for !sched.setup {
+		for !sched.setup.Load() {
 			sched.startCond.Wait()
 		}
 		sched.mu.Unlock()

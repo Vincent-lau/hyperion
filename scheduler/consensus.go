@@ -17,19 +17,19 @@ import (
 )
 
 func (sched *Scheduler) timeToCheck() bool {
-	return sched.k%config.Diameter == 0 && sched.k != 0
+	return atomic.LoadUint64(&sched.k)%config.Diameter == 0 && atomic.LoadUint64(&sched.k) != 0
 }
 
 func (sched *Scheduler) getPrevRoundFlag() bool {
-	if sched.k >= config.Diameter {
+	if atomic.LoadUint64(&sched.k) >= config.Diameter {
 
-		prevRound, _ := sched.conData.Load(sched.k - config.Diameter)
+		prevRound, _ := sched.conData.Load(atomic.LoadUint64(&sched.k) - config.Diameter)
 		prevData, _ := prevRound.(*sync.Map).Load(sched.me)
 		prevFlag := prevData.(*pb.ConData).GetFlag()
 
 		log.WithFields(log.Fields{
-			"k":           sched.k,
-			"prev k":      sched.k - config.Diameter,
+			"k":           atomic.LoadUint64(&sched.k),
+			"prev k":      atomic.LoadUint64(&sched.k) - config.Diameter,
 			"prev k flag": prevFlag,
 		}).Debug("checking flag at previous round")
 
@@ -53,7 +53,7 @@ func (sched *Scheduler) CheckCvg() bool {
 			if math.Abs(myData.GetMm()-myData.GetM()) < *config.Tolerance {
 				log.WithFields(log.Fields{
 					"name":      sched.hostname,
-					"iteration": sched.k,
+					"iteration": atomic.LoadUint64(&sched.k),
 					"data":      sched.MyData(),
 					"ratio":     sched.MyData().GetY() / sched.MyData().GetZ(),
 				}).Debug("flag raised for this node")
@@ -70,7 +70,7 @@ func (sched *Scheduler) CheckCvg() bool {
 				"mu":   mu,
 			}).Debug("updating M and m")
 
-			kData, _ := sched.conData.Load(sched.k)
+			kData, _ := sched.conData.Load(atomic.LoadUint64(&sched.k))
 			kData.(*sync.Map).Store(sched.me, &pb.ConData{
 				P:    myData.GetP(),
 				Y:    myData.GetY(),
@@ -84,7 +84,7 @@ func (sched *Scheduler) CheckCvg() bool {
 			if sched.getPrevRoundFlag() && flag {
 				log.WithFields(log.Fields{
 					"name":  sched.hostname,
-					"k":     sched.k,
+					"k":     atomic.LoadUint64(&sched.k),
 					"data":  sched.MyData(),
 					"ratio": sched.MyData().GetY() / sched.MyData().GetZ(),
 				}).Debug("termination reached")
@@ -96,7 +96,7 @@ func (sched *Scheduler) CheckCvg() bool {
 
 	} else { // flag == 1
 		if math.Abs(myData.GetMm()-myData.GetM()) >= *config.Tolerance {
-			kData, _ := sched.conData.Load(sched.k)
+			kData, _ := sched.conData.Load(atomic.LoadUint64(&sched.k))
 			kData.(*sync.Map).Store(sched.me, &pb.ConData{
 				P:    myData.GetP(),
 				Y:    myData.GetY(),
@@ -107,7 +107,7 @@ func (sched *Scheduler) CheckCvg() bool {
 			})
 
 			log.WithFields(log.Fields{
-				"at":   sched.k,
+				"at":   atomic.LoadUint64(&sched.k),
 				"data": sched.MyData(),
 			}).Debug("flip!")
 		}
@@ -128,7 +128,7 @@ func (sched *Scheduler) sendOne(to int, stream pb.RatioConsensus_SendConDataClie
 	for {
 		log.WithFields(log.Fields{
 			"to":   to,
-			"k":    sched.k,
+			"k":    atomic.LoadUint64(&sched.k),
 			"data": data,
 		}).Debug("sending data in sendOne")
 
@@ -139,7 +139,7 @@ func (sched *Scheduler) sendOne(to int, stream pb.RatioConsensus_SendConDataClie
 			log.WithFields(log.Fields{
 				"error":              err,
 				"sending request to": to,
-				"iteration":          sched.k,
+				"iteration":          atomic.LoadUint64(&sched.k),
 			}).Warn("error send conData")
 
 			time.Sleep(time.Second)
@@ -153,8 +153,8 @@ func (sched *Scheduler) sendOne(to int, stream pb.RatioConsensus_SendConDataClie
 		log.WithFields(log.Fields{
 			"me":        sched.me,
 			"to":        to,
-			"trial":     sched.trial,
-			"iteration": sched.k,
+			"trial":     atomic.LoadUint64(&sched.trial),
+			"iteration": atomic.LoadUint64(&sched.k),
 			"took":      time.Since(t).Microseconds(),
 		}).Debug("time taken to sendOne")
 		sched.mu.Unlock()
@@ -165,17 +165,13 @@ func (sched *Scheduler) sendOne(to int, stream pb.RatioConsensus_SendConDataClie
 }
 
 func (sched *Scheduler) MsgXchg() {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
-
 	done := make(chan int)
 	info := make(chan sendTime)
 
-	// TODO move this to a separate function
-	util.StartTrace(sched.me, sched.trial, sched.k)
+	util.StartTrace(sched.me, atomic.LoadUint64(&sched.trial), atomic.LoadUint64(&sched.k))
 
 	data := &pb.ConDataRequest{
-		K:    sched.k,
+		K:    atomic.LoadUint64(&sched.k),
 		Me:   int32(sched.me),
 		Data: sched.MyData(),
 	}
@@ -187,12 +183,10 @@ func (sched *Scheduler) MsgXchg() {
 	t := time.Now()
 
 	sendTimes := make([]sendTime, 0)
-	sched.mu.Unlock()
 	for range sched.outConns {
 		<-done
 		sendTimes = append(sendTimes, <-info)
 	}
-	sched.mu.Lock()
 
 	log.WithFields(log.Fields{
 		"to":        sched.outConns,
@@ -203,31 +197,33 @@ func (sched *Scheduler) MsgXchg() {
 	for {
 		missing := make([]int, 0)
 		for _, from := range sched.inConns {
-			kData, _ := sched.conData.Load(sched.k)
+			kData, _ := sched.conData.Load(atomic.LoadUint64(&sched.k))
 			if _, ok := kData.(*sync.Map).Load(from); !ok {
 				missing = append(missing, from)
 			}
 		}
 
-		x, _ := sched.conLen.Load(sched.k)
+		x, _ := sched.conLen.Load(atomic.LoadUint64(&sched.k))
 		c := x.(uint64)
 
 		log.WithFields(log.Fields{
 			"me":              sched.me,
-			"k":               sched.k,
+			"k":               atomic.LoadUint64(&sched.k),
 			"missing no":      len(missing),
 			"missing from":    missing,
 			"received no":     c - 1,
-			"expecting total": sched.inNeighbours,
+			"expecting total": atomic.LoadUint64(&sched.inNeighbours),
 		}).Info("data reception status")
 
-		if c-1 == sched.inNeighbours {
+		if c-1 == atomic.LoadUint64(&sched.inNeighbours) {
 			break
 		}
 
 		t := time.Now()
 		// for len(sched.CurData())-1 != sched.inNeighbours {
+		sched.mu.Lock()
 		sched.neighCond.Wait()
+		sched.mu.Unlock()
 		// }
 
 		log.WithFields(log.Fields{
@@ -243,9 +239,9 @@ func (sched *Scheduler) LocalComp() {
 	myData := sched.MyData()
 	curData := sched.CurData()
 
-	l, _ := sched.conLen.Load(sched.k)
+	l, _ := sched.conLen.Load(atomic.LoadUint64(&sched.k))
 	log.WithFields(log.Fields{
-		"iteration":        sched.k,
+		"iteration":        atomic.LoadUint64(&sched.k),
 		"current data len": l,
 	}).Debug("current data")
 
@@ -286,14 +282,14 @@ func (sched *Scheduler) LocalComp() {
 		Flag: false,
 	}
 
-	// sched.k+1 might have been created by receiving response from other nodes
-	kData, _ := sched.conData.LoadOrStore(sched.k+1, &sync.Map{})
+	// atomic.LoadUint64(&sched.k)+1 might have been created by receiving response from other nodes
+	kData, _ := sched.conData.LoadOrStore(atomic.LoadUint64(&sched.k)+1, &sync.Map{})
 	kData.(*sync.Map).Store(sched.me, newData)
-	c, _ := sched.conLen.LoadOrStore(sched.k+1, uint64(0))
-	sched.conLen.Store(sched.k+1, c.(uint64)+1)
+	c, _ := sched.conLen.LoadOrStore(atomic.LoadUint64(&sched.k)+1, uint64(0))
+	sched.conLen.Store(atomic.LoadUint64(&sched.k)+1, c.(uint64)+1)
 
 	log.WithFields(log.Fields{
-		"to":           sched.k + 1,
+		"to":           atomic.LoadUint64(&sched.k) + 1,
 		"updated data": newData,
 	}).Debug("awesome computation done, advancing iteration counter")
 
@@ -327,18 +323,18 @@ func (sched *Scheduler) LoopConsensus() {
 
 		log.WithFields(log.Fields{
 			"name":  sched.hostname,
-			"trial": sched.trial,
+			"trial": atomic.LoadUint64(&sched.trial),
 			"me":    sched.me,
 		}).Info("new trial is starting")
 
 		sched.Consensus()
 		sched.reset()
 
-		sched.mu.Lock()
-		for !sched.setup {
+		for !sched.setup.Load() {
+			sched.mu.Lock()
 			sched.startCond.Wait()
+			sched.mu.Unlock()
 		}
-		sched.mu.Unlock()
 
 	}
 
@@ -358,7 +354,7 @@ func (sched *Scheduler) Consensus() {
 		}
 	}
 
-	for !sched.CheckCvg() && sched.k < *config.MaxIter {
+	for !sched.CheckCvg() && atomic.LoadUint64(&sched.k) < *config.MaxIter {
 		t := time.Now()
 
 		log.Debug("doing msg exchange...")
@@ -373,7 +369,7 @@ func (sched *Scheduler) Consensus() {
 
 		ts = append(ts, time.Since(t).Microseconds())
 		MetricsLogger.WithFields(log.Fields{
-			"iteration":          sched.k - 1,
+			"iteration":          atomic.LoadUint64(&sched.k) - 1,
 			"xchg time per iter": t1.Sub(t).Microseconds(),
 			"comp time per iter": t2.Sub(t1).Microseconds(),
 			"time per iteration": ts[len(ts)-1],
@@ -395,7 +391,7 @@ func (sched *Scheduler) Consensus() {
 	}
 
 	log.WithFields(log.Fields{
-		"iteration":         sched.k,
+		"iteration":         atomic.LoadUint64(&sched.k),
 		"data":              sched.MyData(),
 		"average consensus": sched.MyData().GetY() / sched.MyData().GetZ(),
 	}).Info("consensus done!")
@@ -403,12 +399,12 @@ func (sched *Scheduler) Consensus() {
 	MetricsLogger.WithFields(log.Fields{
 		"avg time per iter": float64(tot) / float64(len(ts)),
 		"total time":        tot,
-		"total iter":        sched.k,
+		"total iter":        atomic.LoadUint64(&sched.k),
 	}).Info("final consensus time")
 
 	MetricsLogger.WithFields(log.Fields{
-		"msg rcv total":  sched.msgSent,
-		"msg sent total": sched.msgRcv,
+		"msg rcv total":  atomic.LoadUint64(&sched.msgSent),
+		"msg sent total": atomic.LoadUint64(&sched.msgRcv),
 	}).Info("consensus message exchanged")
 
 	sched.sendFin()
@@ -416,10 +412,10 @@ func (sched *Scheduler) Consensus() {
 }
 
 func (sched *Scheduler) CurData() *sync.Map {
-	kData, ok := sched.conData.Load(sched.k)
+	kData, ok := sched.conData.Load(atomic.LoadUint64(&sched.k))
 	if !ok {
 		log.WithFields(log.Fields{
-			"iteration": sched.k,
+			"iteration": atomic.LoadUint64(&sched.k),
 		}).Fatal("failed to load current data")
 	}
 	return kData.(*sync.Map)
@@ -430,7 +426,7 @@ func (sched *Scheduler) MyData() *pb.ConData {
 	mData, ok := curData.Load(sched.me)
 	if !ok {
 		log.WithFields(log.Fields{
-			"iteration": sched.k,
+			"iteration": atomic.LoadUint64(&sched.k),
 			"me":        sched.me,
 		}).Fatal("failed to load my data")
 	}
@@ -443,10 +439,8 @@ func (sched *Scheduler) sendFin() {
 		ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 		defer cancel()
 
-		sched.mu.Lock()
 		me := int32(sched.me)
-		trial := int32(sched.trial)
-		sched.mu.Unlock()
+		trial := atomic.LoadUint64(&sched.trial)
 
 		_, err := sched.ctlRegStub.FinConsensus(ctx, &pb.FinRequest{
 			Me:    me,

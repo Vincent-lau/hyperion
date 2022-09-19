@@ -5,6 +5,7 @@ import (
 	"example/dist_sched/config"
 	"net"
 	"os"
+	"sync/atomic"
 	"time"
 
 	log "github.com/sirupsen/logrus"
@@ -119,7 +120,7 @@ func (sched *Scheduler) getNeighbours() []string {
 			wt *= 2
 			sched.mu.Lock()
 		} else {
-			sched.expectedIn = r.GetInNeighbours()
+			atomic.StoreUint64(&sched.expectedIn, r.GetInNeighbours())
 
 			log.WithFields(log.Fields{
 				"neighbours":  r.GetNeigh(),
@@ -181,10 +182,10 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 	}).Debug("connected to all neighbours")
 
 	// now wait for all neighbours to connect to me
-	for sched.expectedIn != sched.inNeighbours {
+	for atomic.LoadUint64(&sched.expectedIn) != atomic.LoadUint64(&sched.inNeighbours) {
 		log.WithFields(log.Fields{
-			"expected in":   sched.expectedIn,
-			"in neighbours": sched.inNeighbours,
+			"expected in":   atomic.LoadUint64(&sched.expectedIn),
+			"in neighbours": atomic.LoadUint64(&sched.inNeighbours),
 		}).Debug("waiting for all neighbours to connect to me")
 		sched.neighCond.Wait()
 	}
@@ -220,12 +221,12 @@ func (sched *Scheduler) waitForFinish() {
 		}
 	}
 
-	for !sched.setup {
+	for !sched.setup.Load() {
 		sched.startCond.Wait()
 	}
 
 	log.WithFields(log.Fields{
-		"in nieghbours": sched.inNeighbours,
+		"in nieghbours": atomic.LoadUint64(&sched.inNeighbours),
 	}).Debug("received finish setup from controller, all schedulers are connected")
 
 }

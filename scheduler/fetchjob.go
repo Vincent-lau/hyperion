@@ -3,6 +3,7 @@ package scheduler
 import (
 	pb "example/dist_sched/message"
 	util "example/dist_sched/util"
+	"sync/atomic"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -34,7 +35,7 @@ func (sched *Scheduler) fetchJobs() {
 		req := &pb.JobRequest{
 			Node:  sched.onNode,
 			Size:  sched.w,
-			Trial: int32(sched.trial),
+			Trial: atomic.LoadUint64(&sched.trial),
 		}
 		sched.mu.Unlock()
 		r, err := util.MakeRPC(req, sched.ctlPlStub.GetJob)
@@ -67,7 +68,7 @@ func (sched *Scheduler) fetchJobs() {
 
 	util.RetryRPC(&pb.JobRequest{
 		Node:  sched.onNode,
-		Trial: int32(sched.trial),
+		Trial: atomic.LoadUint64(&sched.trial),
 		Size:  -1,
 	}, sched.ctlPlStub.GetJob)
 

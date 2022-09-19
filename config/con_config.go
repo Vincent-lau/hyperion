@@ -20,7 +20,7 @@ var (
 	NumSchedulers = flag.Int("schednum", 9, "Number of schedulers")
 
 	JobFactor = flag.Float64("jobfactor", 0.5, "Number of jobs per scheduler")
-	MaxTrials = flag.Int("maxtrials", 1, "Maximum number of trials")
+	MaxTrials = flag.Uint64("maxtrials", 1, "Maximum number of trials")
 	MaxCap = 50000.0
 
 	Mean = 10.0

@@ -22,7 +22,7 @@ func (ctl *Controller) Placement() {
 }
 
 func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobReply, error) {
-	if ctl.trial != int(in.GetTrial()) {
+	if ctl.trial != in.GetTrial() {
 		log.WithFields(log.Fields{
 			"sched trial": in.GetTrial(),
 			"ctl trial":   ctl.trial,

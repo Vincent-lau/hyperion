@@ -104,20 +104,22 @@ func (sched *Scheduler) Ping(ctx context.Context, in *pb.EmptyRequest) (*pb.Empt
 }
 
 func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
 
 	if !slices.Contains(sched.inConns, int(in.GetMe())) {
 		atomic.AddUint64(&sched.inNeighbours, 1)
 		sched.inConns = append(sched.inConns, int(in.GetMe()))
 	}
 
-	if sched.expectedIn != 0 && sched.expectedIn == sched.inNeighbours {
+	if atomic.LoadUint64(&sched.expectedIn) != 0 && atomic.LoadUint64(&sched.expectedIn) == atomic.LoadUint64(&sched.inNeighbours) {
 		// graph is strongly connected, hence >=1 in neighbours
 		log.WithFields(log.Fields{
-			"expected in": sched.expectedIn,
+			"expected in": atomic.LoadUint64(&sched.expectedIn),
 		}).Debug("all neighbours connected, broadcasting")
+
+		sched.mu.Lock()
 		sched.neighCond.Broadcast()
+		sched.mu.Unlock()
+
 	}
 
 	log.WithFields(log.Fields{"from": in.GetMe()}).Debug("Received hello")
@@ -147,19 +149,19 @@ func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) 
 		s := uint64(proto.Size(in))
 		atomic.AddUint64(&sched.msgRcv, s)
 
-		x, _ := sched.conLen.Load(sched.k)
+		x, _ := sched.conLen.Load(atomic.LoadUint64(&sched.k))
 
 		log.WithFields(log.Fields{
 			"from":               in.GetMe(),
-			"scheduler k":        sched.k,
+			"scheduler k":        atomic.LoadUint64(&sched.k),
 			"received k":         in.GetK(),
 			"data":               in.GetData(),
-			"expecting total":    sched.inNeighbours,
+			"expecting total":    atomic.LoadUint64(&sched.inNeighbours),
 			"currently received": x.(uint64) - 1,
 			"elapsed":            time.Since(t),
 		}).Debug("received data")
 
-		if x.(uint64)-1 == sched.inNeighbours {
+		if x.(uint64)-1 == atomic.LoadUint64(&sched.inNeighbours) {
 			// received from all inbound neighbours
 			log.Debug("received from all inbound neighbours, broadcasting")
 			sched.mu.Lock()
@@ -171,8 +173,6 @@ func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) 
 }
 
 func (sched *Scheduler) StartConsensus(ctx context.Context, in *pb.StartRequest) (*pb.EmptyReply, error) {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
 
 	log.WithFields(log.Fields{
 		"l":  in.GetL(),
@@ -181,7 +181,7 @@ func (sched *Scheduler) StartConsensus(ctx context.Context, in *pb.StartRequest)
 	}).Debug("received start from controller")
 
 	sched.InitMyConData(in.GetL(), in.GetU(), in.GetPi())
-	sched.trial = int(in.GetTrial())
+	atomic.StoreUint64(&sched.trial, in.GetTrial())
 
 	MetricsLogger = MetricsLogger.WithFields(log.Fields{
 		"trial": in.GetTrial(),
@@ -190,19 +190,23 @@ func (sched *Scheduler) StartConsensus(ctx context.Context, in *pb.StartRequest)
 		"trial": in.GetTrial(),
 	})
 
+	sched.mu.Lock()
 	sched.startCond.Broadcast()
-	sched.setup = true
+	sched.mu.Unlock()
+
+	sched.setup.Store(true)
 
 	return &pb.EmptyReply{}, nil
 }
 
 func (sched *Scheduler) StartPlace(ctx context.Context, in *pb.EmptyRequest) (*pb.EmptyReply, error) {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
 
 	log.Debug("received start placement from controller")
 
+	sched.mu.Lock()
 	sched.startCond.Broadcast()
+	sched.mu.Unlock()
+
 	sched.allDone = true
 
 	return &pb.EmptyReply{}, nil

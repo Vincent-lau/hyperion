@@ -44,7 +44,7 @@ type Controller struct {
 	jobDemand  []float64
 
 	finSched map[int]bool
-	trial    int
+	trial    uint64
 
 	/* for placement */
 	jobQueue []*queue.Queue
@@ -123,7 +123,7 @@ func (ctl *Controller) connSched(in *pb.RegRequest) {
 			log.WithFields(log.Fields{
 				"error": err,
 				"name":  in.GetName(),
-			}).Fatal("Could not connect to scheduler")
+			}).Warn("Could not connect to scheduler")
 			ctl.mu.Unlock()
 			time.Sleep(time.Second)
 			ctl.mu.Lock()
@@ -234,7 +234,7 @@ func (ctl *Controller) FinConsensus(ctx context.Context, in *pb.FinRequest) (*pb
 	ctl.mu.Lock()
 	defer ctl.mu.Unlock()
 
-	if int(in.GetTrial()) != ctl.trial || len(ctl.finSched) == *config.NumSchedulers {
+	if in.GetTrial() != ctl.trial || len(ctl.finSched) == *config.NumSchedulers {
 		log.WithFields(log.Fields{
 			"from":        in.GetMe(),
 			"sched trial": in.GetTrial(),
@@ -318,10 +318,10 @@ func (ctl *Controller) bcastStart() {
 	log.Debug("broadcasting start")
 
 	for i, s := range ctl.schedulers {
-		go func(i int, s string, trial int, l, u, pi float64) {
+		go func(i int, s string, trial uint64, l, u, pi float64) {
 			_, err := ctl.schedStub[s].StartConsensus(context.Background(),
 				&pb.StartRequest{
-					Trial: int32(trial),
+					Trial: trial,
 					L:     l,
 					U:     u,
 					Pi:    pi,

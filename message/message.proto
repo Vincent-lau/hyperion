@@ -43,7 +43,7 @@ service JobPlacement {
 }
 
 message JobRequest {
-  int32 trial = 1;
+  uint64 trial = 1;
   double size = 2; // requested size
   int32 me = 3;
   string node = 4;
@@ -56,12 +56,12 @@ message JobReply {
 
 message FinRequest {
   int32 me = 1;
-  int32 trial = 2; 
+  uint64 trial = 2; 
 }
 
 
 message StartRequest {
-  int32 trial = 1;
+  uint64 trial = 1;
   double l = 2;
   double u = 3;
   double pi = 4;
