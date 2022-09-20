@@ -1,3 +1,21 @@
+1 -> 2 -> 3 -> 0 -> 8,7 -> 3,6 -> 5 -> 8 -> 1
+trial 5 k 28
+
+k 17
+
+{"iteration":16,"level":"info","me":7,"msg":"time taken to sendOne","time":"2022-09-20T21:21:20Z","to":0,"took":19,"trial":5}
+{"level":"info","msg":"finished waiting for goroutines to finish sendOne","sendTimes":[{}],"time":"2022-09-20T21:21:20Z","to":[0],"took":82}
+{"expecting total":2,"k":16,"level":"info","me":7,"missing from":[3,6],"missing no":2,"msg":"data reception status","time":"2022-09-20T21:21:20Z"}
+{"currently received":1,"elapsed":7,"expecting total":2,"from":3,"level":"info","msg":"received data","received k":16,"scheduler k":16,"time":"2022-09-20T21:21:20Z"}
+{"currently received":1,"elapsed":7,"expecting total":2,"from":3,"level":"info","msg":"received data","received k":17,"scheduler k":16,"time":"2022-09-20T21:21:20Z"}
+{"currently received":1,"elapsed":8,"expecting total":2,"from":3,"level":"info","msg":"received data","received k":18,"scheduler k":16,"time":"2022-09-20T21:21:20Z"}
+{"currently received":2,"elapsed":6,"expecting total":2,"from":6,"level":"info","msg":"received data","received k":16,"scheduler k":16,"time":"2022-09-20T21:21:20Z"}
+{"level":"info","msg":"finished waiting for all responses","time":"2022-09-20T21:21:20Z","took":9747}
+{"comp time per iter":14,"iteration":16,"level":"info","msg":"time of this iteration","prefix":"metrics","time":"2022-09-20T21:21:20Z","time per iteration":9927,"trial":5,"xchg time per i
+ter":9912}
+
+
+
 0 -> 7 
 
 trial 9 iter 14
