@@ -1,0 +1,352 @@
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-scheduler
+  namespace: dist-sched
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: my-scheduler-as-kube-scheduler
+subjects:
+- kind: ServiceAccount
+  name: my-scheduler
+  namespace: dist-sched
+roleRef:
+  kind: ClusterRole
+  name: system:kube-scheduler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-scheduler-103
+  labels:
+    component: scheduler
+    tier: control-plane
+    version: second
+spec:
+    serviceAccountName: my-scheduler
+    containers:
+    - command:
+      - /usr/local/bin/kube-scheduler
+      - -schednum=%REPLICAS%
+      - -mode=%MODE%
+      - -trace=trace.out
+      # - -cpuprofile=sched.prof
+      image: cuso4/my-sched:latest
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 2379
+      livenessProbe:
+        grpc:
+          port: 2379
+        initialDelaySeconds: 10
+      name: my-scheduler
+      resources:
+        requests:
+          cpu: "5m"
+      securityContext:
+        privileged: true
+    restartPolicy: Never
+    hostNetwork: false
+    hostPID: false
+    nodeSelector:
+      kubernetes.io/hostname: caelum-103
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-scheduler-201
+  labels:
+    component: scheduler
+    tier: control-plane
+    version: second
+spec:
+    serviceAccountName: my-scheduler
+    containers:
+    - command:
+      - /usr/local/bin/kube-scheduler
+      - -schednum=%REPLICAS%
+      - -mode=%MODE%
+      # - -trace=trace.out
+      # - -cpuprofile=sched.prof
+      image: cuso4/my-sched:latest
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 2379
+      livenessProbe:
+        grpc:
+          port: 2379
+        initialDelaySeconds: 10
+      name: my-scheduler
+      resources:
+        requests:
+          cpu: "5m"
+      securityContext:
+        privileged: true
+    restartPolicy: Never
+    hostNetwork: false
+    hostPID: false
+    nodeSelector:
+      kubernetes.io/hostname: caelum-201
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-scheduler-214
+  labels:
+    component: scheduler
+    tier: control-plane
+    version: second
+spec:
+    serviceAccountName: my-scheduler
+    containers:
+    - command:
+      - /usr/local/bin/kube-scheduler
+      - -schednum=%REPLICAS%
+      - -mode=%MODE%
+      # - -trace=trace.out
+      # - -cpuprofile=sched.prof
+      image: cuso4/my-sched:latest
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 2379
+      livenessProbe:
+        grpc:
+          port: 2379
+        initialDelaySeconds: 10
+      name: my-scheduler
+      resources:
+        requests:
+          cpu: "5m"
+      securityContext:
+        privileged: true
+    restartPolicy: Never
+    hostNetwork: false
+    hostPID: false
+    nodeSelector:
+      kubernetes.io/hostname: caelum-214
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-scheduler-401
+  labels:
+    component: scheduler
+    tier: control-plane
+    version: second
+spec:
+    serviceAccountName: my-scheduler
+    containers:
+    - command:
+      - /usr/local/bin/kube-scheduler
+      - -schednum=%REPLICAS%
+      - -mode=%MODE%
+      # - -trace=trace.out
+      # - -cpuprofile=sched.prof
+      image: cuso4/my-sched:latest
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 2379
+      livenessProbe:
+        grpc:
+          port: 2379
+        initialDelaySeconds: 10
+      name: my-scheduler
+      resources:
+        requests:
+          cpu: "5m"
+      securityContext:
+        privileged: true
+    restartPolicy: Never
+    hostNetwork: false
+    hostPID: false
+    nodeSelector:
+      kubernetes.io/hostname: caelum-401
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-scheduler-402
+  labels:
+    component: scheduler
+    tier: control-plane
+    version: second
+spec:
+    serviceAccountName: my-scheduler
+    containers:
+    - command:
+      - /usr/local/bin/kube-scheduler
+      - -schednum=%REPLICAS%
+      - -mode=%MODE%
+      # - -trace=trace.out
+      # - -cpuprofile=sched.prof
+      image: cuso4/my-sched:latest
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 2379
+      livenessProbe:
+        grpc:
+          port: 2379
+        initialDelaySeconds: 10
+      name: my-scheduler
+      resources:
+        requests:
+          cpu: "5m"
+      securityContext:
+        privileged: true
+    restartPolicy: Never
+    hostNetwork: false
+    hostPID: false
+    nodeSelector:
+      kubernetes.io/hostname: caelum-402
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-scheduler-601
+  labels:
+    component: scheduler
+    tier: control-plane
+    version: second
+spec:
+    serviceAccountName: my-scheduler
+    containers:
+    - command:
+      - /usr/local/bin/kube-scheduler
+      - -schednum=%REPLICAS%
+      - -mode=%MODE%
+      # - -trace=trace.out
+      # - -cpuprofile=sched.prof
+      image: cuso4/my-sched:latest
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 2379
+      livenessProbe:
+        grpc:
+          port: 2379
+        initialDelaySeconds: 10
+      name: my-scheduler
+      resources:
+        requests:
+          cpu: "5m"
+      securityContext:
+        privileged: true
+    restartPolicy: Never
+    hostNetwork: false
+    hostPID: false
+    nodeSelector:
+      kubernetes.io/hostname: caelum-601
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-scheduler-602
+  labels:
+    component: scheduler
+    tier: control-plane
+    version: second
+spec:
+    serviceAccountName: my-scheduler
+    containers:
+    - command:
+      - /usr/local/bin/kube-scheduler
+      - -schednum=%REPLICAS%
+      - -mode=%MODE%
+      # - -trace=trace.out
+      # - -cpuprofile=sched.prof
+      image: cuso4/my-sched:latest
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 2379
+      livenessProbe:
+        grpc:
+          port: 2379
+        initialDelaySeconds: 10
+      name: my-scheduler
+      resources:
+        requests:
+          cpu: "5m"
+      securityContext:
+        privileged: true
+    restartPolicy: Never
+    hostNetwork: false
+    hostPID: false
+    nodeSelector:
+      kubernetes.io/hostname: caelum-602
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-scheduler-603
+  labels:
+    component: scheduler
+    tier: control-plane
+    version: second
+spec:
+    serviceAccountName: my-scheduler
+    containers:
+    - command:
+      - /usr/local/bin/kube-scheduler
+      - -schednum=%REPLICAS%
+      - -mode=%MODE%
+      # - -trace=trace.out
+      # - -cpuprofile=sched.prof
+      image: cuso4/my-sched:latest
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 2379
+      livenessProbe:
+        grpc:
+          port: 2379
+        initialDelaySeconds: 10
+      name: my-scheduler
+      resources:
+        requests:
+          cpu: "5m"
+      securityContext:
+        privileged: true
+    restartPolicy: Never
+    hostNetwork: false
+    hostPID: false
+    nodeSelector:
+      kubernetes.io/hostname: caelum-603
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: my-scheduler-604
+  labels:
+    component: scheduler
+    tier: control-plane
+    version: second
+spec:
+    serviceAccountName: my-scheduler
+    containers:
+    - command:
+      - /usr/local/bin/kube-scheduler
+      - -schednum=%REPLICAS%
+      - -mode=%MODE%
+      # - -trace=trace.out
+      # - -cpuprofile=sched.prof
+      image: cuso4/my-sched:latest
+      imagePullPolicy: Always
+      ports:
+      - containerPort: 2379
+      livenessProbe:
+        grpc:
+          port: 2379
+        initialDelaySeconds: 10
+      name: my-scheduler
+      resources:
+        requests:
+          cpu: "5m"
+      securityContext:
+        privileged: true
+    restartPolicy: Never
+    hostNetwork: false
+    hostPID: false
+    nodeSelector:
+      kubernetes.io/hostname: caelum-604

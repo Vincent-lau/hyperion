@@ -127,8 +127,8 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 
 func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) error {
 	for {
-		in, err := stream.Recv()
 		t := time.Now()
+		in, err := stream.Recv()
 
 		if err == io.EOF {
 			return stream.SendAndClose(&pb.EmptyReply{})
@@ -153,10 +153,10 @@ func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) 
 			"from":               in.GetMe(),
 			"scheduler k":        atomic.LoadUint64(&sched.k),
 			"received k":         k,
-			"data":               in.GetData(),
+			// "data":               in.GetData(),
 			"expecting total":    atomic.LoadUint64(&sched.inNeighbours),
 			"currently received": cc,
-			"elapsed":            time.Since(t),
+			"elapsed":            time.Since(t).Microseconds(),
 		}).Debug("received data")
 
 		if cc == atomic.LoadUint64(&sched.inNeighbours) {

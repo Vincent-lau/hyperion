@@ -70,6 +70,7 @@ func (ctl *Controller) jobsFromPodQueue(podChan chan *v1.Pod) {
 
 		log.WithFields(log.Fields{
 			"number of pods": len(pods.Items),
+			"trial":          ctl.trial,
 		}).Info("There are pods in the cluster")
 
 		watch, err := ctl.clientset.CoreV1().Pods("").Watch(context.TODO(), metav1.ListOptions{
@@ -169,5 +170,3 @@ func (ctl *Controller) placePodToNode(n string, j int) error {
 	return nil
 
 }
-
-

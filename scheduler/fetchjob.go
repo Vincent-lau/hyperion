@@ -12,7 +12,7 @@ func (sched *Scheduler) Placement() {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
-	log.Info("waiting for all schedulers to send finish before starting placement")
+	log.Debug("waiting for all schedulers to send finish before starting placement")
 
 	for !sched.allDone.Load() {
 		sched.startCond.Wait()

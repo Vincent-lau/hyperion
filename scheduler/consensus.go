@@ -198,20 +198,17 @@ func (sched *Scheduler) MsgXchg() {
 		}
 	}
 
-	// x, _ := sched.conLen.Load(atomic.LoadUint64(&sched.k))
-
 	log.WithFields(log.Fields{
 		"me":              atomic.LoadUint64(&sched.me),
 		"k":               atomic.LoadUint64(&sched.k),
 		"missing no":      len(missing),
 		"missing from":    missing,
 		"expecting total": atomic.LoadUint64(&sched.inNeighbours),
-	}).Info("data reception status")
+	}).Debug("data reception status")
 
 	notMyK := make([]uint64, 0)
 
 	xt := time.Now()
-	// for len(sched.CurData())-1 != sched.inNeighbours {
 	for mk := range sched.xchgChan {
 		if mk == atomic.LoadUint64(&sched.k) {
 			break
@@ -226,11 +223,10 @@ func (sched *Scheduler) MsgXchg() {
 	for _, mk := range notMyK {
 		sched.xchgChan <- mk
 	}
-	// }
 
 	log.WithFields(log.Fields{
-		"took": time.Since(xt),
-	}).Info("finished waiting for all responses")
+		"took": time.Since(xt).Microseconds(),
+	}).Debug("finished waiting for all responses")
 
 	util.StopTrace()
 
@@ -250,7 +246,7 @@ func (sched *Scheduler) LocalComp() {
 		log.WithFields(log.Fields{
 			"key": key,
 			"val": value,
-		}).Info("conData internal")
+		}).Debug("conData internal")
 		return true
 	})
 
@@ -385,7 +381,7 @@ func (sched *Scheduler) Consensus() {
 			"xchg time per iter": t1.Sub(t).Microseconds(),
 			"comp time per iter": t2.Sub(t1).Microseconds(),
 			"time per iteration": ts[len(ts)-1],
-		}).Info("time of this iteration")
+		}).Debug("time of this iteration")
 	}
 
 	for you, s := range sched.streams {
@@ -398,7 +394,7 @@ func (sched *Scheduler) Consensus() {
 			log.WithFields(log.Fields{
 				"me":  atomic.LoadUint64(&sched.me),
 				"you": you,
-			}).Info("stream closed")
+			}).Debug("stream closed")
 		}
 	}
 
@@ -473,7 +469,7 @@ func (sched *Scheduler) sendFin() {
 
 			time.Sleep(time.Second)
 		} else {
-			log.Info("fin consensus sent")
+			log.Debug("fin consensus sent")
 			break
 		}
 	}

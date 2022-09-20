@@ -309,7 +309,7 @@ func (ctl *Controller) newTrial() {
 	log.WithFields(log.Fields{
 		"number of schedulers": *config.NumSchedulers,
 		"expected consensus":   (used + load) / cap,
-	}).Debug("expected ratio")
+	}).Info("expected ratio")
 
 	ctl.bcastStart()
 }

@@ -153,7 +153,7 @@ def run_jobs():
 def run_pods(scheduler_name: str):
     console = Console()
     job_factor = 36
-    for i in range(1, 10):
+    for i in range(10, 20):
         console.print(f'Running {i*job_factor} pods', style='green bold')
         wt = render_pod(i*job_factor, scheduler_name) + 120
         os.system("kubectl apply -f deploy/bbox-pod.yaml")

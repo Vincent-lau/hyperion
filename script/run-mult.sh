@@ -21,6 +21,7 @@ do
 
     sed "s/%REPLICAS%/$i/g; s/%MODE%/$MODE/g; s/%JOBS%/$j/g; s/%TRIALS%/$TRIAL/g" deploy/my-controller-temp.yaml > deploy/my-controller-pod.yaml 
     sed "s/%REPLICAS%/$i/g; s/%MODE%/$MODE/g" deploy/my-scheduler-temp.yaml > deploy/my-scheduler-deploy.yaml 
+    # sed "s/%REPLICAS%/$i/g; s/%MODE%/$MODE/g" deploy/my-scheduler-pod.yaml > deploy/my-scheduler-deploy.yaml 
 
     # make does not work, we need to wait for the controller a bit 
 
