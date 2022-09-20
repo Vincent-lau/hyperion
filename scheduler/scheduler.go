@@ -23,6 +23,8 @@ type Scheduler struct {
 	*/
 	neighCond *sync.Cond
 
+	xchgChan chan uint64
+
 	hostname string
 	// name of inNeighbours, N-, ones that we will receive data from
 	inConns      []int
@@ -30,7 +32,7 @@ type Scheduler struct {
 	expectedIn   uint64 // expected number of inNeighbours, used for waiting
 	// number of out neighbours, N+, i.e. ones to which we will broadcast values
 	outConns      []int
-	outNeighbours int
+	outNeighbours uint64
 	stubs         map[int]pb.RatioConsensusClient // stubs of outNeighbours
 	streams       map[int]pb.RatioConsensus_SendConDataClient
 
@@ -41,14 +43,14 @@ type Scheduler struct {
 	conLen  sync.Map // iter -> number of received msg, including self
 
 	/* for job fetching */
-	pi      float64 // capacity
-	u       float64 // used
-	ratio   float64 // (rho + u) / pi after consensus
-	w       float64 // remaining capacity = z * pi - u
-	allDone bool    // all schedulers have sent finish to controller
+	pi      float64      // capacity
+	u       float64      // used
+	ratio   float64      // (rho + u) / pi after consensus
+	w       float64      // remaining capacity = z * pi - u
+	allDone *atomic.Bool // all schedulers have sent finish to controller
 
 	/* used by central controller */
-	me         int
+	me         uint64
 	trial      uint64
 	setup      *atomic.Bool // all scheduler connected and ready for consensus
 	startCond  *sync.Cond
@@ -109,7 +111,7 @@ func New() *Scheduler {
 		setup: &atomic.Bool{},
 
 		/* placement */
-		allDone: false,
+		allDone: &atomic.Bool{},
 
 		// metrics
 		msgSent: 0,
@@ -120,7 +122,11 @@ func New() *Scheduler {
 	}
 	sched.done.Store(false)
 	sched.setup.Store(false)
+	sched.allDone.Store(false)
 
+	// ! 30 is arbitrary, we should use a size that is as large as the number of iterations
+	// used for now
+	sched.xchgChan = make(chan uint64, 30)
 	sched.neighCond = sync.NewCond(&sched.mu)
 	sched.startCond = sync.NewCond(&sched.mu)
 
@@ -142,12 +148,19 @@ func (sched *Scheduler) reset() {
 	atomic.StoreUint64(&sched.k, 0)
 	sched.done.Store(false)
 
-	sched.conData = sync.Map{}
-	sched.conLen = sync.Map{}
+	sched.conData.Range(func(key, value any) bool {
+		sched.conData.Delete(key)
+		return true
+	})
+	sched.conLen.Range(func(key, value any) bool {
+		sched.conLen.Delete(key)
+		return true
+	})
+
 	sched.setup.Store(false)
 
 	/* placement */
-	sched.allDone = false
+	sched.allDone.Store(false)
 
 	atomic.StoreUint64(&sched.msgRcv, 0)
 	atomic.StoreUint64(&sched.msgSent, 0)
@@ -183,14 +196,14 @@ func (sched *Scheduler) Schedule() {
 		}).Info("new trial is starting")
 
 		sched.Consensus()
-		// sched.Placement()
+		sched.Placement()
 		sched.reset()
 
-		sched.mu.Lock()
 		for !sched.setup.Load() {
+			sched.mu.Lock()
 			sched.startCond.Wait()
+			sched.mu.Unlock()
 		}
-		sched.mu.Unlock()
 
 	}
 

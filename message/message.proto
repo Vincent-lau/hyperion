@@ -45,7 +45,7 @@ service JobPlacement {
 message JobRequest {
   uint64 trial = 1;
   double size = 2; // requested size
-  int32 me = 3;
+  uint64 me = 3;
   string node = 4;
 }
 
@@ -55,7 +55,7 @@ message JobReply {
 
 
 message FinRequest {
-  int32 me = 1;
+  uint64 me = 1;
   uint64 trial = 2; 
 }
 
@@ -74,11 +74,11 @@ message RegRequest {
 }
 
 message RegReply {
-  int32 you = 1;
+  uint64 you = 1;
 }
 
 message NeighboursRequest {
-  int32 me = 1;
+  uint64 me = 1;
 }
 
 message NeighboursReply {
@@ -87,7 +87,7 @@ message NeighboursReply {
 }
 
 message SetupRequest {
-  int32 me = 1;
+  uint64 me = 1;
   uint64 inNeighbours = 2;
 }
 
@@ -104,7 +104,7 @@ message EmptyReply {
 
 message ConDataRequest {
   uint64 k = 1;
-  int32 me = 2;
+  uint64 me = 2;
   ConData data = 3;
 }
 
@@ -126,10 +126,10 @@ message ConData {
 
 
 message HelloRequest {
-  int32 me = 1;
+  uint64 me = 1;
 }
 
 // The response message containing the greetings
 message HelloReply {
-  int32 me = 1;
+  uint64 me = 1;
 }

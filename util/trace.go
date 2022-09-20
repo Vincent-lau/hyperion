@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-func StartTrace(me int, trial uint64, k uint64) {
+func StartTrace(me uint64, trial uint64, k uint64) {
 	if *config.Trace != "" {
 		s := fmt.Sprintf("trace/trace-s%d-t%d-r%d.out", me, trial, k)
 		if err := os.MkdirAll("trace", os.ModePerm); err != nil {

@@ -104,6 +104,8 @@ func (sched *Scheduler) Ping(ctx context.Context, in *pb.EmptyRequest) (*pb.Empt
 }
 
 func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.HelloReply, error) {
+	sched.mu.Lock()
+	defer sched.mu.Unlock()
 
 	if !slices.Contains(sched.inConns, int(in.GetMe())) {
 		atomic.AddUint64(&sched.inNeighbours, 1)
@@ -116,14 +118,11 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 			"expected in": atomic.LoadUint64(&sched.expectedIn),
 		}).Debug("all neighbours connected, broadcasting")
 
-		sched.mu.Lock()
 		sched.neighCond.Broadcast()
-		sched.mu.Unlock()
-
 	}
 
 	log.WithFields(log.Fields{"from": in.GetMe()}).Debug("Received hello")
-	return &pb.HelloReply{Me: int32(sched.me)}, nil
+	return &pb.HelloReply{Me: atomic.LoadUint64(&sched.me)}, nil
 }
 
 func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) error {
@@ -136,37 +135,36 @@ func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) 
 		} else if err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
-			}).Fatal("failed to receive con data")
+			}).Panic("failed to receive con data")
 		}
 
 		k := in.GetK()
 
 		kData, _ := sched.conData.LoadOrStore(k, &sync.Map{})
 		kData.(*sync.Map).Store(int(in.GetMe()), in.GetData())
-		c, _ := sched.conLen.LoadOrStore(k, uint64(0))
-		sched.conLen.Store(k, c.(uint64)+1)
+
+		c, _  := sched.conLen.LoadOrStore(k, &atomic.Uint64{})
+		cc := c.(*atomic.Uint64).Add(1)	
 
 		s := uint64(proto.Size(in))
 		atomic.AddUint64(&sched.msgRcv, s)
 
-		x, _ := sched.conLen.Load(atomic.LoadUint64(&sched.k))
-
 		log.WithFields(log.Fields{
 			"from":               in.GetMe(),
 			"scheduler k":        atomic.LoadUint64(&sched.k),
-			"received k":         in.GetK(),
+			"received k":         k,
 			"data":               in.GetData(),
 			"expecting total":    atomic.LoadUint64(&sched.inNeighbours),
-			"currently received": x.(uint64) - 1,
+			"currently received": cc,
 			"elapsed":            time.Since(t),
 		}).Debug("received data")
 
-		if x.(uint64)-1 == atomic.LoadUint64(&sched.inNeighbours) {
+		if cc == atomic.LoadUint64(&sched.inNeighbours) {
 			// received from all inbound neighbours
-			log.Debug("received from all inbound neighbours, broadcasting")
-			sched.mu.Lock()
-			sched.neighCond.Broadcast()
-			sched.mu.Unlock()
+			log.WithFields(log.Fields{
+				"for k": k,
+			}).Debug("received from all inbound neighbours, send to channel")
+			sched.xchgChan <- k
 		}
 	}
 
@@ -182,13 +180,6 @@ func (sched *Scheduler) StartConsensus(ctx context.Context, in *pb.StartRequest)
 
 	sched.InitMyConData(in.GetL(), in.GetU(), in.GetPi())
 	atomic.StoreUint64(&sched.trial, in.GetTrial())
-
-	MetricsLogger = MetricsLogger.WithFields(log.Fields{
-		"trial": in.GetTrial(),
-	})
-	PlLogger = PlLogger.WithFields(log.Fields{
-		"trial": in.GetTrial(),
-	})
 
 	sched.mu.Lock()
 	sched.startCond.Broadcast()
@@ -207,7 +198,7 @@ func (sched *Scheduler) StartPlace(ctx context.Context, in *pb.EmptyRequest) (*p
 	sched.startCond.Broadcast()
 	sched.mu.Unlock()
 
-	sched.allDone = true
+	sched.allDone.Store(true)
 
 	return &pb.EmptyReply{}, nil
 

@@ -12,9 +12,9 @@ func (sched *Scheduler) Placement() {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
-	log.Debug("waiting for all schedulers to send finish before starting placement")
+	log.Info("waiting for all schedulers to send finish before starting placement")
 
-	for !sched.allDone {
+	for !sched.allDone.Load() {
 		sched.startCond.Wait()
 	}
 
@@ -59,7 +59,8 @@ func (sched *Scheduler) fetchJobs() {
 			}).Warn("getting job of size 0")
 		} else {
 			PlLogger.WithFields(log.Fields{
-				"job": r.GetSize(),
+				"trial": atomic.LoadUint64(&sched.trial),
+				"job":   r.GetSize(),
 			}).Debug("got a job")
 			gotJobs = append(gotJobs, r.GetSize())
 			sched.w -= r.GetSize()
@@ -73,6 +74,7 @@ func (sched *Scheduler) fetchJobs() {
 	}, sched.ctlPlStub.GetJob)
 
 	PlLogger.WithFields(log.Fields{
+		"trial":     atomic.LoadUint64(&sched.trial),
 		"got jobs":  gotJobs,
 		"initial w": sw,
 		"final w":   sched.w,

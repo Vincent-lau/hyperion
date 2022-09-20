@@ -150,7 +150,7 @@ func (ctl *Controller) Reg(ctx context.Context, in *pb.RegRequest) (*pb.RegReply
 		ctl.connSched(in)
 
 		return &pb.RegReply{
-			You: int32(len(ctl.schedulers) - 1),
+			You: uint64(len(ctl.schedulers) - 1),
 		}, nil
 	} else {
 		log.WithFields(log.Fields{
@@ -158,7 +158,7 @@ func (ctl *Controller) Reg(ctx context.Context, in *pb.RegRequest) (*pb.RegReply
 		}).Debug("scheduler already registered")
 
 		return &pb.RegReply{
-			You: int32(slices.Index(ctl.schedulers, in.GetName())),
+			You: uint64(slices.Index(ctl.schedulers, in.GetName())),
 		}, nil
 	}
 

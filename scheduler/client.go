@@ -90,9 +90,9 @@ func (sched *Scheduler) regWithCtl(ctlAddr net.IP) {
 		}
 	}
 
-	sched.me = int(r.GetYou())
+	atomic.StoreUint64(&sched.me, r.GetYou())
 	log.WithFields(log.Fields{
-		"me": sched.me,
+		"me": atomic.LoadUint64(&sched.me),
 	}).Debug("My number")
 
 }
@@ -107,7 +107,7 @@ func (sched *Scheduler) getNeighbours() []string {
 		defer cancel()
 		sched.mu.Unlock()
 		r, err := sched.ctlRegStub.GetNeighbours(ctx, &pb.NeighboursRequest{
-			Me: int32(sched.me),
+			Me: atomic.LoadUint64(&sched.me),
 		})
 		sched.mu.Lock()
 		if err != nil {
@@ -154,7 +154,7 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 			defer cancel()
 			sched.mu.Unlock()
-			r, err = stub.SayHello(ctx, &pb.HelloRequest{Me: int32(sched.me)})
+			r, err = stub.SayHello(ctx, &pb.HelloRequest{Me: atomic.LoadUint64(&sched.me)})
 			sched.mu.Lock()
 			if err != nil {
 				log.WithFields(log.Fields{
@@ -175,10 +175,10 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 		sched.outConns = append(sched.outConns, int(r.GetMe()))
 		sched.stubs[int(r.GetMe())] = stub
 	}
-	sched.outNeighbours = len(sched.outConns)
+	atomic.StoreUint64(&sched.outNeighbours, uint64(len(sched.outConns)))
 
 	log.WithFields(log.Fields{
-		"number of out neighbours": sched.outNeighbours,
+		"number of out neighbours": atomic.LoadUint64(&sched.outNeighbours),
 	}).Debug("connected to all neighbours")
 
 	// now wait for all neighbours to connect to me
@@ -203,7 +203,7 @@ func (sched *Scheduler) waitForFinish() {
 		defer cancel()
 		sched.mu.Unlock()
 		r, err := sched.ctlRegStub.FinSetup(ctx, &pb.SetupRequest{
-			Me:           int32(sched.me),
+			Me:           atomic.LoadUint64(&sched.me),
 			InNeighbours: sched.inNeighbours,
 		})
 		sched.mu.Lock()
