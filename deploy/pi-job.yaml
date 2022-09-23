@@ -1,0 +1,66 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi-2000
+  namespace: dist-sched
+spec:
+  completions: 30
+  parallelism: 30
+  template:
+    spec:
+      schedulerName: default-scheduler
+      containers:
+      - name: pi
+        image: perl:5.34.0
+        command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2000)"]
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "200m"
+      restartPolicy: Never
+  backoffLimit: 4
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi-4000
+  namespace: dist-sched
+spec:
+  completions: 30
+  parallelism: 30
+  template:
+    spec:
+      schedulerName: default-scheduler
+      containers:
+      - name: pi
+        image: perl:5.34.0
+        command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(4000)"]
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "400m"
+      restartPolicy: Never
+  backoffLimit: 4
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: pi-6000
+  namespace: dist-sched
+spec:
+  completions: 30
+  parallelism: 30
+  template:
+    spec:
+      schedulerName: default-scheduler
+      containers:
+      - name: pi
+        image: perl:5.34.0
+        command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(6000)"]
+        imagePullPolicy: IfNotPresent
+        resources:
+          requests:
+            cpu: "600m"
+      restartPolicy: Never
+  backoffLimit: 4
+---
