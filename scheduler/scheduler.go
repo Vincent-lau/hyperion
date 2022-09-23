@@ -8,9 +8,9 @@ import (
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/health/grpc_health_v1"
+	v1 "k8s.io/api/core/v1"
 
 	"example/dist_sched/config"
-	"example/dist_sched/controller"
 	pb "example/dist_sched/message"
 )
 
@@ -58,7 +58,7 @@ type Scheduler struct {
 	msgSent uint64
 
 	/* interface with k8s */
-	onNode string
+	onNode *v1.Node
 
 	/* implementing the gRPC server */
 	pb.UnimplementedRatioConsensusServer
@@ -78,7 +78,7 @@ func New() *Scheduler {
 	if err != nil {
 		log.Fatalf("could not get hostname: %v", err)
 	}
-	node, err := controller.MyNode(hostname)
+	node, err := MyNode(hostname)
 
 	if err != nil {
 		log.WithFields(log.Fields{
@@ -112,7 +112,7 @@ func New() *Scheduler {
 		msgRcv:  0,
 
 		/* interface with k8s */
-		onNode: node.Name,
+		onNode: node,
 	}
 	sched.neighCond = sync.NewCond(&sched.mu)
 	sched.startCond = sync.NewCond(&sched.mu)
