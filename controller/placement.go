@@ -113,9 +113,9 @@ func (ctl *Controller) populateQueue() {
 	}
 
 	PlLogger.WithFields(log.Fields{
-		"smallQueue":  ctl.jobQueue[2],
-		"mediumQueue": ctl.jobQueue[1],
-		"largeQueue":  ctl.jobQueue[0],
+		"smallQueue":  *ctl.jobQueue[2],
+		"mediumQueue": *ctl.jobQueue[1],
+		"largeQueue":  *ctl.jobQueue[0],
 	}).Debug("populated queue")
 
 }
@@ -142,7 +142,6 @@ func (ctl *Controller) finPl() {
 	jobSched := make([]float64, 0)
 	s := make(map[int]bool)
 
-	t := time.Now()
 	for _, q := range ctl.jobQueue {
 		vs := q.Dispose()
 		for _, v := range vs {
@@ -163,7 +162,6 @@ func (ctl *Controller) finPl() {
 		"left elements":       elementsLeft,
 		"scheduled elements":  jobSched,
 		"each job fetch time": ctl.tq.Dispose(),
-		"drain time":          time.Since(t).Microseconds(),
 	}).Debug("all jobs fetched, queue elements left")
 
 	go ctl.newTrial()

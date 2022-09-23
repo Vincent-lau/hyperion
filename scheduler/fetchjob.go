@@ -34,7 +34,7 @@ func (sched *Scheduler) fetchJobs() {
 
 	for sched.w >= 1e-2 {
 		req := &pb.JobRequest{
-			Node:  sched.onNode,
+			Node:  sched.onNode.Name,
 			Size:  sched.w,
 			Trial: int32(sched.trial),
 		}
@@ -68,7 +68,7 @@ func (sched *Scheduler) fetchJobs() {
 	}
 
 	util.RetryRPC(&pb.JobRequest{
-		Node:  sched.onNode,
+		Node:  sched.onNode.Name,
 		Trial: int32(sched.trial),
 		Size:  -1,
 	}, sched.ctlPlStub.GetJob)
@@ -89,6 +89,7 @@ func (sched *Scheduler) computeW() {
 		"ratio":          sched.ratio,
 		"used":           sched.u,
 		"total capacity": sched.pi,
+		"total to take":  sched.ratio * sched.pi,
 		"w":              sched.w,
 	}).Debug("computed w")
 

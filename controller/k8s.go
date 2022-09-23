@@ -9,40 +9,19 @@ import (
 
 	v1 "k8s.io/api/core/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/rest"
 )
 
 const (
 	schedulerName = "my-controller"
 )
 
-func MyNode(hostname string) (*v1.Node, error) {
-	config, err := rest.InClusterConfig()
-	if err != nil {
-		panic(err.Error())
-	}
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		panic(err.Error())
-	}
-	pods, err := clientset.CoreV1().Pods("dist-sched").List(context.TODO(), metav1.ListOptions{
-		FieldSelector: fmt.Sprintf("metadata.name=%s", hostname),
-	})
-	if err != nil {
-		panic(err.Error())
-	}
 
-	n, err := clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{
-		LabelSelector: fmt.Sprintf("%s=%s", "kubernetes.io/hostname", pods.Items[0].Spec.NodeName),
-	})
-
-	return &n.Items[0], err
-}
 
 func (ctl *Controller) findNodes() {
 	// TODO add informer to get the list of nodes
-	nodes, _ := ctl.clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{})
+	nodes, _ := ctl.clientset.CoreV1().Nodes().List(context.TODO(), metav1.ListOptions{
+		LabelSelector: fmt.Sprintf("%s!=%s", "node-role.kubernetes.io/control-plane", ""),
+	})
 	nMap := make(map[string]*v1.Node)
 
 	for _, node := range nodes.Items {
@@ -50,9 +29,6 @@ func (ctl *Controller) findNodes() {
 	}
 
 	ctl.nodeMap = nMap
-	log.WithFields(log.Fields{
-		"number of nodes": len(nodes.Items),
-	}).Debug("found nodes")
 }
 
 func (ctl *Controller) jobsFromPodQueue(podChan chan *v1.Pod) {
@@ -70,7 +46,7 @@ func (ctl *Controller) jobsFromPodQueue(podChan chan *v1.Pod) {
 
 		log.WithFields(log.Fields{
 			"number of pods": len(pods.Items),
-		}).Debug("There are pods in the cluster")
+		}).Info("There are pods in the cluster")
 
 		watch, err := ctl.clientset.CoreV1().Pods("").Watch(context.TODO(), metav1.ListOptions{
 			FieldSelector: fmt.Sprintf("spec.schedulerName=%s,spec.nodeName=", schedulerName),
