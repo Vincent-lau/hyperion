@@ -8,4 +8,5 @@ spec:
   containers:
   - name: pod-with-no-annotation-container
     image: k8s.gcr.io/pause:2.0
-
+  nodeSelector:
+    kubernetes.io/hostname: caelum-103

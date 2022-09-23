@@ -1,0 +1,1836 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-0
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-1
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits476-2
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(476)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "2m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits476-3
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(476)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "2m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits476-4
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(476)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "2m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-5
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-6
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3148-7
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3148)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "34m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3209-8
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3209)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "35m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3270-9
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3270)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "36m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3390-10
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3390)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "38m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3331-11
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3331)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "37m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3148-12
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3148)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "34m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3270-13
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3270)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "36m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3023-14
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3023)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "32m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3209-15
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3209)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "35m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3148-16
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3148)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "34m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3450-17
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3450)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "39m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3209-18
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3209)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "35m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3331-19
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3331)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "37m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3209-20
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3209)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "35m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3270-21
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3270)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "36m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3023-22
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3023)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "32m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3023-23
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3023)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "32m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3148-24
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3148)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "34m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3209-25
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3209)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "35m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3209-26
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3209)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "35m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3086-27
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3086)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "33m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3148-28
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3148)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "34m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2831-29
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2831)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "29m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2960-30
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2960)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "31m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3270-31
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3270)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "36m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits4597-32
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(4597)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "60m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits4546-33
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(4546)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "59m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits4749-34
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(4749)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "63m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits4699-35
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(4699)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "62m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits4648-36
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(4648)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "61m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits990-37
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(990)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "6m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits755-38
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(755)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "4m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits877-39
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(877)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "5m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-40
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-41
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits624-42
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(624)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "3m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits755-43
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(755)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "4m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits755-44
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(755)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "4m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits755-45
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(755)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "4m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits624-46
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(624)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "3m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-47
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-48
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-49
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-50
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3962-51
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3962)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "48m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3907-52
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3907)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "47m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3962-53
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3962)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "48m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits4179-54
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(4179)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "52m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits624-55
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(624)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "3m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits624-56
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(624)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "3m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-57
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-58
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-59
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits624-60
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(624)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "3m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits624-61
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(624)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "3m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2632-62
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2632)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "26m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2699-63
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2699)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "27m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2960-64
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2960)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "31m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2496-65
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2496)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "24m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2699-66
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2699)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "27m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2699-67
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2699)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "27m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2896-68
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2896)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "30m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2831-69
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2831)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "29m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-70
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits300-71
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(300)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "1m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits1483-72
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(1483)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "11m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3450-73
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3450)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "39m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2210-74
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2210)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "20m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2355-75
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2355)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "22m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2136-76
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2136)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "19m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits1572-77
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(1572)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "12m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3331-78
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3331)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "37m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3086-79
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3086)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "33m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3086-80
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3086)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "33m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3086-81
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3086)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "33m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2960-82
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2960)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "31m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3209-83
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3209)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "35m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3390-84
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3390)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "38m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3023-85
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3023)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "32m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3682-86
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3682)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "43m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3209-87
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3209)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "35m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3270-88
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3270)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "36m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2960-89
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2960)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "31m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2960-90
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2960)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "31m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3450-91
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3450)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "39m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3390-92
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3390)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "38m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3331-93
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3331)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "37m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3270-94
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3270)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "36m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3148-95
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3148)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "34m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3390-96
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3390)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "38m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3148-97
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3148)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "34m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3086-98
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3086)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "33m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3148-99
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3148)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "34m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2766-100
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2766)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "28m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3270-101
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3270)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "36m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3390-102
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3390)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "38m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3270-103
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3270)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "36m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3209-104
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3209)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "35m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3086-105
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3086)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "33m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits3331-106
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(3331)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "37m"
+  restartPolicy: Never
+---
+apiVersion: v1
+kind: Pod
+metadata:
+  name: pi-digits2896-107
+  namespace: dist-sched
+spec:
+  schedulerName: default-scheduler
+  containers:
+    - name: pi
+      image: perl:5.34.0
+      command: ["perl",  "-Mbignum=bpi", "-wle", "print bpi(2896)"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "30m"
+  restartPolicy: Never
+---
