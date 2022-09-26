@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: {{ name }}
+spec:
+  schedulerName: {{ scheduler_name }}
+  containers:
+    - name: fib
+      image: cuso4/fib
+      command: ["./fib.py"]
+      args: ["{{ n }}"]
+      imagePullPolicy: IfNotPresent
+      resources:
+        requests:
+          cpu: "{{ cpu }}m"
+  restartPolicy: Never
