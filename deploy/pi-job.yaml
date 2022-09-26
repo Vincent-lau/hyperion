@@ -4,8 +4,8 @@ metadata:
   name: pi-2000
   namespace: dist-sched
 spec:
-  completions: 30
-  parallelism: 30
+  completions: 60
+  parallelism: 60
   template:
     spec:
       schedulerName: default-scheduler
@@ -26,8 +26,8 @@ metadata:
   name: pi-4000
   namespace: dist-sched
 spec:
-  completions: 30
-  parallelism: 30
+  completions: 60
+  parallelism: 60
   template:
     spec:
       schedulerName: default-scheduler
@@ -48,8 +48,8 @@ metadata:
   name: pi-6000
   namespace: dist-sched
 spec:
-  completions: 30
-  parallelism: 30
+  completions: 60
+  parallelism: 60
   template:
     spec:
       schedulerName: default-scheduler

@@ -1,8 +1,7 @@
 #! /usr/bin/env python3
 
 import os
-import sys
-import time
+import math
 from rich.console import Console
 from jinja2 import Environment, FileSystemLoader
 from inputimeout import inputimeout, TimeoutOccurred
@@ -84,19 +83,77 @@ def render_bbox(num_jobs: int, scheduler_name: str):
 def render_pi(num_jobs: int, scheduler_name: str):
     environment = Environment(loader=FileSystemLoader("deploy/templates"))
     template = environment.get_template("pi-job.yaml.jinja2")
-    with open('deploy/bbox-job.yaml', 'w') as out_file:
-        for d in [100, 500, 5000]:
+    with open('deploy/pi-job.yaml', 'w') as out_file:
+        for d in [2000, 4000, 6000]:
             content = template.render(
                 scheduler_name=scheduler_name,
-                num_jobs=num_jobs,
+                num_jobs=int(num_jobs),
                 digits=d,
                 cpu=int(d/10),
             )
             out_file.write(content)
             out_file.write('\n---\n')
 
+def render_pod_fib(num_pods: int, scheduler_name: str) -> float:
+    environment = Environment(loader=FileSystemLoader("deploy/templates"))
+    template = environment.get_template("fib-pod.yaml.jinja2")
+    max_st = 0
+    with open('deploy/fib-pod.yaml', 'w') as out_file:
+        with open('deploy/google-cluster.csv', 'r') as usage:
+            i = 0
+            for line in usage:
+                cpu = int(float(line.split(',')[2]) * 1000)
+                n = int(float(line.split(',')[2]) * 1000 * 30000)
+                max_st = max(max_st, n)
+                if cpu < 1 or n > 5000000:
+                    continue
 
-def render_pod(num_pods: int, scheduler_name: str) -> float:
+                content = template.render(
+                    scheduler_name=scheduler_name,
+                    name=f'fib-{n}th-{i}',
+                    cpu=cpu,
+                    n=n,
+                )
+                out_file.write(content)
+                out_file.write('\n---\n')
+
+                i += 1
+                if i >= num_pods:
+                    break
+
+    return max_st
+
+
+def render_pod_pi(num_pods: int, scheduler_name: str) -> float:
+    environment = Environment(loader=FileSystemLoader("deploy/templates"))
+    template = environment.get_template("pi-pod.yaml.jinja2")
+    max_st = 0
+    with open('deploy/pi-pod.yaml', 'w') as out_file:
+        with open('deploy/google-cluster.csv', 'r') as usage:
+            i = 0
+            for line in usage:
+                cpu = int(float(line.split(',')[2]) * 1000)
+                digits = int(math.pow(cpu, 2/3) * 300)
+                max_st = max(max_st, digits)
+                if cpu < 1:
+                    continue
+
+                content = template.render(
+                    scheduler_name=scheduler_name,
+                    name=f'pi-digits{digits}-{i}',
+                    cpu=cpu,
+                    digits=digits,
+                )
+                out_file.write(content)
+                out_file.write('\n---\n')
+
+                i += 1
+                if i >= num_pods:
+                    break
+
+    return max_st
+
+def render_pod_bbox(num_pods: int, scheduler_name: str) -> float:
     environment = Environment(loader=FileSystemLoader("deploy/templates"))
     template = environment.get_template("bbox-pod.yaml.jinja2")
     max_st = 0
@@ -126,15 +183,17 @@ def render_pod(num_pods: int, scheduler_name: str) -> float:
     return max_st
 
 
-def run_jobs():
+def run_jobs(scheduler_name: str, job_name: str):
     console = Console()
-    schedulers = ['default-scheduler', 'my-controller']
-    scheduler_name = schedulers[1]
+    job_factor = 36
 
-    for i in range(1, 2):
-        console.print(f'Running {i * 27} jobs', style='green bold')
-        render_pi(i * 27 / 3, scheduler_name)
-        os.system('kubectl apply -f deploy/bbox-job.yaml')
+    for i in range(5, 6):
+        console.print(f'Running {i * job_factor} jobs', style='green bold')
+        if job_name == 'pi':
+            render_pi(i * job_factor / 3, scheduler_name)
+        elif job_name == 'bbox':
+            render_bbox(i * job_factor / 3, scheduler_name)
+        os.system(f'kubectl apply -f deploy/{job_name}-job.yaml')
 
         wt = 0
         if i < 8:
@@ -146,29 +205,41 @@ def run_jobs():
         with suppress(TimeoutOccurred):
             inputimeout(prompt=':B', timeout=wt)
 
-        os.system('kubectl delete -f deploy/bbox-job.yaml')
+        os.system(f'kubectl delete -f deploy/{job_name}-job.yaml')
     console.print('done', style='blue')
 
 
-def run_pods(scheduler_name: str):
+def run_pods(scheduler_name: str, pod_name: str):
     console = Console()
-    job_factor = 36
-    for i in range(1, 10):
-        console.print(f'Running {i*job_factor} pods', style='green bold')
-        wt = render_pod(i*job_factor, scheduler_name) + 120
-        os.system("kubectl apply -f deploy/bbox-pod.yaml")
+    job_factor = 9 * 4 
+    for i in range(4, 5):
+        console.print(f'Running {i*job_factor} {pod_name} pods', style='green bold')
+        if pod_name == 'bbox':
+            render_pod_bbox(i*job_factor, scheduler_name)
+        elif pod_name == 'pi':
+            render_pod_pi(i*job_factor, scheduler_name)
+        elif pod_name == 'fib':
+            render_pod_fib(i*job_factor, scheduler_name)
+        else:
+            raise Exception(f'Unknown pod name {pod_name}')
+
+        wt = 180
+        os.system(f"kubectl apply -f deploy/{pod_name}-pod.yaml")
 
         console.print(f'sleeping for {wt} seconds', style='red')
         with suppress(TimeoutOccurred):
             inputimeout(prompt=':D', timeout=wt)
 
-        os.system('kubectl delete -f deploy/bbox-pod.yaml')
+        os.system(f'kubectl delete -f deploy/{pod_name}-pod.yaml')
 
 
 def main():
     schedulers = ['default-scheduler', 'my-controller']
     scheduler_name = schedulers[1]
-    run_pods(scheduler_name)
+    # for _ in range(5):
+    # render_pod_fib(30, scheduler_name)
+    run_pods(scheduler_name, 'fib')
+    # run_jobs(scheduler_name, 'pi')
 
 
 if __name__ == '__main__':
