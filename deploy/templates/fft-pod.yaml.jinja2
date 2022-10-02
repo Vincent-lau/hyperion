@@ -6,9 +6,9 @@ metadata:
 spec:
   schedulerName: {{ scheduler_name }}
   containers:
-    - name: fib
-      image: cuso4/fib
-      command: ["./fib.py"]
+    - name: fft
+      image: cuso4/fft
+      command: ["./fft.py"]
       args: ["{{ n }}"]
       imagePullPolicy: IfNotPresent
       resources:

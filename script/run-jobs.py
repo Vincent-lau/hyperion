@@ -1,11 +1,14 @@
 #! /usr/bin/env python3
 
-import os
 import math
-from rich.console import Console
-from jinja2 import Environment, FileSystemLoader
-from inputimeout import inputimeout, TimeoutOccurred
+import os
 from contextlib import suppress
+
+from inputimeout import TimeoutOccurred, inputimeout
+from jinja2 import Environment, FileSystemLoader
+from rich.console import Console
+from scipy.optimize import fsolve
+import time
 
 
 def install(num_jobs: int):
@@ -93,6 +96,42 @@ def render_pi(num_jobs: int, scheduler_name: str):
             )
             out_file.write(content)
             out_file.write('\n---\n')
+
+
+def render_pod_fft(num_pods: int, scheduler_name: str) -> float:
+    environment = Environment(loader=FileSystemLoader("deploy/templates"))
+    template = environment.get_template("fft-pod.yaml.jinja2")
+    max_st = 0
+    with open('deploy/fft-pod.yaml', 'w') as out_file:
+        with open('deploy/google-cluster.csv', 'r') as usage:
+            i = 0
+            for line in usage:
+                c = float(line.split(',')[2]) * 1000
+                cpu = int(c)
+                if cpu < 1:
+                    continue
+                k = 0.34293475
+                func = lambda x: k * x * math.log(x) - c * 60 * 10e9
+                solution = fsolve(func, 1000000000)
+                n = int(solution[0]  / 1e5)
+                max_st = max(max_st, n)
+
+                content = template.render(
+                    scheduler_name=scheduler_name,
+                    name=f'fft-{n}-{i}',
+                    cpu=cpu,
+                    n=n,
+                )
+                out_file.write(content)
+                out_file.write('\n---\n')
+
+                i += 1
+                if i >= num_pods:
+                    break
+
+    return max_st
+
+
 
 def render_pod_fib(num_pods: int, scheduler_name: str) -> float:
     environment = Environment(loader=FileSystemLoader("deploy/templates"))
@@ -211,8 +250,8 @@ def run_jobs(scheduler_name: str, job_name: str):
 
 def run_pods(scheduler_name: str, pod_name: str):
     console = Console()
-    job_factor = 9 * 4 
-    for i in range(4, 5):
+    job_factor = 9 * 12
+    for i in range(1, 2):
         console.print(f'Running {i*job_factor} {pod_name} pods', style='green bold')
         if pod_name == 'bbox':
             render_pod_bbox(i*job_factor, scheduler_name)
@@ -220,6 +259,8 @@ def run_pods(scheduler_name: str, pod_name: str):
             render_pod_pi(i*job_factor, scheduler_name)
         elif pod_name == 'fib':
             render_pod_fib(i*job_factor, scheduler_name)
+        elif pod_name == 'fft':
+            render_pod_fft(i*job_factor, scheduler_name)
         else:
             raise Exception(f'Unknown pod name {pod_name}')
 
@@ -232,13 +273,20 @@ def run_pods(scheduler_name: str, pod_name: str):
 
         os.system(f'kubectl delete -f deploy/{pod_name}-pod.yaml')
 
+        with suppress(TimeoutOccurred):
+            inputimeout(prompt=f'waiting after deleting', timeout=60)
+
+
 
 def main():
     schedulers = ['default-scheduler', 'my-controller']
     scheduler_name = schedulers[1]
     # for _ in range(5):
-    # render_pod_fib(30, scheduler_name)
-    run_pods(scheduler_name, 'fib')
+    # render_pod_fft(30, scheduler_name)
+    # run_pods(scheduler_name, 'pi')
+    for _ in range(3):
+        for sn in schedulers:
+            run_pods(sn, 'fft')
     # run_jobs(scheduler_name, 'pi')
 
 
