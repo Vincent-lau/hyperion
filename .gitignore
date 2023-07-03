@@ -30,6 +30,7 @@ deploy/my-scheduler-temp.yaml
 
 # data
 measure/data/
+scratch.txt
 
 
 # Test binary, built with `go test -c`
