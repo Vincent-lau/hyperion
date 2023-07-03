@@ -24,7 +24,9 @@ my-controller-pod.yaml
 deploy/bbox-job.yaml
 deploy/bbox-pod.yaml
 deploy/my-controller.yaml
-deploy/my-sched.yaml
+deploy/my-controller-temp.yaml
+deploy/my-scheduler.yaml
+deploy/my-scheduler-temp.yaml
 
 # data
 measure/data/
