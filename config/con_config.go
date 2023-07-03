@@ -16,17 +16,17 @@ func init() {
 }
 
 var (
-	Mode = flag.String("mode", "dev", "Environment to run in")	
+	Mode          = flag.String("mode", "DEV", "Environment to run in")
 	NumSchedulers = flag.Int("schednum", 9, "Number of schedulers")
 
 	TopologyID = flag.Int("topid", 1, "Topology ID")
 
 	JobFactor = flag.Float64("jobfactor", 0.5, "Number of jobs per scheduler")
 	MaxTrials = flag.Int("maxtrials", 1, "Maximum number of trials")
-	MaxCap = 50000.0
+	MaxCap    = 50000.0
 
 	Mean = 10.0
-	Std = 4.0
+	Std  = 4.0
 	Skew = -4.0
 
 	Tolerance = flag.Float64("tolerance", 1e-5, "Tolerance for the convergence")

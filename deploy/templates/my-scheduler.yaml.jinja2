@@ -1,0 +1,89 @@
+
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-scheduler
+  namespace: dist-sched
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: my-scheduler-as-kube-scheduler
+subjects:
+- kind: ServiceAccount
+  name: my-scheduler
+  namespace: dist-sched
+roleRef:
+  kind: ClusterRole
+  name: system:kube-scheduler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: my-scheduler-as-admin-user
+subjects:
+- kind: ServiceAccount
+  name: my-scheduler
+  namespace: dist-sched
+roleRef:
+  kind: ClusterRole
+  name: cluster-admin
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    component: scheduler
+    tier: control-plane
+  name: my-scheduler
+  namespace: dist-sched
+spec:
+  selector:
+    matchLabels:
+      component: scheduler
+      tier: control-plane
+  replicas: {{ replicas }}
+  template:
+    metadata:
+      labels:
+        component: scheduler
+        tier: control-plane
+        version: second
+    spec:
+      topologySpreadConstraints:
+      - maxSkew: 1
+        topologyKey: kubernetes.io/hostname
+        whenUnsatisfiable: ScheduleAnyway
+        labelSelector:
+          matchLabels:
+            component: scheduler
+            tier: control-plane
+            version: second
+      serviceAccountName: my-scheduler
+      containers:
+      - command:
+        - /usr/local/bin/kube-scheduler
+        - -schednum={{ replicas }}
+        - -mode={{ mode }}
+        - -topid={{ topid }}
+        # - -trace=trace.out
+        # - -cpuprofile=sched.prof
+        image: cuso4/my-sched:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 2379
+        livenessProbe:
+          grpc:
+            port: 2379
+          initialDelaySeconds: 10
+        name: my-scheduler
+        resources:
+          requests:
+            cpu: "5m"
+        securityContext:
+          privileged: true
+      restartPolicy: Always
+      hostNetwork: false
+      hostPID: false

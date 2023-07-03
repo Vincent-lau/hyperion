@@ -1,0 +1,116 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: my-controller-account
+  namespace: dist-sched
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: my-controller-as-kube-scheduler
+subjects:
+- kind: ServiceAccount
+  name: my-controller-account
+  namespace: dist-sched
+roleRef:
+  kind: ClusterRole
+  name: system:kube-scheduler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: my-controller-as-volume-scheduler
+subjects:
+- kind: ServiceAccount
+  name: my-controller-account
+  namespace: dist-sched
+roleRef:
+  kind: ClusterRole
+  name: system:volume-scheduler
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: my-controller-config
+  namespace: dist-sched
+data:
+  my-controller-config.yaml: |
+    apiVersion: kubescheduler.config.k8s.io/v1beta2
+    kind: KubeSchedulerConfiguration
+    profiles:
+      - schedulerName: my-controller
+    leaderElection:
+      leaderElect: false
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: my-controller
+  namespace: dist-sched
+  labels:
+    component: controller
+    tier: control-plane
+    name: my-controller
+spec:
+  selector:
+    matchLabels:
+      component: controller
+      tier: control-plane
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        component: controller
+        tier: control-plane
+        name: my-controller
+    spec:
+      serviceAccountName: my-controller-account
+      nodeSelector:
+        node-role.kubernetes.io/control-plane: ""
+      tolerations:
+      - key: "node-role.kubernetes.io/master"
+        operator: "Exists"
+        effect: NoSchedule
+      - key: "node-role.kubernetes.io/control-plane"
+        operator: "Exists"
+        effect: NoSchedule
+      containers:
+      - command:
+        - ./ctl
+        - -schednum={{ replicas }}
+        - -mode={{ mode }}
+        - -jobfactor={{ jobfactor }}
+        - -maxtrials={{ trials }}
+        - -topid={{ topid }}
+        # - -trace=trace.out
+        name: my-controller
+        resources:
+          requests:
+            cpu: 100m
+        image: cuso4/my-ctl:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 2379
+          name: grpc-probe
+        - containerPort: 3000
+          name: svc-dis
+        livenessProbe:
+          grpc:
+            port: 2379
+          initialDelaySeconds: 10
+        securityContext:
+          privileged: true
+        volumeMounts:
+          - name: config-volume
+            mountPath: /etc/kubernetes/my-controller
+      restartPolicy: Always
+      hostNetwork: false
+      hostPID: false
+      priorityClassName: system-node-critical
+      volumes:
+        - name: config-volume
+          configMap:
+            name: my-controller-config
+      

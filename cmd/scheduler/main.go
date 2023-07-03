@@ -13,12 +13,12 @@ func init() {
 	flag.Parse()
 	// log.SetReportCaller(true)
 
-	if *config.Mode == "dev" {
+	if *config.Mode == "DEV" {
 		log.SetLevel(log.DebugLevel)
 		log.SetFormatter(&log.TextFormatter{
 			ForceColors: true,
 		})
-	} else if *config.Mode == "prod" {
+	} else if *config.Mode == "PROD" {
 		log.SetLevel(log.InfoLevel)
 		log.SetFormatter(&log.JSONFormatter{})
 	} else {
