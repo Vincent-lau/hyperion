@@ -6,7 +6,6 @@ import (
 	"example/dist_sched/config"
 	pb "example/dist_sched/message"
 	"example/dist_sched/util"
-	"math/rand"
 	"sync/atomic"
 	"time"
 
@@ -95,21 +94,13 @@ func getQueueIdx(size float64) int {
 
 // put jobs into multiple queues
 func (ctl *Controller) populateQueue() {
-	done := make(chan int)
-	for i, j := range ctl.jobDemand {
-		go func(id int, s float64) {
-			i := getQueueIdx(s)
-			if err := ctl.jobQueue[i].Put(&Job{id: id, size: s}); err != nil {
-				log.WithFields(log.Fields{
-					"error": err,
-				}).Error("failed to put job into queue")
-			}
-			done <- 1
-		}(i, j)
-	}
-
-	for range ctl.jobDemand {
-		<-done
+	for id, s := range ctl.jobDemand {
+		i := getQueueIdx(s)
+		if err := ctl.jobQueue[i].Put(&Job{id: id, size: s}); err != nil {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Error("failed to put job into queue")
+		}
 	}
 
 	PlLogger.WithFields(log.Fields{
@@ -124,12 +115,11 @@ func (ctl *Controller) waitForPl() {
 
 	numJobs := len(ctl.jobDemand)
 	for i := 0; i < numJobs; i++ {
-		<-ctl.placed	
+		<-ctl.placed
 	}
 
 	log.Debug("all pods placed")
 	ctl.finPl()
-
 
 }
 
@@ -188,18 +178,18 @@ func (ctl *Controller) randPlace() {
 		vs := q.Dispose()
 		for _, v := range vs {
 			j := v.(*Job).Id()
-			ctl.mu.Lock()
-			pod := ctl.jobPod[j]
-			ctl.mu.Unlock()
+			// ctl.mu.Lock()
+			// pod := ctl.jobPod[j]
+			// ctl.mu.Unlock()
 
-			ri := rand.Intn(*config.NumSchedulers)
+			// ri := rand.Intn(*config.NumSchedulers)
 			log.WithFields(log.Fields{
-				"node": ns[ri],
-				"job":  j,
-				"name": pod.Name,
+				// "node": ns[ri],
+				"job": j,
+				// "name": pod.Name,
 			}).Debug("randomly placed job")
 
-			go ctl.placePodToNode(ns[ri], v.(*Job).Id())
+			go ctl.placePodToNode(ns[0], v.(*Job).Id())
 		}
 	}
 }
