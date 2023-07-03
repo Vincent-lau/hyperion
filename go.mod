@@ -1,4 +1,4 @@
-module example/dist_sched
+module github.com/Vincent-lau/hyperion
 
 go 1.20
 

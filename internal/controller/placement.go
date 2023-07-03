@@ -3,9 +3,9 @@ package controller
 import (
 	"context"
 	"errors"
-	"example/dist_sched/config"
-	pb "example/dist_sched/message"
-	"example/dist_sched/util"
+	config "github.com/Vincent-lau/hyperion/internal/configs"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
+	"github.com/Vincent-lau/hyperion/internal/util"
 	"sync/atomic"
 	"time"
 

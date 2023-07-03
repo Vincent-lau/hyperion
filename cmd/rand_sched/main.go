@@ -1,8 +1,8 @@
 package main
 
 import (
-	"example/dist_sched/rand_sched"
 	"flag"
+	"github.com/Vincent-lau/hyperion/internal/rand_sched"
 	"time"
 
 	log "github.com/sirupsen/logrus"

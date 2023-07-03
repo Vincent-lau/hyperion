@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"example/dist_sched/config"
+	config "github.com/Vincent-lau/hyperion/internal/configs"
 	"math"
 	"math/rand"
 

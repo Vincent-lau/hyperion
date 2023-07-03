@@ -1,7 +1,7 @@
 package controller
 
 import (
-	pb "example/dist_sched/message"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
 	"math/rand"
 	"time"
 
@@ -55,8 +55,8 @@ func (ctl *Controller) RandomInAvail(in *pb.JobRequest) *Job {
 }
 
 /*
-	We look at queues from large to small, and pick the first one that is available
-	We also look at the first two elements of the queue when possilbe
+We look at queues from large to small, and pick the first one that is available
+We also look at the first two elements of the queue when possilbe
 */
 func (ctl *Controller) Large2Small(in *pb.JobRequest) *Job {
 

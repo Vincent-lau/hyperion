@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"example/dist_sched/config"
-	pb "example/dist_sched/message"
+	config "github.com/Vincent-lau/hyperion/internal/configs"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
 	"net"
 
 	log "github.com/sirupsen/logrus"

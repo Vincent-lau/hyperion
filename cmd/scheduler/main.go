@@ -1,9 +1,9 @@
 package main
 
 import (
-	"example/dist_sched/config"
-	"example/dist_sched/scheduler"
 	"flag"
+	"github.com/Vincent-lau/hyperion/internal/configs"
+	"github.com/Vincent-lau/hyperion/internal/scheduler"
 	"time"
 
 	log "github.com/sirupsen/logrus"
