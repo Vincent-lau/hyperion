@@ -1,8 +1,8 @@
 package scheduler
 
 import (
-	pb "example/dist_sched/message"
-	util "example/dist_sched/util"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
+	util "github.com/Vincent-lau/hyperion/internal/util"
 
 	log "github.com/sirupsen/logrus"
 )

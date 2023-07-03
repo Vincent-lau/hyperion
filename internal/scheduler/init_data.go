@@ -5,7 +5,7 @@
 package scheduler
 
 import (
-	pb "example/dist_sched/message"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
 	"math"
 	"os"
 	"time"
@@ -46,8 +46,7 @@ func (sched *Scheduler) InitMyConData(l, u, pi float64) {
 
 }
 
-
-func (sched *Scheduler) k8sCpuUsage() (float64, float64){
+func (sched *Scheduler) k8sCpuUsage() (float64, float64) {
 	_, pi := sched.MyCpu()
 	return float64(0), float64(pi)
 }

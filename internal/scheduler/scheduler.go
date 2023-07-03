@@ -1,6 +1,7 @@
 package scheduler
 
 import (
+	config "github.com/Vincent-lau/hyperion/internal/configs"
 	"os"
 	"runtime/pprof"
 	"sync"
@@ -10,8 +11,7 @@ import (
 	"google.golang.org/grpc/health/grpc_health_v1"
 	v1 "k8s.io/api/core/v1"
 
-	"example/dist_sched/config"
-	pb "example/dist_sched/message"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
 )
 
 type Scheduler struct {

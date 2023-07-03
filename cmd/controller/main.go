@@ -1,9 +1,9 @@
 package main
 
 import (
-	"example/dist_sched/config"
-	"example/dist_sched/controller"
 	"flag"
+	"github.com/Vincent-lau/hyperion/internal/configs"
+	"github.com/Vincent-lau/hyperion/internal/controller"
 	"math/rand"
 
 	log "github.com/sirupsen/logrus"

@@ -2,9 +2,9 @@ package scheduler
 
 import (
 	"context"
-	"example/dist_sched/config"
-	pb "example/dist_sched/message"
 	"fmt"
+	config "github.com/Vincent-lau/hyperion/internal/configs"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
 	"math"
 	"os"
 	"runtime/pprof"
@@ -388,13 +388,10 @@ func (sched *Scheduler) Consensus() {
 		}
 	}
 
-
 	var tot int64
 	for _, t := range ts {
 		tot += t
 	}
-
-
 
 	log.WithFields(log.Fields{
 		"iteration":         sched.k,

@@ -2,7 +2,7 @@ package scheduler
 
 import (
 	"context"
-	"example/dist_sched/config"
+	config "github.com/Vincent-lau/hyperion/internal/configs"
 	"net"
 	"os"
 	"time"
@@ -13,7 +13,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	"google.golang.org/grpc/keepalive"
 
-	pb "example/dist_sched/message"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
 )
 
 func (sched *Scheduler) AsClient() {

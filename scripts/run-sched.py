@@ -39,7 +39,7 @@ def run_ctrler():
         # compile the protobuf
         protoc --go_out=. --go_opt=paths=source_relative \
         --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-            message/message.proto
+            internal/message/message.proto
 
         go build -o ./bin/ctl cmd/controller/main.go && \
         docker build -t my-ctl -f cmd/controller/Dockerfile . && \
@@ -95,8 +95,8 @@ for pods in range(9, 10):
         for top in range(1, 2):
             print(
                 f"Running with {pods} pods and {jobs * pods} jobs {top} topology")
-            render_ctrler(pods, Mode.DEV, top, 1, 1)
-            render_sched(pods, Mode.DEV, top)
+            render_ctrler(pods, Mode.PROD, top, 1, 1)
+            render_sched(pods, Mode.PROD, top)
             run_ctrler()
             run_sched()
 

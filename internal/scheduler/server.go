@@ -2,7 +2,7 @@ package scheduler
 
 import (
 	"context"
-	"example/dist_sched/config"
+	config "github.com/Vincent-lau/hyperion/internal/configs"
 	"io"
 	"net"
 
@@ -12,7 +12,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/keepalive"
 
-	pb "example/dist_sched/message"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
 
 	"google.golang.org/grpc/health/grpc_health_v1"
 
@@ -161,7 +161,6 @@ func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) 
 	}
 
 }
-
 
 func (sched *Scheduler) StartConsensus(ctx context.Context, in *pb.StartRequest) (*pb.EmptyReply, error) {
 	sched.mu.Lock()
