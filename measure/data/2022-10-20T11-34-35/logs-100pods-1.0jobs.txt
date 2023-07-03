@@ -1,0 +1,705 @@
+{"level":"info","mean":30000,"msg":"job mean and std","number of jobs":100,"prefix":"placement","std":12000,"time":"2022-10-20T10:31:53Z","trial":1}
+{"distribution":"normal","generated jobDemand":[48643.566701477714,31503.073041924563,24067.502246754208,44928.18018091447,31583.741811252847,44476.41347642126,22490.860979399546,37555.31973884071,48786.24091828903,19988.88027083501,14179.289823472396,40493.27899037097,45145.938177167736,34147.07392507508,22211.598550354636,25488.89384462632,13233.788936653433,27217.07351067732,29234.064959322466,35215.14226765305,40312.91933256696,34494.71668813408,37622.75930333668,20892.523699148085,31949.72508959997,27590.006074918296,35396.18432385179,45128.521528820085,38765.04731840537,39225.987332891804,23115.179796526358,24417.983886155445,29969.31370643686,33235.87343388464,29418.278564076852,26492.241325869596,27239.579713154366,35184.96594958141,17489.431151261233,24258.454562586034,19149.555408662374,39473.90444128196,32421.43954969344,3664.606536494375,21585.7754515031,27933.33374947783,9171.011180289406,19205.055290690136,21237.426577150636,36213.76677988359,38661.16575944114,26652.8960368669,14016.619253423512,12810.542742922637,35515.1342235925,42519.03453754315,42349.50629766329,30857.79955032144,39443.023376084544,28304.85636252643,17991.744270800802,38711.08953157509,19867.916937639493,33443.44866136131,35712.30505361593,43008.86565783395,9483.020419280947,26473.529728170513,25184.791610632627,38974.6959431233,21468.23210086438,23847.39268214856,16674.78123120587,7481.96195900716,33114.65228493458,47525.368607001816,24823.840577980984,23402.61352725166,28979.73029043703,48961.12167016838,18885.678640536287,19502.59118582464,24330.05374295866,35144.746364609644,39517.569853928006,22150.124298493003,36866.22806183737,29803.958563156957,23880.187246910275,40086.85570944103,11634.462573595054,15260.622656980364,28760.506218160772,40988.12625775079,13963.980936076232,30339.89585918372,29127.13012707009,46698.500578069754,33545.87487347519,27539.93600652635],"level":"info","msg":"generated jobs","number of jobDemand":100,"number of schedulers":100,"prefix":"placement","time":"2022-10-20T10:31:53Z","total size":2937134.2007378195,"trial":1}
+{"cap":[50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000,50000],"level":"info","load":[48643.566701477714,31503.073041924563,24067.502246754208,44928.18018091447,31583.741811252847,44476.41347642126,22490.860979399546,37555.31973884071,48786.24091828903,19988.88027083501,14179.289823472396,40493.27899037097,45145.938177167736,34147.07392507508,22211.598550354636,25488.89384462632,13233.788936653433,27217.07351067732,29234.064959322466,35215.14226765305,40312.91933256696,34494.71668813408,37622.75930333668,20892.523699148085,31949.72508959997,27590.006074918296,35396.18432385179,45128.521528820085,38765.04731840537,39225.987332891804,23115.179796526358,24417.983886155445,29969.31370643686,33235.87343388464,29418.278564076852,26492.241325869596,27239.579713154366,35184.96594958141,17489.431151261233,24258.454562586034,19149.555408662374,39473.90444128196,32421.43954969344,3664.606536494375,21585.7754515031,27933.33374947783,9171.011180289406,19205.055290690136,21237.426577150636,36213.76677988359,38661.16575944114,26652.8960368669,14016.619253423512,12810.542742922637,35515.1342235925,42519.03453754315,42349.50629766329,30857.79955032144,39443.023376084544,28304.85636252643,17991.744270800802,38711.08953157509,19867.916937639493,33443.44866136131,35712.30505361593,43008.86565783395,9483.020419280947,26473.529728170513,25184.791610632627,38974.6959431233,21468.23210086438,23847.39268214856,16674.78123120587,7481.96195900716,33114.65228493458,47525.368607001816,24823.840577980984,23402.61352725166,28979.73029043703,48961.12167016838,18885.678640536287,19502.59118582464,24330.05374295866,35144.746364609644,39517.569853928006,22150.124298493003,36866.22806183737,29803.958563156957,23880.187246910275,40086.85570944103,11634.462573595054,15260.622656980364,28760.506218160772,40988.12625775079,13963.980936076232,30339.89585918372,29127.13012707009,46698.500578069754,33545.87487347519,27539.93600652635],"msg":"new trial","time":"2022-10-20T10:31:53Z","trial":1,"used":[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]}
+{"level":"info","msg":"placement time","prefix":"placement","time":"2022-10-20T10:31:53Z","time taken":19850,"trial":1}
+{"level":"info","msg":"max trials reached","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:27Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":25.6710354,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-2dbsl","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322662426,"data":{"p":0.09090909090909091,"y":32724.73922559942,"z":9693.300060762658,"mm":3.376016322662426,"m":3.376016322662426,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6471.894736842105,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":122966,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":9710,"msg sent total":16507,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":9654.396321627675,"got jobs":[30857.79955032144],"initial w":40512.195871949116,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:32Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":20.640705462,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-2g7fp","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163225366915,"data":{"p":0.05555555555555555,"y":32114.420861097933,"z":9512.519429102644,"mm":3.3760163225366915,"m":3.3760163225366915,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6306.631578947368,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":119826,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":16507,"msg sent total":13594,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":6365.121945365223,"got jobs":[34147.07392507508],"initial w":40512.1958704403,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:29Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":23.606747386,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-2xnzb","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227045115,"data":{"p":0.09090909090909091,"y":28577.80456825049,"z":8464.948577427771,"mm":3.3760163227045115,"m":3.3760163227045115,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6897.263157894737,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":131048,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":9710,"msg sent total":13594,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":15688.355294473156,"got jobs":[24823.840577980984],"initial w":40512.19587245414,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:32Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":20.18269036,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-2xqvx","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163230489386,"data":{"p":0.07142857142857142,"y":21157.487869380504,"z":6266.998096227453,"mm":3.3760163230489386,"m":3.3760163230489386,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6044.8421052631575,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":114852,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":11614,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":1747.1485581818924,"got jobs":[38765.04731840537],"initial w":40512.19587658726,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:25Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":27.31304078,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-47dmz","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163225220032,"data":{"p":0.1,"y":24372.47998916062,"z":7219.301585293734,"mm":3.3760163225220032,"m":3.3760163225220032,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6622.8421052631575,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":125834,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":8739,"msg sent total":10681,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":1286.2085373722366,"got jobs":[39225.987332891804],"initial w":40512.19587026404,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:31Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":21.681602735,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-47prt","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226114916,"data":{"p":0.0625,"y":32428.9638755716,"z":9605.689302617597,"mm":3.3760163226114916,"m":3.3760163226114916,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6829.421052631579,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":129759,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":14565,"msg sent total":15498,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":5297.05360368485,"got jobs":[35215.14226765305],"initial w":40512.1958713379,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:19Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":33.356513143,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-4d5q2","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322924575,"data":{"p":0.045454545454545456,"y":31839.439192015434,"z":9431.067905629547,"mm":3.376016322924575,"m":3.376016322924575,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":7004.368421052632,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":133083,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":20391,"msg sent total":17478,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.09793754745,"got jobs":[],"initial w":20256.09793754745,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:28Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":24.971418995,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-4hxjp","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322769387,"data":{"p":0.058823529411764705,"y":25953.131453150196,"z":7687.501768907482,"mm":3.376016322769387,"m":3.376016322769387,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6176.894736842105,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":117361,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":12623,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":8621.635363021269,"got jobs":[11634.462573595054],"initial w":20256.097936616323,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:31Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":21.489918141,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-4wc56","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227688387,"data":{"p":0.058823529411764705,"y":28215.56166942831,"z":8357.64965919576,"mm":3.3760163227688387,"m":3.3760163227688387,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6283.578947368421,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":119388,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":13594,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.09793661303,"got jobs":[],"initial w":20256.09793661303,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:33Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":19.734731421,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-4xzhl","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322418951,"data":{"p":0.07142857142857142,"y":28916.909475756995,"z":8565.393858948444,"mm":3.376016322418951,"m":3.376016322418951,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6161.105263157895,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":117061,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":11532.465578590381,"got jobs":[28979.73029043703],"initial w":40512.19586902741,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:34Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":18.22732527,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-558dc","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227624904,"data":{"p":0.1,"y":29635.292520498067,"z":8778.184015487348,"mm":3.3760163227624904,"m":3.3760163227624904,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6301.8421052631575,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":119735,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":8739,"msg sent total":15536,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.09793657494,"got jobs":[],"initial w":20256.09793657494,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:35Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":17.698918478,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-5fqch","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163225785162,"data":{"p":0.058823529411764705,"y":27238.4669528959,"z":8068.227268549414,"mm":3.3760163225785162,"m":3.3760163225785162,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5987.736842105263,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":113767,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":13594,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":388.18099783160505,"got jobs":[19867.916937639493],"initial w":20256.097935471098,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:23Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":30.012683139,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-5m2xg","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226859654,"data":{"p":0.06666666666666667,"y":25834.05694331064,"z":7652.231054012503,"mm":3.3760163226859654,"m":3.3760163226859654,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5749.684210526316,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":109244,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":13594,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":2889.4365688949038,"got jobs":[37622.75930333668],"initial w":40512.19587223158,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:21Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":31.873882753,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-69t7w","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322626899,"data":{"p":0.045454545454545456,"y":46542.270583093654,"z":13786.150935099398,"mm":3.376016322626899,"m":3.376016322626899,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6803.105263157895,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":129259,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":20391,"msg sent total":22333,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":5327.229921941376,"got jobs":[35184.96594958141],"initial w":40512.19587152279,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:33Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":20.123473274,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-6kjkr","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163228035056,"data":{"p":0.058823529411764705,"y":39888.93285075249,"z":11815.385068289004,"mm":3.3760163228035056,"m":3.3760163228035056,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6934.0526315789475,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":131747,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":17478,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097936821032,"got jobs":[],"initial w":20256.097936821032,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:28Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":24.328543232,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-6s5kw","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227806492,"data":{"p":0.07692307692307693,"y":38785.074388761735,"z":11488.414356011313,"mm":3.3760163227806492,"m":3.3760163227806492,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6385,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":121315,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":11652,"msg sent total":20391,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":12774.135977676735,"got jobs":[7481.96195900716],"initial w":20256.097936683895,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:30Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":23.070450865,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-6sjqr","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163225365987,"data":{"p":0.07692307692307693,"y":28814.19244802877,"z":8534.96834588139,"mm":3.3760163225365987,"m":3.3760163225365987,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6608.684210526316,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":125565,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":11652,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":3645.9678086018175,"got jobs":[36866.22806183737],"initial w":40512.19587043919,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:20Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":32.308384718,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-6vkgk","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016323032853,"data":{"p":0.058823529411764705,"y":30326.60170646386,"z":8982.954703021069,"mm":3.376016323032853,"m":3.376016323032853,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5824.210526315789,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":110660,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":4997.061652801734,"got jobs":[35515.1342235925],"initial w":40512.19587639423,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:20Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":33.036870755,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-87smt","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322495045,"data":{"p":0.0625,"y":36949.36683390377,"z":10944.664748124304,"mm":3.376016322495045,"m":3.376016322495045,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5991.526315789473,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":113839,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":14565,"msg sent total":18449,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":7397.543585005958,"got jobs":[33114.65228493458],"initial w":40512.19586994054,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:26Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":27.146895476,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-8gvgg","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163230746416,"data":{"p":0.1,"y":28604.669934332505,"z":8472.906288640617,"mm":3.3760163230746416,"m":3.3760163230746416,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5676.210526315789,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":107848,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":8739,"msg sent total":15536,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.09793844785,"got jobs":[],"initial w":20256.09793844785,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:24Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":28.547507913,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-8tb2r","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322840136,"data":{"p":0.058823529411764705,"y":31459.827734785522,"z":9318.624297503207,"mm":3.376016322840136,"m":3.376016322840136,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5845.368421052632,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":111062,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097937040817,"got jobs":[],"initial w":20256.097937040817,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:23Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":29.365148433,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-969fd","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226313344,"data":{"p":0.07142857142857142,"y":39763.3763507332,"z":11778.194342301293,"mm":3.3760163226313344,"m":3.3760163226313344,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5800.210526315789,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":110204,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":21362,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":10172.30001239229,"got jobs":[30339.89585918372],"initial w":40512.19587157601,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:29Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":24.196378382,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-97z7z","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322780562,"data":{"p":0.0625,"y":38486.107335502486,"z":11399.858192570726,"mm":3.376016322780562,"m":3.376016322780562,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5648.578947368421,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":107323,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":14565,"msg sent total":18411,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097936683374,"got jobs":[],"initial w":20256.097936683374,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:34Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":18.594025414,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-9kbjq","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163229018536,"data":{"p":0.05555555555555555,"y":40787.87146472881,"z":12081.657066654703,"mm":3.3760163229018536,"m":3.3760163229018536,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6815.105263157895,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":129487,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":16507,"msg sent total":19420,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":1069.172498737702,"got jobs":[39443.023376084544],"initial w":40512.195874822246,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:33Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":19.302708942,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-9mckw","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322689477,"data":{"p":0.07142857142857142,"y":50993.564834575285,"z":15104.655890393227,"mm":3.376016322689477,"m":3.376016322689477,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6060.631578947368,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":115152,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":21362,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097936136863,"got jobs":[],"initial w":20256.097936136863,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:31Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":21.829513909,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-9s9fd","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227098245,"data":{"p":0.08333333333333333,"y":26474.820703996862,"z":7842.029828441806,"mm":3.3760163227098245,"m":3.3760163227098245,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6564.526315789473,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":124726,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":10681,"msg sent total":12623,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":6076.80811278655,"got jobs":[14179.289823472396],"initial w":20256.097936258946,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:31Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":21.338124209,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-9t8mg","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226454125,"data":{"p":0.0625,"y":31510.930585869577,"z":9333.761325294165,"mm":3.3760163226454125,"m":3.3760163226454125,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6617.473684210527,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":125732,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":14565,"msg sent total":17478,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097935872476,"got jobs":[],"initial w":20256.097935872476,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:25Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":27.560793738,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-9x256","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163223173882,"data":{"p":0.058823529411764705,"y":15479.926614938833,"z":4585.2641507115095,"mm":3.3760163223173882,"m":3.3760163223173882,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6983.315789473684,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":132683,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":8739,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.09793390433,"got jobs":[],"initial w":20256.09793390433,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:23Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":29.85893979,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-bbmcc","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163223356745,"data":{"p":0.07142857142857142,"y":33236.62114206791,"z":9844.923119054523,"mm":3.3760163223356745,"m":3.3760163223356745,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5505.736842105263,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":104609,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":16507,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097934014047,"got jobs":[],"initial w":20256.097934014047,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:32Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":20.693563217,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-blzc8","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226475024,"data":{"p":0.045454545454545456,"y":31971.89655628469,"z":9470.30271797147,"mm":3.3760163226475024,"m":3.3760163226475024,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6274.473684210527,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":119215,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":20391,"msg sent total":15536,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097935885013,"got jobs":[],"initial w":20256.097935885013,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:27Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":25.36103226,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-bs7v5","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163228321214,"data":{"p":0.05555555555555555,"y":28222.074074543118,"z":8359.578679663426,"mm":3.3760163228321214,"m":3.3760163228321214,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6470.736842105263,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":122944,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":16507,"msg sent total":15536,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":9009.122832060897,"got jobs":[31503.073041924563],"initial w":40512.19587398546,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:30Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":22.777647427,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-c2vll","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322464973,"data":{"p":0.041666666666666664,"y":18549.991726987464,"z":5494.639230133617,"mm":3.376016322464973,"m":3.376016322464973,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5903.105263157895,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":112159,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":22333,"msg sent total":8739,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":7022.308998136403,"got jobs":[13233.788936653433],"initial w":20256.097934789836,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:22Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":30.899112056,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-cqdxq","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163225417026,"data":{"p":0.07142857142857142,"y":43900.96515087683,"z":13003.777516639817,"mm":3.3760163225417026,"m":3.3760163225417026,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5835.0526315789475,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":110866,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":19420,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":4995.475278269851,"got jobs":[15260.622656980364],"initial w":20256.097935250215,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:24Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":28.290752266,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-cx5qg","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322858474,"data":{"p":0.058823529411764705,"y":33228.09899606256,"z":9842.398797387425,"mm":3.376016322858474,"m":3.376016322858474,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5609.789473684211,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":106586,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":16507,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":3581.3167059449734,"got jobs":[16674.78123120587],"initial w":20256.097937150844,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:26Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":26.399563787,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-dlj4w","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163228456794,"data":{"p":0.05,"y":22704.91504133511,"z":6725.357009588419,"mm":3.3760163228456794,"m":3.3760163228456794,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6883.526315789473,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":130787,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":18449,"msg sent total":11652,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":12922.189799229855,"got jobs":[27590.006074918296],"initial w":40512.19587414815,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:35Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":17.818934477,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-drlw2","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163224338284,"data":{"p":0.06666666666666667,"y":30316.416779400653,"z":8979.937856919194,"mm":3.3760163224338284,"m":3.3760163224338284,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6824.1578947368425,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":129659,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":13594,"msg sent total":15536,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":6966.320995730748,"got jobs":[33545.87487347519],"initial w":40512.19586920594,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:31Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":22.118732727,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-f8fqt","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227626063,"data":{"p":0.05263157894736842,"y":38181.70139297972,"z":11309.690991581312,"mm":3.3760163227626063,"m":3.3760163227626063,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6044.210526315789,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":114840,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":17478,"msg sent total":15536,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.09793657564,"got jobs":[],"initial w":20256.09793657564,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:36Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":16.954941607,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-fg2zq","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226289017,"data":{"p":0.0625,"y":28309.169919596352,"z":8385.377087736359,"mm":3.3760163226289017,"m":3.3760163226289017,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6816.0526315789475,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":129505,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":14565,"msg sent total":13594,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":8928.454060293974,"got jobs":[31583.741811252847],"initial w":40512.19587154682,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:33Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":19.254591468,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-fl8pp","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322893959,"data":{"p":0.05263157894736842,"y":22300.53019833663,"z":6605.575348409561,"mm":3.376016322893959,"m":3.376016322893959,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6353.263157894737,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":120712,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":17478,"msg sent total":10681,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":4298.429094843916,"got jobs":[36213.76677988359],"initial w":40512.195874727506,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:25Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":27.719296689,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-gdqlc","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163225509183,"data":{"p":0.0625,"y":35779.50081319896,"z":10598.14212810558,"mm":3.3760163225509183,"m":3.3760163225509183,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6289.8421052631575,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":119507,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":14565,"msg sent total":16507,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097935305508,"got jobs":[],"initial w":20256.097935305508,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:24Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":28.376150766,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-ggmnx","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163231750484,"data":{"p":0.08333333333333333,"y":20734.050263079964,"z":6141.572871182143,"mm":3.3760163231750484,"m":3.3760163231750484,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5873.315789473684,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":111593,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":10681,"msg sent total":10643,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.09793905029,"got jobs":[],"initial w":20256.09793905029,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:23Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":30.00108556,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-ghfsd","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226588347,"data":{"p":0.058823529411764705,"y":30547.131108618174,"z":9048.277078399995,"mm":3.3760163226588347,"m":3.3760163226588347,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5701.263157894737,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":108324,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":10773.07751667206,"got jobs":[9483.020419280947],"initial w":20256.097935953007,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:30Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":22.934058188,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-gq2gj","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322786741,"data":{"p":0.1111111111111111,"y":16601.155669102933,"z":4917.380155140799,"mm":3.376016322786741,"m":3.376016322786741,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5653.368421052632,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":107414,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":7768,"msg sent total":6797,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":267.2176658854369,"got jobs":[19988.88027083501],"initial w":20256.097936720445,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:27Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":25.563267865,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-gw8zl","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226292463,"data":{"p":0.05555555555555555,"y":29042.377377651246,"z":8602.558341611631,"mm":3.3760163226292463,"m":3.3760163226292463,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5365.578947368421,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":101946,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":16507,"msg sent total":16507,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097935775477,"got jobs":[],"initial w":20256.097935775477,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:21Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":31.874423916,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-h5msw","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322510043,"data":{"p":0.06666666666666667,"y":20138.215534686784,"z":5965.082396199486,"mm":3.376016322510043,"m":3.376016322510043,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6747,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":128193,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":13594,"msg sent total":10681,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":7445.555192137621,"got jobs":[12810.542742922637],"initial w":20256.097935060257,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:26Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":27.024682445,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-jh2cc","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163223855457,"data":{"p":0.08333333333333333,"y":41045.95522777158,"z":12158.103311173527,"mm":3.3760163223855457,"m":3.3760163223855457,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6076.105263157895,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":115446,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":10681,"msg sent total":18449,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097934313275,"got jobs":[],"initial w":20256.097934313275,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:34Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":18.572687286,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-jvmpk","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227770046,"data":{"p":0.06666666666666667,"y":28921.83491511055,"z":8566.85280814056,"mm":3.3760163227770046,"m":3.3760163227770046,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6884.684210526316,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":130809,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":13594,"msg sent total":13594,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097936662027,"got jobs":[],"initial w":20256.097936662027,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:24Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":28.358642619,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-jxr7d","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322488112,"data":{"p":0.05,"y":28823.51317970452,"z":8537.729212891274,"mm":3.376016322488112,"m":3.376016322488112,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6823.736842105263,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":129651,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":18449,"msg sent total":13594,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":994.6260159293379,"got jobs":[39517.569853928006],"initial w":40512.19586985734,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:21Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":31.595088864,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-k54v8","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.37601632283976,"data":{"p":0.0625,"y":19442.885924404054,"z":5759.120829146209,"mm":3.37601632283976,"m":3.37601632283976,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6945.473684210527,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":131964,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":14565,"msg sent total":10681,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":11085.086756749155,"got jobs":[9171.011180289406],"initial w":20256.09793703856,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:23Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":29.264849341,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-k84fq","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322947128,"data":{"p":0.08333333333333333,"y":11531.1931246011,"z":3415.6212593589676,"mm":3.376016322947128,"m":3.376016322947128,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5830.105263157895,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":110772,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":10681,"msg sent total":6797,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097937682767,"got jobs":[],"initial w":20256.097937682767,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:27Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":25.454810346,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-kq4wb","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227229385,"data":{"p":0.08333333333333333,"y":17913.13257678591,"z":5305.9970285742,"mm":3.3760163227229385,"m":3.3760163227229385,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5673.0526315789475,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":107788,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":10681,"msg sent total":8739,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097936337632,"got jobs":[],"initial w":20256.097936337632,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:29Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":23.982623361,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-kxq5g","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163224751247,"data":{"p":0.08333333333333333,"y":33403.22324556595,"z":9894.271844360157,"mm":3.3760163224751247,"m":3.3760163224751247,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5935.9473684210525,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":112783,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":10681,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":7276.322435816859,"got jobs":[33235.87343388464],"initial w":40512.1958697015,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:34Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":19.010742829,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-kzdsf","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227988853,"data":{"p":0.09090909090909091,"y":19233.543552821553,"z":5697.112132703194,"mm":3.3760163227988853,"m":3.3760163227988853,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5990.894736842105,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":113827,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":9710,"msg sent total":8739,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":6292.117000717079,"got jobs":[13963.980936076232],"initial w":20256.09793679331,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:26Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":26.343669389,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-l5lmk","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163228764073,"data":{"p":0.125,"y":42480.158877485475,"z":12582.92461136321,"mm":3.3760163228764073,"m":3.3760163228764073,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6043.421052631579,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":114825,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":6797,"msg sent total":18449,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097937258444,"got jobs":[],"initial w":20256.097937258444,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:20Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":32.31583042,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-lpqlq","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322527899,"data":{"p":0.07142857142857142,"y":26909.47035621258,"z":7970.776141290473,"mm":3.376016322527899,"m":3.376016322527899,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5847.684210526316,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":111106,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":12623,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":6239.47868174388,"got jobs":[14016.619253423512],"initial w":20256.097935167392,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:32Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":20.505081218,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-lvjvv","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227828137,"data":{"p":0.08333333333333333,"y":46085.17188828196,"z":13650.755056271308,"mm":3.3760163227828137,"m":3.3760163227828137,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5730.526315789473,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":108880,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":10681,"msg sent total":20353,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097936696882,"got jobs":[],"initial w":20256.097936696882,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:26Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":27.061700086,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-lwwm6","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322517792,"data":{"p":0.07692307692307693,"y":19586.442947107,"z":5801.643438885884,"mm":3.376016322517792,"m":3.376016322517792,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6415.578947368421,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":121896,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":11652,"msg sent total":9710,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":18926.4204187104,"got jobs":[21585.7754515031],"initial w":40512.1958702135,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:21Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":31.592797862,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-mcmpt","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322915476,"data":{"p":0.058823529411764705,"y":23261.146057809736,"z":6890.116585017506,"mm":3.376016322915476,"m":3.376016322915476,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6694.736842105263,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":127200,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":11614,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":11278.130915663249,"got jobs":[29234.064959322466],"initial w":40512.195874985715,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:26Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":26.840272157,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-mfnrz","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322687656,"data":{"p":0.09090909090909091,"y":26391.578631378165,"z":7817.372935675783,"mm":3.376016322687656,"m":3.376016322687656,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5790.526315789473,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":110020,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":9710,"msg sent total":13594,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":14038.666144081362,"got jobs":[26473.529728170513],"initial w":40512.195872251876,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:22Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":30.786933784,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-mm4m2","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.37601632283493,"data":{"p":0.05263157894736842,"y":29867.07824070588,"z":8846.840590991487,"mm":3.37601632283493,"m":3.37601632283493,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5913.368421052632,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":112354,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":17478,"msg sent total":15498,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":10708.237310862198,"got jobs":[29803.958563156957],"initial w":40512.195874019155,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:31Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":21.329688042,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-mq8nk","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226666227,"data":{"p":0.05,"y":32206.869832709777,"z":9539.90347039272,"mm":3.3760163226666227,"m":3.3760163226666227,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6242.736842105263,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":118612,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":18449,"msg sent total":15536,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097935999736,"got jobs":[],"initial w":20256.097935999736,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:20Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":32.251617106,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-mzsx6","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322680215,"data":{"p":0.05555555555555555,"y":19878.397727040872,"z":5888.122516913496,"mm":3.376016322680215,"m":3.376016322680215,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6721.210526315789,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":127703,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":16507,"msg sent total":11652,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":16591.491399586914,"got jobs":[3664.606536494375],"initial w":20256.09793608129,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:27Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":25.777573714,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-n58lr","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227457176,"data":{"p":0.07142857142857142,"y":30862.648727547934,"z":9141.735636647429,"mm":3.3760163227457176,"m":3.3760163227457176,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5983.894736842105,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":113694,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":14527,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097936474307,"got jobs":[],"initial w":20256.097936474307,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:23Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":30.148856695,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-nb5lv","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226619735,"data":{"p":0.045454545454545456,"y":18903.119587155274,"z":5599.2382087330225,"mm":3.3760163226619735,"m":3.3760163226619735,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5872.368421052632,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":111575,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":20391,"msg sent total":11652,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.09793597184,"got jobs":[],"initial w":20256.09793597184,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:33Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":19.876578744,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-nbw6n","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163223894644,"data":{"p":0.07692307692307693,"y":40124.2337245793,"z":11885.082858894568,"mm":3.3760163223894644,"m":3.3760163223894644,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5741.263157894737,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":109084,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":11652,"msg sent total":19420,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":753.5067485121472,"got jobs":[19502.59118582464],"initial w":20256.097934336787,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:28Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":25.021652801,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-nnkp8","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.37601632255319,"data":{"p":0.07692307692307693,"y":32158.64908209569,"z":9525.620142077682,"mm":3.37601632255319,"m":3.37601632255319,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6450.0526315789475,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":122551,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":11652,"msg sent total":16507,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":12207.33950811185,"got jobs":[28304.85636252643],"initial w":40512.19587063828,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:35Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":17.428912243,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-npdw2","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163224831876,"data":{"p":0.1,"y":22372.512094087146,"z":6626.896897711477,"mm":3.3760163224831876,"m":3.3760163224831876,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5942.263157894737,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":112903,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":8739,"msg sent total":10643,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":199.27653723128606,"got jobs":[40312.91933256696],"initial w":40512.19586979825,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:24Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":28.69636289,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-nwxx8","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322604914,"data":{"p":0.05,"y":36452.893621459414,"z":10797.605857939863,"mm":3.376016322604914,"m":3.376016322604914,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5698.421052631579,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":108270,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":18449,"msg sent total":17440,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":12578.86212178113,"got jobs":[27933.33374947783],"initial w":40512.19587125896,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:25Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":27.740741523,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-pnqvd","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163228606337,"data":{"p":0.05555555555555555,"y":20740.202467206935,"z":6143.395198288891,"mm":3.3760163228606337,"m":3.3760163228606337,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5632.9473684210525,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":107026,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":16507,"msg sent total":11652,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":16253.74131174157,"got jobs":[24258.454562586034],"initial w":40512.195874327605,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:29Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":23.547474353,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-pwh5q","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227352114,"data":{"p":0.06666666666666667,"y":33033.72943957629,"z":9784.825155351358,"mm":3.3760163227352114,"m":3.3760163227352114,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5653.315789473684,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":107413,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":13594,"msg sent total":16507,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097936411268,"got jobs":[],"initial w":20256.097936411268,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:32Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":21.111461493,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-qd6dm","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322685474,"data":{"p":0.041666666666666664,"y":25901.893905949393,"z":7672.324843899322,"mm":3.376016322685474,"m":3.376016322685474,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5745.684210526316,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":109168,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":22333,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":4799.890818609754,"got jobs":[35712.30505361593],"initial w":40512.19587222568,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:30Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":22.80026124,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-rt5x2","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227676343,"data":{"p":0.06666666666666667,"y":27365.97967594422,"z":8105.997441833985,"mm":3.3760163227676343,"m":3.3760163227676343,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5846.105263157895,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":111076,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":13594,"msg sent total":12623,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":425.3401637705829,"got jobs":[40086.85570944103],"initial w":40512.19587321161,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:31Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":21.416180777,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-rtn2l","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163231632143,"data":{"p":0.07142857142857142,"y":20145.468438697306,"z":5967.230756698971,"mm":3.3760163231632143,"m":3.3760163231632143,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6698.9473684210525,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":127280,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":9672,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":8090.756328265128,"got jobs":[32421.43954969344],"initial w":40512.19587795857,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:28Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":24.488181268,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-s6dvj","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322541588,"data":{"p":0.05263157894736842,"y":26216.515438606384,"z":7765.517975597238,"mm":3.376016322541588,"m":3.376016322541588,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6706.473684210527,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":127423,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":17478,"msg sent total":12623,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":11751.689652338282,"got jobs":[28760.506218160772],"initial w":40512.195870499054,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:22Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":30.92255806,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-skcs8","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163224377,"data":{"p":0.045454545454545456,"y":25171.875255476883,"z":7456.088138016222,"mm":3.3760163224377,"m":3.3760163224377,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5730.210526315789,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":108874,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":20391,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":1051.0426439360635,"got jobs":[19205.055290690136],"initial w":20256.0979346262,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:34Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":18.800131233,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-smmq9","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163229663616,"data":{"p":0.05263157894736842,"y":20422.21147810064,"z":6049.204009818445,"mm":3.3760163229663616,"m":3.3760163229663616,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6261.684210526316,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":118972,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":17478,"msg sent total":9672,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":1537.499932473038,"got jobs":[38974.6959431233],"initial w":40512.195875596335,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:23Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":29.372936108,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-sqkvj","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227225846,"data":{"p":0.07142857142857142,"y":24039.35889742098,"z":7120.628752776428,"mm":3.3760163227225846,"m":3.3760163227225846,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5948.684210526316,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":113025,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":12623,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097936335507,"got jobs":[],"initial w":20256.097936335507,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:23Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":30.119767877,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-svfj7","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322573278,"data":{"p":0.047619047619047616,"y":39795.248822279034,"z":11787.635194828137,"mm":3.376016322573278,"m":3.376016322573278,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5951.684210526316,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":113082,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":19420,"msg sent total":19420,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":8562.470781279368,"got jobs":[31949.72508959997],"initial w":40512.19587087934,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:31Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":21.96361068,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-t58jj","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163224918927,"data":{"p":0.058823529411764705,"y":36264.534803820454,"z":10741.812639416687,"mm":3.3760163224918927,"m":3.3760163224918927,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6854.1578947368425,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":130229,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":18449,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":13272.616156748343,"got jobs":[27239.579713154366],"initial w":40512.19586990271,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:29Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":23.17012521,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-t6wt8","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322610476,"data":{"p":0.07142857142857142,"y":28484.96808503047,"z":8437.449752317758,"mm":3.376016322610476,"m":3.376016322610476,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5955.368421052632,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":113152,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097935662856,"got jobs":[],"initial w":20256.097935662856,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:30Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":22.787180677,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-tbl46","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322995816,"data":{"p":0.045454545454545456,"y":31551.890094072616,"z":9345.893821411988,"mm":3.376016322995816,"m":3.376016322995816,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5850.1578947368425,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":111153,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":20391,"msg sent total":12623,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097937974897,"got jobs":[],"initial w":20256.097937974897,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:33Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":19.937881935,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-tvq59","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226940536,"data":{"p":0.047619047619047616,"y":21780.749620312647,"z":6451.612651840396,"mm":3.3760163226940536,"m":3.3760163226940536,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5682.789473684211,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":107973,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":19420,"msg sent total":10681,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":1370.419295628035,"got jobs":[18885.678640536287],"initial w":20256.097936164322,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:29Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":24.124512005,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-v26jn","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227237583,"data":{"p":0.05555555555555555,"y":24040.582738221456,"z":7120.991263106689,"mm":3.3760163227237583,"m":3.3760163227237583,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5693.421052631579,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":108175,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":16507,"msg sent total":10643,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":1106.5425276801761,"got jobs":[19149.555408662374],"initial w":20256.09793634255,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:20Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":33.101110052,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-vjjmm","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163224798765,"data":{"p":0.07142857142857142,"y":36301.24655915662,"z":10752.686921990735,"mm":3.3760163224798765,"m":3.3760163224798765,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5809.526315789473,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":110381,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":12623,"msg sent total":17478,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":2264.3536640784587,"got jobs":[17991.744270800802],"initial w":20256.09793487926,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:21Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":31.595682142,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-w87nr","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163224442072,"data":{"p":0.07692307692307693,"y":17572.56851128462,"z":5205.119535252195,"mm":3.3760163224442072,"m":3.3760163224442072,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5083.684210526316,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":96590,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":11652,"msg sent total":8739,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":2766.666783404009,"got jobs":[17489.431151261233],"initial w":20256.097934665242,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:24Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":28.501985204,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-wbj7w","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322915746,"data":{"p":0.06666666666666667,"y":26287.829986825007,"z":7786.641850155848,"mm":3.376016322915746,"m":3.376016322915746,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5765.526315789473,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":109545,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":13594,"msg sent total":15536,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":16182.142132030294,"got jobs":[24330.05374295866],"initial w":40512.19587498895,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:34Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":18.778315411,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-wks8r","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322485108,"data":{"p":0.05,"y":31274.147669118935,"z":9263.62454494824,"mm":3.376016322485108,"m":3.376016322485108,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6590.0526315789475,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":125211,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":18449,"msg sent total":15536,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097934910646,"got jobs":[],"initial w":20256.097934910646,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:19Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":33.434632937,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-wm2xr","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163229511493,"data":{"p":0.06666666666666667,"y":34670.96343019055,"z":10269.785484888558,"mm":3.3760163229511493,"m":3.3760163229511493,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6787.578947368421,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":128964,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":13062,"msg sent total":16507,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":18.91688504281774,"got jobs":[40493.27899037097],"initial w":40512.19587541379,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:20Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":33.161343743,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-wph4v","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322629384,"data":{"p":0.05555555555555555,"y":24560.553823698876,"z":7275.0103899290625,"mm":3.376016322629384,"m":3.376016322629384,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5979.8421052631575,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":113617,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":16507,"msg sent total":12623,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097935776303,"got jobs":[],"initial w":20256.097935776303,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:28Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":24.757869697,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-wplz7","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322925891,"data":{"p":0.05555555555555555,"y":31003.176137538037,"z":9183.360852553144,"mm":3.376016322925891,"m":3.376016322925891,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6159.526315789473,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":117031,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":16507,"msg sent total":15536,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097937555343,"got jobs":[],"initial w":20256.097937555343,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:28Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":24.184392244,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-wxc7v","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226846256,"data":{"p":0.0625,"y":43664.42016081358,"z":12933.711210878093,"mm":3.3760163226846256,"m":3.3760163226846256,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6410.0526315789475,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":121791,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":14565,"msg sent total":22333,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":1801.106340640421,"got jobs":[38711.08953157509],"initial w":40512.19587221551,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:27Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":26.104683173,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-x46n9","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163229284963,"data":{"p":0.05263157894736842,"y":22088.923950295408,"z":6542.89607555409,"mm":3.3760163229284963,"m":3.3760163229284963,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6197.578947368421,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":117754,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":17478,"msg sent total":13594,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.09793757098,"got jobs":[],"initial w":20256.09793757098,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:21Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":31.616336235,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-x6sj6","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.376016322709996,"data":{"p":0.058823529411764705,"y":31846.146925277073,"z":9433.054784437041,"mm":3.376016322709996,"m":3.376016322709996,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6938.789473684211,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":131837,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":17478,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":10542.88216608309,"got jobs":[29969.31370643686],"initial w":40512.19587251995,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:23Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":29.951842335,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-xczmb","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226672795,"data":{"p":0.058823529411764705,"y":27137.670256306137,"z":8038.370571284903,"mm":3.3760163226672795,"m":3.3760163226672795,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5753.105263157895,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":109309,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":15536,"msg sent total":12623,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":1038.291430725396,"got jobs":[39473.90444128196],"initial w":40512.19587200735,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:35Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":17.833746984,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-xj6lt","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227422204,"data":{"p":0.07692307692307693,"y":23768.3544850108,"z":7040.355322009994,"mm":3.3760163227422204,"m":3.3760163227422204,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6746.8421052631575,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":128190,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":11652,"msg sent total":11614,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.097936453323,"got jobs":[],"initial w":20256.097936453323,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:34Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":18.284764858,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-xjwkp","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163224704987,"data":{"p":0.09090909090909091,"y":29987.524730008852,"z":8882.517697089985,"mm":3.3760163224704987,"m":3.3760163224704987,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6625.210526315789,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":125879,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":9710,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":16094.211983490539,"got jobs":[24417.983886155445],"initial w":40512.195869645984,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:30Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":22.531467948,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-xkw2n","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163227969207,"data":{"p":0.08333333333333333,"y":37593.381794963316,"z":11135.426550253884,"mm":3.3760163227969207,"m":3.3760163227969207,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6111.526315789473,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":116119,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":10681,"msg sent total":18449,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":1851.0301141219097,"got jobs":[38661.16575944114],"initial w":40512.19587356305,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:33Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":19.979615439,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-zgkjf","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226030335,"data":{"p":0.043478260869565216,"y":28656.808325893155,"z":8488.350051518026,"mm":3.3760163226030335,"m":3.3760163226030335,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6859.789473684211,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":130336,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":21362,"msg sent total":14565,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":7068.747209875088,"got jobs":[33443.44866136131],"initial w":40512.1958712364,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:27Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":25.923798873,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-zjzc7","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163224806834,"data":{"p":0.05555555555555555,"y":25521.382379543844,"z":7559.6146291114,"mm":3.3760163224806834,"m":3.3760163224806834,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":6130.736842105263,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":116484,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":16507,"msg sent total":11652,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":5116.011545916408,"got jobs":[35396.18432385179],"initial w":40512.1958697682,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"server listening at [::]:50051","time":"2022-10-20T10:31:26Z"}
+{"level":"info","msg":"setup done","prefix":"metrics","setup time":26.932555419,"time":"2022-10-20T10:31:53Z","trial":1}
+{"level":"info","msg":"new trial is starting","name":"my-scheduler-6d787b9bfc-znjgq","time":"2022-10-20T10:31:53Z","trial":1}
+{"average consensus":3.3760163226831814,"data":{"p":0.0625,"y":34747.138597365236,"z":10292.349110963123,"mm":3.3760163226831814,"m":3.3760163226831814,"flag":true},"iteration":18,"level":"info","msg":"consensus done!","time":"2022-10-20T10:31:53Z"}
+{"avg time per iter":5886.789473684211,"level":"info","msg":"final consensus time","prefix":"metrics","time":"2022-10-20T10:31:53Z","total iter":18,"total time":111849,"trial":1}
+{"level":"info","msg":"consensus message exchanged","msg rcv total":14565,"msg sent total":17478,"prefix":"metrics","time":"2022-10-20T10:31:53Z","trial":1}
+{"final w":20256.09793609909,"got jobs":[],"initial w":20256.09793609909,"level":"info","msg":"fetched jobs","prefix":"placement","time":"2022-10-20T10:31:53Z","trial":1}
