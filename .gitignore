@@ -23,6 +23,12 @@ my-controller-pod.yaml
 # generated yaml
 deploy/bbox-job.yaml
 deploy/bbox-pod.yaml
+deploy/my-controller.yaml
+deploy/my-sched.yaml
+
+# data
+measure/data/
+
 
 # Test binary, built with `go test -c`
 *.test
