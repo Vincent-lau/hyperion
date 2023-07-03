@@ -8,7 +8,7 @@ import (
 func init() {
 	flag.Parse()
 
-	MFile = fmt.Sprintf("data/adj%d.txt", *NumSchedulers)
+	MFile = fmt.Sprintf("data/adj%d-%d.txt", *NumSchedulers, *TopologyID)
 
 	Network = AdjList()
 	RNetwork = RAdjList()
@@ -18,6 +18,8 @@ func init() {
 var (
 	Mode = flag.String("mode", "dev", "Environment to run in")	
 	NumSchedulers = flag.Int("schednum", 9, "Number of schedulers")
+
+	TopologyID = flag.Int("topid", 1, "Topology ID")
 
 	JobFactor = flag.Float64("jobfactor", 0.5, "Number of jobs per scheduler")
 	MaxTrials = flag.Int("maxtrials", 1, "Maximum number of trials")
