@@ -48,8 +48,8 @@ func (sched *Scheduler) InitMyConData(l, u, pi float64) {
 
 
 func (sched *Scheduler) k8sCpuUsage() (float64, float64){
-	u, pi := sched.MyCpu()
-	return float64(u), float64(pi)
+	_, pi := sched.MyCpu()
+	return float64(0), float64(pi)
 }
 
 func localCpuUsage() (float64, float64) {
