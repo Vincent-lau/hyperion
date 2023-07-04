@@ -22,6 +22,12 @@ class Cmd(Enum):
 def macro_time(fmt: str) -> str:
     return time.strftime(fmt)
 
+# ========== configs ==========
+
+mode = Mode.PROD
+
+# ========== configs ==========
+
 
 # ptg.tim.define("!time", macro_time)
 
@@ -36,15 +42,6 @@ def run_ctrler():
     os.system('''
         echo "=====================deploying controller=================="
 
-        # compile the protobuf
-        protoc --go_out=. --go_opt=paths=source_relative \
-        --go-grpc_out=. --go-grpc_opt=paths=source_relative \
-            internal/message/message.proto
-
-        go build -o ./bin/ctl cmd/controller/main.go && \
-        docker build -t my-ctl -f cmd/controller/Dockerfile . && \
-        docker tag my-ctl cuso4/my-ctl && \
-        docker push cuso4/my-ctl && \
         kubectl delete -f deploy/my-controller.yaml --ignore-not-found && \
         kubectl apply -f deploy/my-controller.yaml 
     ''')
@@ -52,11 +49,6 @@ def run_ctrler():
 
 def run_sched():
     os.system('''
-        echo "=====================deploying scheduler=================="
-        go build -o ./bin/sched cmd/scheduler/main.go && \
-        docker build -t my-sched -f cmd/scheduler/Dockerfile . && \
-        docker tag my-sched cuso4/my-sched && \
-        docker push cuso4/my-sched:latest && \
         kubectl delete -f deploy/my-scheduler.yaml --ignore-not-found && \
         kubectl apply -f deploy/my-scheduler.yaml
     
@@ -90,16 +82,25 @@ def render_ctrler(pods: int, mode: Mode, top: int, job_factor: int, trials: int)
         out_file.write(content)
 
 
-for pods in range(9, 10):
-    for jobs in range(1, 2):
-        for top in range(1, 2):
-            print(
-                f"Running with {pods} pods and {jobs * pods} jobs {top} topology")
-            render_ctrler(pods, Mode.PROD, top, 1, 1)
-            render_sched(pods, Mode.PROD, top)
-            run_ctrler()
-            run_sched()
 
-            sleep_time = max(200, pods)
-            print(f"Sleeping for {sleep_time} seconds")
-            time.sleep(sleep_time)
+def main():
+    os.system("make")
+
+    for pods in range(9, 10):
+        for jobs in range(1, 2):
+            for top in range(1, 2):
+                print(
+                    f"Running with {pods} pods and {jobs * pods} jobs {top} topology")
+                render_ctrler(pods, mode, top, 1, 1)
+                render_sched(pods, mode, top)
+                run_ctrler()
+                time.sleep(10)
+                run_sched()
+
+                print(f"Sleeping for {sleep_time} seconds")
+                sleep_time = max(200, pods)
+                time.sleep(sleep_time)
+
+
+if __name__ == "__main__":
+    main()
