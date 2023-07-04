@@ -14,7 +14,7 @@
 
 syntax = "proto3";
 
-option go_package = "example/dist_sched/message";
+option go_package = "github.com/Vincent-lau/hyperion/message";
 
 
 package message;
