@@ -3,14 +3,16 @@ package scheduler
 import (
 	"context"
 	"fmt"
-	config "github.com/Vincent-lau/hyperion/internal/configs"
-	pb "github.com/Vincent-lau/hyperion/internal/message"
 	"math"
 	"os"
 	"runtime/pprof"
 	"runtime/trace"
 	"sync/atomic"
 	"time"
+
+	config "github.com/Vincent-lau/hyperion/internal/configs"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
+	"github.com/Vincent-lau/hyperion/internal/metrics"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/protobuf/proto"
@@ -371,6 +373,11 @@ func (sched *Scheduler) Consensus() {
 		t2 := time.Now()
 
 		ts = append(ts, time.Since(t).Microseconds())
+
+		metrics.XchgLatencyPerIter.Observe(float64(t1.Sub(t).Microseconds()))
+		metrics.CompLatencyPerIter.Observe(float64(t2.Sub(t1).Microseconds()))
+		metrics.TotTimePerIter.Observe(float64(ts[len(ts)-1]))
+
 		MetricsLogger.WithFields(log.Fields{
 			"iteration":          sched.k - 1,
 			"xchg time per iter": t1.Sub(t).Microseconds(),
@@ -399,6 +406,8 @@ func (sched *Scheduler) Consensus() {
 		"average consensus": sched.MyData().GetY() / sched.MyData().GetZ(),
 	}).Info("consensus done!")
 
+	metrics.ConsensusLatency.Observe(float64(tot))
+	
 	MetricsLogger.WithFields(log.Fields{
 		"avg time per iter": float64(tot) / float64(len(ts)),
 		"total time":        tot,

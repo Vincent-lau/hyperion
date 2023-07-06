@@ -3,11 +3,13 @@ package controller
 import (
 	"context"
 	"errors"
-	config "github.com/Vincent-lau/hyperion/internal/configs"
-	pb "github.com/Vincent-lau/hyperion/internal/message"
-	"github.com/Vincent-lau/hyperion/internal/util"
 	"sync/atomic"
 	"time"
+
+	config "github.com/Vincent-lau/hyperion/internal/configs"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
+	"github.com/Vincent-lau/hyperion/internal/metrics"
+	"github.com/Vincent-lau/hyperion/internal/util"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -124,6 +126,7 @@ func (ctl *Controller) waitForPl() {
 }
 
 func (ctl *Controller) finPl() {
+	metrics.PlacementLatency.Observe(time.Since(plStart).Seconds())
 	PlLogger.WithFields(log.Fields{
 		"time taken": time.Since(plStart).Microseconds(),
 	}).Info("placement time")

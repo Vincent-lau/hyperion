@@ -1,11 +1,13 @@
 package scheduler
 
 import (
-	config "github.com/Vincent-lau/hyperion/internal/configs"
 	"os"
 	"runtime/pprof"
 	"sync"
 	"time"
+
+	config "github.com/Vincent-lau/hyperion/internal/configs"
+	"github.com/Vincent-lau/hyperion/internal/metrics"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -166,6 +168,8 @@ func (sched *Scheduler) Schedule() {
 		f.Close()
 		return
 	}
+
+	go metrics.Start()
 
 	for {
 
