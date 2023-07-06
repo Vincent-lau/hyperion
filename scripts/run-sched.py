@@ -7,6 +7,7 @@ import pytermgui as ptg
 import time
 from enum import Enum
 import os
+import argparse
 
 
 class Mode(Enum):
@@ -19,14 +20,12 @@ class Cmd(Enum):
     REDEPLOY = 2
 
 
+# TODO add color to prompt
 def macro_time(fmt: str) -> str:
     return time.strftime(fmt)
 
-# ========== configs ==========
 
-mode = Mode.PROD
 
-# ========== configs ==========
 
 
 # ptg.tim.define("!time", macro_time)
@@ -84,7 +83,24 @@ def render_ctrler(pods: int, mode: Mode, top: int, job_factor: int, trials: int)
 
 
 def main():
-    os.system("make")
+
+
+    parser = argparse.ArgumentParser(
+        prog = 'Deploy scheduler script',
+        description='Deploy the controller and scheduler',
+        epilog=''
+    )
+
+    parser.add_argument('-m', '--make', action='store_true', help='run make')
+    parser.add_argument('-d', '--dev', action='store_true', help='run in production mode, default is prod')
+    args = parser.parse_args()
+
+
+    mode = Mode.PROD
+    if args.make:
+        os.system("make")
+    if args.dev:
+        mode = Mode.DEV
 
     for pods in range(9, 10):
         for jobs in range(1, 2):
@@ -94,11 +110,12 @@ def main():
                 render_ctrler(pods, mode, top, 1, 1)
                 render_sched(pods, mode, top)
                 run_ctrler()
+                print("waiting for controller to start up")
                 time.sleep(10)
                 run_sched()
 
-                print(f"Sleeping for {sleep_time} seconds")
                 sleep_time = max(200, pods)
+                print(f"Sleeping for {sleep_time} seconds")
                 time.sleep(sleep_time)
 
 
