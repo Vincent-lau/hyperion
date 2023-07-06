@@ -1,39 +1,9 @@
-
-apiVersion: v1
-kind: ServiceAccount
-metadata:
-  name: my-scheduler
-  namespace: dist-sched
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: my-scheduler-as-kube-scheduler
-subjects:
-- kind: ServiceAccount
-  name: my-scheduler
-  namespace: dist-sched
-roleRef:
-  kind: ClusterRole
-  name: system:kube-scheduler
-  apiGroup: rbac.authorization.k8s.io
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: my-scheduler-as-admin-user
-subjects:
-- kind: ServiceAccount
-  name: my-scheduler
-  namespace: dist-sched
-roleRef:
-  kind: ClusterRole
-  name: cluster-admin
-  apiGroup: rbac.authorization.k8s.io
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  annotations:
+    prometheus.io/scrape: "true"
+    prometheus.io/port: "8080"
   labels:
     component: scheduler
     tier: control-plane
@@ -44,12 +14,17 @@ spec:
     matchLabels:
       component: scheduler
       tier: control-plane
+      name: my-scheduler
   replicas: {{ replicas }}
   template:
     metadata:
+      annotations:
+        prometheus.io/scrape: "true"
+        prometheus.io/port: "8080"
       labels:
         component: scheduler
         tier: control-plane
+        name: my-scheduler
         version: second
     spec:
       topologySpreadConstraints:
@@ -74,6 +49,7 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 2379
+        - containerPort: 8080
         livenessProbe:
           grpc:
             port: 2379
