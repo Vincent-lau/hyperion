@@ -80,6 +80,11 @@ func Start() {
 	// Create an HTTP handler to expose the metrics endpoint
 	http.Handle("/metrics", promhttp.Handler())
 
+	log.WithFields(log.Fields{
+		"port": 8080,
+		"endpoint": "/metrics",
+	}).Info("Starting metrics server")
+
 	// Start the HTTP server
 	log.Fatalln(http.ListenAndServe(":8080", nil))
 }
