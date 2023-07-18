@@ -1,7 +1,11 @@
 DOCKER_USERNAME=cuso4
 CTRL_IMAGE_NAME=my-ctl
 SCHED_IMAGE_NAME=my-sched
+GO_FLAGS=
 
+ifdef RACE
+	GO_FLAGS += -race
+endif
 
 all: build pushctl pushshed
 
@@ -11,10 +15,10 @@ msg: internal/message/message.proto
 
 
 ctl: cmd/controller/main.go msg
-	go build -o bin/ctl $<
+	go build ${GO_FLAGS} -o bin/ctl $<
 
 sched: cmd/scheduler/main.go
-	go build -o bin/sched $<
+	go build ${GO_FLAGS} -o bin/sched $<
 
 build: ctl sched
 	docker build -t ${DOCKER_USERNAME}/my-ctl -f build/package/Dockerfile_ctrl . && \
