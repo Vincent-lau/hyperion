@@ -44,3 +44,5 @@ scratch.txt
 
 # Go workspace file
 go.work
+
+__pycache__/
