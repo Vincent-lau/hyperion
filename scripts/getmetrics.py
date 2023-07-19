@@ -3,7 +3,7 @@
 import datetime
 import json
 import os
-import sys
+import argparse
 
 from kubernetes import client, config
 
@@ -55,12 +55,7 @@ dir = f"measure/data/{name}"
 os.mkdir(dir)
 
 
-
-pods = int(sys.argv[1])
-jobs = float(sys.argv[2])
-
-
-def read_pl():
+def read_pl(pods: int, jobs: int):
     ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
     for i in ret.items:
         if i.metadata.name.startswith("my-scheduler-") or i.metadata.name.startswith("my-controller"):
@@ -93,7 +88,7 @@ def read_pl():
     print(f"{fname} is created for placement")
 
 
-def read_con():
+def read_con(pods: int, jobs: int):
     ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
     for i in ret.items:
         if i.metadata.name.startswith("my-scheduler-") or i.metadata.name.startswith("my-controller"):
@@ -133,7 +128,7 @@ def read_con():
     print(f"{fname} is created for consensus")
 
 
-def read_all_log():
+def read_all_log(pods: int, jobs: int):
     ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
     data = ""
     for i in ret.items:
@@ -144,7 +139,6 @@ def read_all_log():
 
             data += lines
 
-    pods = int(sys.argv[1])
     fname = f"{dir}/logs-{pods}pods-{jobs}jobs.txt"
     with open(fname, 'w') as f:
         f.write(data)
@@ -152,6 +146,27 @@ def read_all_log():
     print(f"{fname} is created for all logs")
 
 
-read_con()
-read_pl()
-read_all_log()
+def getmetrics(pods, jobs, logs=False):
+    read_con(pods, jobs)
+    read_pl(pods, jobs)
+    if logs:
+        read_all_log(pods, jobs)
+
+
+def main():
+    argparser = argparse.ArgumentParser(
+        prog='Get metrics',
+        description='Get metrics from the scheduler and controller',
+        epilog=''
+    )
+    argparser.add_argument('-p', '--pods', type=int,
+                           help='number of pods', required=True)
+    argparser.add_argument('-j', '--jobs', type=int,
+                           help='number of jobs', required=True)
+    args = argparser.parse_args()
+
+    getmetrics(args.pods, args.jobs)
+
+
+if __name__ == "__main__":
+    main()

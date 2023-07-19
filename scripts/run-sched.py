@@ -8,6 +8,7 @@ import time
 from enum import Enum
 import os
 import argparse
+import getmetrics 
 
 
 class Mode(Enum):
@@ -93,16 +94,37 @@ def main():
 
     parser.add_argument('-m', '--make', action='store_true', help='run make')
     parser.add_argument('-d', '--dev', action='store_true', help='run in production mode, default is prod')
+    parser.add_argument('-r', '--remove', action='store_true', help='remove previous the controller and scheduler')
+    parser.add_argument('-p', '--pods', type=int, nargs = 2, help='number of pods to run')
     args = parser.parse_args()
 
 
     mode = Mode.PROD
-    if args.make:
-        os.system("make")
     if args.dev:
         mode = Mode.DEV
+    if args.make:
+        if args.dev:
+            os.system("make RACE=1")
+        else:
+            os.system("make")
 
-    for pods in range(9, 10):
+    if args.remove:
+        os.system('''
+            kubectl delete -f deploy/my-controller.yaml --ignore-not-found && \
+            kubectl delete -f deploy/my-scheduler.yaml --ignore-not-found
+        ''')
+        return
+    
+    start_pods = 500
+    end_pods = 10000
+    if len(args.pods) > 1:
+        start_pods = args.pods[0]
+        end_pods = args.pods[1]
+    elif len(args.pods) == 1:
+        start_pods = args.pods[0]
+    
+
+    for pods in range(start_pods, end_pods, 100):
         for jobs in range(1, 2):
             for top in range(1, 2):
                 print(
@@ -115,8 +137,13 @@ def main():
                 run_sched()
 
                 sleep_time = max(200, pods)
-                print(f"Sleeping for {sleep_time} seconds")
-                time.sleep(sleep_time)
+                print(f"Sleeping for {sleep_time} seconds while waiting for completion")
+                try:
+                    time.sleep(sleep_time)
+                except KeyboardInterrupt:
+                    print("Keyboard interrupt detected, waking up")
+                getmetrics.getmetrics(pods, jobs)
+
 
 
 if __name__ == "__main__":
