@@ -1,0 +1,7 @@
+apiVersion: v1
+data:
+  prom-additional.yaml: LSBqb2JfbmFtZTogIm15YXBwIgogIGt1YmVybmV0ZXNfc2RfY29uZmlnczoKICAgIC0gcm9sZTogZW5kcG9pbnRzCiAgbWV0cmljc19wYXRoOiAvbWV0cmljcwoK
+kind: Secret
+metadata:
+  creationTimestamp: null
+  name: additional-scrape-configs
