@@ -28,7 +28,7 @@ spec:
         version: second
     spec:
       topologySpreadConstraints:
-      - maxSkew: 1
+      - maxSkew: 10
         topologyKey: kubernetes.io/hostname
         whenUnsatisfiable: ScheduleAnyway
         labelSelector:
