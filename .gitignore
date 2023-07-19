@@ -46,3 +46,4 @@ scratch.txt
 go.work
 
 measure/data
+__pycache__/
