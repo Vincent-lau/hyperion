@@ -17,10 +17,10 @@ import (
 )
 
 func (sched *Scheduler) AsClient() {
-	ctlAddr := findCtlAddr()
+	ctrlAddr := findCtlAddr()
 
-	sched.regWithCtl(ctlAddr)
-	sched.connectToPl(ctlAddr)
+	sched.regWithCtl(ctrlAddr)
+	sched.connectToPl(ctrlAddr)
 
 	neighbours := sched.getNeighbours()
 	sched.connectNeigh(neighbours)
@@ -28,17 +28,24 @@ func (sched *Scheduler) AsClient() {
 }
 
 func (sched *Scheduler) connectToPl(ctlAddr net.IP) {
-	conn, err := grpc.Dial(ctlAddr.String()+":"+config.PlacementPort,
+	conn := sched.Conn(ctlAddr.String(),config.PlacementPort,
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
+
+	sched.mu.Lock()
+	sched.ctlPlStub = pb.NewJobPlacementClient(conn)
+	sched.mu.Unlock()
+
+}
+
+func (sched *Scheduler) Conn(addr string, port string, opts ...grpc.DialOption) *grpc.ClientConn {
+	conn, err := grpc.Dial(addr+":"+port, opts...)
 	if err != nil {
 		log.WithFields(log.Fields{
 			"error": err,
 			"for":   "placement",
 		}).Fatal("Could not connect to controller")
 	}
-	sched.mu.Lock()
-	sched.ctlPlStub = pb.NewJobPlacementClient(conn)
-	sched.mu.Unlock()
+	return conn
 
 }
 
@@ -46,15 +53,8 @@ func (sched *Scheduler) regWithCtl(ctlAddr net.IP) {
 	sched.mu.Lock()
 	defer sched.mu.Unlock()
 
-	conn, err := grpc.Dial(ctlAddr.String()+":"+*config.CtlPort,
+	conn := sched.Conn(ctlAddr.String(),*config.CtlPort,
 		grpc.WithTransportCredentials(insecure.NewCredentials()))
-	if err != nil {
-		log.WithFields(log.Fields{
-			"error": err,
-			"for":   "registration",
-		}).Fatal("Could not connect to controller")
-	}
-
 	sched.ctlRegStub = pb.NewSchedRegClient(conn)
 
 	host, err := os.Hostname()
@@ -135,16 +135,10 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 	defer sched.mu.Unlock()
 
 	for _, n := range neighbours {
-		conn, err := grpc.Dial(n+":"+*config.SchedPort,
+		conn := sched.Conn(n,*config.SchedPort,
 			grpc.WithTransportCredentials(insecure.NewCredentials()),
 			grpc.WithKeepaliveParams(keepalive.ClientParameters{}))
 
-		if err != nil {
-			log.WithFields(log.Fields{
-				"neighbour address": n,
-				"error":             err,
-			}).Fatalf("Could not connect to neighbour")
-		}
 
 		stub := pb.NewRatioConsensusClient(conn)
 
@@ -153,6 +147,7 @@ func (sched *Scheduler) connectNeigh(neighbours []string) {
 			ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 			defer cancel()
 			sched.mu.Unlock()
+			var err error
 			r, err = stub.SayHello(ctx, &pb.HelloRequest{Me: int32(sched.me)})
 			sched.mu.Lock()
 			if err != nil {
