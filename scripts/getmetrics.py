@@ -7,9 +7,6 @@ import argparse
 
 from kubernetes import client, config
 
-# Configs can be set in Configuration class directly or using helper utility
-config.load_kube_config()
-
 
 consensus_stats_name = ['msg rcv total',
                         'msg sent total',
@@ -46,16 +43,13 @@ time unit is in microsecond 1e-6
 
 '''
 
-metrics = {}
 
-
-v1 = client.CoreV1Api()
 name = datetime.datetime.now().isoformat()[:-7].replace(':', '-')
 dir = f"measure/data/{name}"
 os.mkdir(dir)
 
 
-def read_pl(pods: int, jobs: int):
+def read_pl(v1, pods: int, jobs: int, metrics: dict):
     ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
     for i in ret.items:
         if i.metadata.name.startswith("my-scheduler-") or i.metadata.name.startswith("my-controller"):
@@ -88,7 +82,7 @@ def read_pl(pods: int, jobs: int):
     print(f"{fname} is created for placement")
 
 
-def read_con(pods: int, jobs: int):
+def read_con(v1, pods: int, jobs: int, metrics: dict):
     ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
     for i in ret.items:
         if i.metadata.name.startswith("my-scheduler-") or i.metadata.name.startswith("my-controller"):
@@ -128,7 +122,7 @@ def read_con(pods: int, jobs: int):
     print(f"{fname} is created for consensus")
 
 
-def read_all_log(pods: int, jobs: int):
+def read_all_log(v1, pods: int, jobs: int):
     ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
     data = ""
     for i in ret.items:
@@ -147,10 +141,17 @@ def read_all_log(pods: int, jobs: int):
 
 
 def getmetrics(pods, jobs, logs=False):
-    read_con(pods, jobs)
-    read_pl(pods, jobs)
+    # Configs can be set in Configuration class directly or using helper utility
+    config.load_kube_config()
+    v1 = client.CoreV1Api()
+    metrics = {}
+    read_con(v1, pods, jobs, metrics)
+    read_pl(v1, pods, jobs, metrics)
     if logs:
-        read_all_log(pods, jobs)
+        read_all_log(v1, pods, jobs)
+
+    v1.api_client.rest_client.pool_manager.clear()
+    v1.api_client.close()
 
 
 def main():
