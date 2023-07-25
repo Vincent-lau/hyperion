@@ -8,7 +8,7 @@ import time
 from enum import Enum
 import os
 import argparse
-import getmetrics 
+import getmetrics
 
 
 class Mode(Enum):
@@ -26,9 +26,6 @@ def macro_time(fmt: str) -> str:
     return time.strftime(fmt)
 
 
-
-
-
 # ptg.tim.define("!time", macro_time)
 
 # with ptg.WindowManager() as manager:
@@ -41,15 +38,12 @@ def macro_time(fmt: str) -> str:
 def run_ctrler():
     os.system('''
         echo "=====================deploying controller=================="
-
-        kubectl delete -f deploy/my-controller.yaml --ignore-not-found && \
         kubectl apply -f deploy/my-controller.yaml 
     ''')
 
 
 def run_sched():
     os.system('''
-        kubectl delete -f deploy/my-scheduler.yaml --ignore-not-found && \
         kubectl apply -f deploy/my-scheduler.yaml
     
     ''')
@@ -82,53 +76,62 @@ def render_ctrler(pods: int, mode: Mode, top: int, job_factor: int, trials: int)
         out_file.write(content)
 
 
+def remove(wait_time = 5):
+    os.system('''
+            kubectl delete -f deploy/my-controller.yaml --ignore-not-found && \
+            kubectl delete -f deploy/my-scheduler.yaml --ignore-not-found
+        ''')
+    print("waiting for deletion")
+    time.sleep(wait_time)
+
 
 def main():
 
-
     parser = argparse.ArgumentParser(
-        prog = 'Deploy scheduler script',
+        prog='Deploy scheduler script',
         description='Deploy the controller and scheduler',
         epilog=''
     )
 
     parser.add_argument('-m', '--make', action='store_true', help='run make')
-    parser.add_argument('-d', '--dev', action='store_true', help='run in production mode, default is prod')
-    parser.add_argument('-r', '--remove', action='store_true', help='remove previous the controller and scheduler')
-    parser.add_argument('-p', '--pods', type=int, nargs = 2, help='number of pods to run')
+    parser.add_argument('-d', '--dev', action='store_true',
+                        help='run in production mode, default is prod')
+    parser.add_argument('-r', '--remove', action='store_true',
+                        help='remove previous the controller and scheduler')
+    parser.add_argument('-p', '--pods', type=int, nargs='+',
+                        help='number of pods to run')
+    parser.add_argument('-t', '--topology', type=int,
+                        nargs=1, help='topology id')
     args = parser.parse_args()
 
 
-    mode = Mode.PROD
-    if args.dev:
-        mode = Mode.DEV
+    if args.remove:
+        remove()
+        return
+
+    mode = Mode.DEV if args.dev else Mode.PROD
     if args.make:
         if args.dev:
             os.system("make RACE=1")
         else:
             os.system("make")
 
-    if args.remove:
-        os.system('''
-            kubectl delete -f deploy/my-controller.yaml --ignore-not-found && \
-            kubectl delete -f deploy/my-scheduler.yaml --ignore-not-found
-        ''')
-        return
-    
     start_pods = 500
-    end_pods = 10000
+    end_pods = 1000
     if len(args.pods) > 1:
         start_pods = args.pods[0]
         end_pods = args.pods[1]
     elif len(args.pods) == 1:
         start_pods = args.pods[0]
-    
+        end_pods = start_pods + 100
+
 
     for pods in range(start_pods, end_pods, 100):
         for jobs in range(1, 2):
-            for top in range(1, 2):
+            for top in args.topology if args.topology else [2]:
                 print(
                     f"Running with {pods} pods and {jobs * pods} jobs {top} topology")
+                remove(pods // 20)
                 render_ctrler(pods, mode, top, 1, 1)
                 render_sched(pods, mode, top)
                 run_ctrler()
@@ -137,13 +140,14 @@ def main():
                 run_sched()
 
                 sleep_time = max(200, pods)
-                print(f"Sleeping for {sleep_time} seconds while waiting for completion")
                 try:
-                    time.sleep(sleep_time)
+                    for i in range(sleep_time):
+                        print(
+                            f"Sleeping for {sleep_time - i} seconds while waiting for completion", end='\r', flush=True)
+                        time.sleep(1)
                 except KeyboardInterrupt:
                     print("Keyboard interrupt detected, waking up")
                 getmetrics.getmetrics(pods, jobs)
-
 
 
 if __name__ == "__main__":
