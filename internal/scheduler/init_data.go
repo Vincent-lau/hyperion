@@ -14,13 +14,24 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+const (
+	CPU_INTERVAL = time.Second * 1
+)
+
 func (sched *Scheduler) InitMyConData(l, u, pi float64) {
 
 	if _, ok := sched.conData[0]; !ok {
 		sched.conData[0] = make(map[int]*pb.ConData)
 	}
 
-	myu, mypi := sched.k8sCpuUsage()
+	// myu, mypi := sched.k8sCpuUsage()
+	myu, mypi := localCpuUsage()
+	log.WithFields(log.Fields{
+		"my used k8s":     myu,
+		"my capacity k8s": mypi,
+		// "my used2 local":    myu2,
+		// "my capacity2 local": mypi2,
+	}).Debug("cpu usage")
 
 	// this node's data
 	sched.conData[0][sched.me] = &pb.ConData{
@@ -47,13 +58,13 @@ func (sched *Scheduler) InitMyConData(l, u, pi float64) {
 }
 
 func (sched *Scheduler) k8sCpuUsage() (float64, float64) {
-	_, pi := sched.MyCpu()
-	return float64(0), float64(pi)
+	u, pi := sched.MyCpu()
+	return float64(u), float64(pi)
 }
 
 func localCpuUsage() (float64, float64) {
 	prev := readCPUStats()
-	time.Sleep(time.Second * 3)
+	time.Sleep(CPU_INTERVAL)
 	curr := readCPUStats()
 
 	pct := cpuPct(curr, prev)
