@@ -7,7 +7,6 @@ import (
 	"time"
 
 	config "github.com/Vincent-lau/hyperion/internal/configs"
-	"github.com/Vincent-lau/hyperion/internal/metrics"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc/health/grpc_health_v1"
@@ -29,8 +28,9 @@ type Scheduler struct {
 	inConns      []int
 	inNeighbours int
 	expectedIn   int // expected number of inNeighbours, used for waiting
+	// names/ids of outNeighbours, N+
+	outConns []int
 	// number of out neighbours, N+, i.e. ones to which we will broadcast values
-	outConns      []int
 	outNeighbours int
 	stubs         map[int]pb.RatioConsensusClient // stubs of outNeighbours
 	streams       map[int]pb.RatioConsensus_SendConDataClient
@@ -168,8 +168,6 @@ func (sched *Scheduler) Schedule() {
 		f.Close()
 		return
 	}
-
-	go metrics.Start()
 
 	for {
 

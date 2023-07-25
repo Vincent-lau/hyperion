@@ -2,9 +2,11 @@ package scheduler
 
 import (
 	"context"
-	config "github.com/Vincent-lau/hyperion/internal/configs"
 	"io"
 	"net"
+
+	config "github.com/Vincent-lau/hyperion/internal/configs"
+	"github.com/Vincent-lau/hyperion/internal/metrics"
 
 	log "github.com/sirupsen/logrus"
 	"golang.org/x/exp/slices"
@@ -72,6 +74,8 @@ func (sched *Scheduler) AsServer() {
 	sched.healthSrv() // for k8s liveness probing
 
 	sched.schedStartSrv() // for controller to start the scheduler
+	
+	go metrics.Start() // metrics server for prometheus
 
 	// grpc will multiplex the connection over a single TCP connection
 	// so tcp is fine here
@@ -122,18 +126,25 @@ func (sched *Scheduler) SayHello(ctx context.Context, in *pb.HelloRequest) (*pb.
 }
 
 func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) error {
-	sched.mu.Lock()
-	defer sched.mu.Unlock()
 
 	for {
-		sched.mu.Unlock()
 		in, err := stream.Recv()
-		sched.mu.Lock()
 
 		if err == io.EOF {
+			log.WithFields(log.Fields{
+				"error": err,
+			}).Debug("received EOF")
 			return stream.SendAndClose(&pb.EmptyReply{})
 		}
+		if err != nil {
+			log.WithFields(log.Fields{
+				"in":    in,
+				"error": err,
+			}).Debug("SendConData: failed to receive")
+			return err
+		}
 
+		sched.mu.Lock()
 		k := int(in.GetK())
 		if _, ok := sched.conData[k]; !ok {
 			sched.conData[k] = make(map[int]*pb.ConData)
@@ -158,6 +169,7 @@ func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) 
 			sched.neighCond.Broadcast()
 		}
 
+		sched.mu.Unlock()
 	}
 
 }
