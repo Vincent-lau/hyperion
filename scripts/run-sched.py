@@ -76,7 +76,7 @@ def render_ctrler(pods: int, mode: Mode, top: int, job_factor: int, trials: int)
         out_file.write(content)
 
 
-def remove(wait_time = 5):
+def remove(wait_time=5):
     os.system('''
             kubectl delete -f deploy/my-controller.yaml --ignore-not-found && \
             kubectl delete -f deploy/my-scheduler.yaml --ignore-not-found
@@ -101,9 +101,10 @@ def main():
     parser.add_argument('-p', '--pods', type=int, nargs='+',
                         help='number of pods to run')
     parser.add_argument('-t', '--topology', type=int,
-                        nargs=1, help='topology id')
+                        nargs='+', help='topology id')
+    parser.add_argument('-j', '--jobs', type=int, nargs='+',
+                        help='job factor, the job/scheduler ratio, default to 1')
     args = parser.parse_args()
-
 
     if args.remove:
         remove()
@@ -125,14 +126,13 @@ def main():
         start_pods = args.pods[0]
         end_pods = start_pods + 100
 
-
     for pods in range(start_pods, end_pods, 100):
-        for jobs in range(1, 2):
+        for jobs in args.jobs if args.jobs else [1]:
             for top in args.topology if args.topology else [2]:
                 print(
                     f"Running with {pods} pods and {jobs * pods} jobs {top} topology")
                 remove(pods // 20)
-                render_ctrler(pods, mode, top, 1, 1)
+                render_ctrler(pods, mode, top, jobs, 1)
                 render_sched(pods, mode, top)
                 run_ctrler()
                 print("waiting for controller to start up")
@@ -147,7 +147,8 @@ def main():
                         time.sleep(1)
                 except KeyboardInterrupt:
                     print("Keyboard interrupt detected, waking up")
-                getmetrics.getmetrics(pods, jobs)
+                if mode.PROD:
+                    getmetrics.getmetrics(pods, jobs)
 
 
 if __name__ == "__main__":
