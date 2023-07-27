@@ -9,7 +9,7 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
-// this file implements different policies for job assignment
+// This file implements different policies for job assignment
 
 func (ctl *Controller) RandomInAvail(in *pb.JobRequest) *Job {
 

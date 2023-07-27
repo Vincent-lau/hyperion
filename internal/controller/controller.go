@@ -47,7 +47,7 @@ type Controller struct {
 	trial    int
 
 	/* for placement */
-	jobQueue []*queue.Queue
+	jobQueue []*queue.Queue // a slice of queues for different sizes of jobs
 	fetched  int32
 	placed   chan int
 
