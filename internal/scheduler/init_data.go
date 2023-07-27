@@ -5,10 +5,12 @@
 package scheduler
 
 import (
-	pb "github.com/Vincent-lau/hyperion/internal/message"
 	"math"
 	"os"
 	"time"
+
+	config "github.com/Vincent-lau/hyperion/internal/configs"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
 
 	linuxproc "github.com/c9s/goprocinfo/linux"
 	log "github.com/sirupsen/logrus"
@@ -25,12 +27,10 @@ func (sched *Scheduler) InitMyConData(l, u, pi float64) {
 	}
 
 	// myu, mypi := sched.k8sCpuUsage()
-	myu, mypi := localCpuUsage()
+	myu, mypi := fakeCpuUsage()
 	log.WithFields(log.Fields{
 		"my used k8s":     myu,
 		"my capacity k8s": mypi,
-		// "my used2 local":    myu2,
-		// "my capacity2 local": mypi2,
 	}).Debug("cpu usage")
 
 	// this node's data
@@ -62,6 +62,12 @@ func (sched *Scheduler) k8sCpuUsage() (float64, float64) {
 	return float64(u), float64(pi)
 }
 
+// purely for simulation
+// assume there is no load on the node
+func fakeCpuUsage() (float64, float64) {
+	return 0.0, config.MaxCap
+}
+
 func localCpuUsage() (float64, float64) {
 	prev := readCPUStats()
 	time.Sleep(CPU_INTERVAL)
@@ -79,7 +85,6 @@ func localCpuUsage() (float64, float64) {
 	pi := mCores
 
 	return used, pi
-
 }
 
 func readCPUStats() linuxproc.CPUStat {

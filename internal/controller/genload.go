@@ -1,9 +1,10 @@
 package controller
 
 import (
-	config "github.com/Vincent-lau/hyperion/internal/configs"
 	"math"
 	"math/rand"
+
+	config "github.com/Vincent-lau/hyperion/internal/configs"
 
 	log "github.com/sirupsen/logrus"
 	"gonum.org/v1/gonum/stat"
@@ -94,7 +95,7 @@ func (ctl *Controller) genLoad() {
 	}
 
 	numJobs := int(*config.JobFactor * float64(*config.NumSchedulers))
-	ctl.genJobs("normal", numJobs, avail)
+	ctl.genJobs(config.Distribution, numJobs, avail)
 	// ctl.getJobsFromK8s(numJobs, avail)
 	ctl.loadFromJobs()
 }
@@ -143,7 +144,7 @@ func (ctl *Controller) getJobsFromK8s(numJobs int, avail float64) {
 }
 
 // generate synthetic jobs, only with numerical values
-func (ctl *Controller) genJobs(distribution string, numJobs int, avail float64) {
+func (ctl *Controller) genJobs(distribution config.Distr, numJobs int, avail float64) {
 
 	log.WithFields(log.Fields{
 		"avail": avail,
@@ -151,14 +152,14 @@ func (ctl *Controller) genJobs(distribution string, numJobs int, avail float64) 
 
 	// TODO tune 0.6 and 0.4
 	var poi distuv.Poisson
-	if distribution == "normal" {
+	if distribution == config.Normal {
 		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
 		config.Std = config.Mean * 0.4
-	} else if distribution == "poisson" {
+	} else if distribution == config.Poisson {
 		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.3
 		config.Std = math.Sqrt(config.Mean)
 		poi = distuv.Poisson{Lambda: config.Mean}
-	} else if distribution == "skew normal" {
+	} else if distribution == config.SkewNormal {
 		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
 		config.Std = config.Mean * 0.4
 		config.Skew = -4.0 // TODO tune this
@@ -174,19 +175,20 @@ func (ctl *Controller) genJobs(distribution string, numJobs int, avail float64) 
 	c := 0
 	for generated+config.Std < avail && c < numJobs {
 		var v float64
-		if distribution == "normal" {
+		if distribution == config.Normal {
 			v = rand.NormFloat64()*float64(config.Std) + float64(config.Mean)
-		} else if distribution == "uniform" {
+		} else if distribution == config.Uniform {
 			v = rand.Float64() * float64(config.MaxCap)
-		} else if distribution == "poisson" {
+		} else if distribution == config.Poisson {
 			v = poi.Rand()
-		} else if distribution == "skew normal" {
+		} else if distribution == config.SkewNormal {
 			v = skewNorm(config.Skew)*float64(config.Std) + float64(config.Mean)
 		} else {
 			panic("unknown distribution")
 		}
 
-		if v < 0 || v >= config.MaxCap {
+		v = math.Round(v)
+		if v <= 0 || v >= config.MaxCap {
 			log.WithFields(log.Fields{"v": v}).Debug("generated value out of bounds")
 			continue
 		}
