@@ -24,7 +24,7 @@ placement_stats_name = [
     "left elements",
     "scheduled elements",
     "time taken",
-    "generated jobs"
+    "generated jobDemand"
 ]
 
 '''
@@ -43,13 +43,17 @@ time unit is in microsecond 1e-6
 
 '''
 
-
-name = datetime.datetime.now().isoformat()[:-7].replace(':', '-')
-dir = f"measure/data/{name}"
-os.mkdir(dir)
+dir = ""
 
 
-def read_pl(v1, pods: int, jobs: int, metrics: dict):
+def mkdir():
+    global dir
+    name = datetime.datetime.now().isoformat()[:-7].replace(':', '-')
+    dir = f"measure/data/{name}"
+    os.mkdir(dir)
+
+
+def read_pl(v1, pods: int, jobs: int, top: int, metrics: dict):
     ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
     for i in ret.items:
         if i.metadata.name.startswith("my-scheduler-") or i.metadata.name.startswith("my-controller"):
@@ -74,7 +78,7 @@ def read_pl(v1, pods: int, jobs: int, metrics: dict):
                     for sn in placement_stats_name:
                         if sn in d:
                             m[sched_name][sn] = d[sn]
-    fname = f"{dir}/placement-{pods}pods-{jobs}jobs.json"
+    fname = f"{dir}/placement-{pods}pods-{jobs}jobs-{top}top.json"
 
     with open(fname, 'w') as f:
         json.dump(metrics, f)
@@ -82,7 +86,7 @@ def read_pl(v1, pods: int, jobs: int, metrics: dict):
     print(f"{fname} is created for placement")
 
 
-def read_con(v1, pods: int, jobs: int, metrics: dict):
+def read_con(v1, pods: int, jobs: int, top: int, metrics: dict):
     ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
     for i in ret.items:
         if i.metadata.name.startswith("my-scheduler-") or i.metadata.name.startswith("my-controller"):
@@ -115,14 +119,14 @@ def read_con(v1, pods: int, jobs: int, metrics: dict):
                         if sn in d:
                             m[sched_name][sn] = d[sn]
 
-    fname = f"{dir}/consensus-{pods}pods-{jobs}jobs.json"
+    fname = f"{dir}/consensus-{pods}pods-{jobs}jobs-{top}top.json"
     with open(fname, 'w') as f:
         json.dump(metrics, f)
 
     print(f"{fname} is created for consensus")
 
 
-def read_all_log(v1, pods: int, jobs: int):
+def read_all_log(v1, pods: int, jobs: int, top: int):
     ret = v1.list_namespaced_pod(namespace='dist-sched', watch=False)
     data = ""
     for i in ret.items:
@@ -133,22 +137,23 @@ def read_all_log(v1, pods: int, jobs: int):
 
             data += lines
 
-    fname = f"{dir}/logs-{pods}pods-{jobs}jobs.txt"
+    fname = f"{dir}/logs-{pods}pods-{jobs}jobs-{top}top.txt"
     with open(fname, 'w') as f:
         f.write(data)
 
     print(f"{fname} is created for all logs")
 
 
-def getmetrics(pods, jobs, logs=False):
+def getmetrics(pods: int, jobs, top: int,  logs=False):
     # Configs can be set in Configuration class directly or using helper utility
     config.load_kube_config()
     v1 = client.CoreV1Api()
+    mkdir()
     metrics = {}
-    read_con(v1, pods, jobs, metrics)
-    read_pl(v1, pods, jobs, metrics)
+    read_con(v1, pods, jobs, top, metrics)
+    read_pl(v1, pods, jobs, top, metrics)
     if logs:
-        read_all_log(v1, pods, jobs)
+        read_all_log(v1, pods, jobs, top)
 
     v1.api_client.rest_client.pool_manager.clear()
     v1.api_client.close()
@@ -161,12 +166,14 @@ def main():
         epilog=''
     )
     argparser.add_argument('-p', '--pods', type=int,
-                           help='number of pods', required=True)
+                           help='number of scheduler pods', required=True)
     argparser.add_argument('-j', '--jobs', type=int,
                            help='number of jobs', required=True)
+    argparser.add_argument('-t', '--topology', type=int,
+                           help='topology id', required=True)
     args = argparser.parse_args()
 
-    getmetrics(args.pods, args.jobs)
+    getmetrics(args.pods, args.jobs, args.topology)
 
 
 if __name__ == "__main__":
