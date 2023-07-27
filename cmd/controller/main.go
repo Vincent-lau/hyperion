@@ -2,9 +2,9 @@ package main
 
 import (
 	"flag"
-	"github.com/Vincent-lau/hyperion/internal/configs"
+
+	config "github.com/Vincent-lau/hyperion/internal/configs"
 	"github.com/Vincent-lau/hyperion/internal/controller"
-	"math/rand"
 
 	log "github.com/sirupsen/logrus"
 )
@@ -12,7 +12,7 @@ import (
 func init() {
 	flag.Parse()
 	// log.SetReportCaller(true)
-	rand.Seed(42)
+	// rand.Seed(42)
 
 	if *config.Mode == "DEV" {
 		log.SetFormatter(&log.TextFormatter{

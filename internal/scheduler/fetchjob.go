@@ -1,6 +1,8 @@
 package scheduler
 
 import (
+	"math"
+
 	pb "github.com/Vincent-lau/hyperion/internal/message"
 	util "github.com/Vincent-lau/hyperion/internal/util"
 
@@ -83,7 +85,7 @@ func (sched *Scheduler) fetchJobs() {
 
 func (sched *Scheduler) computeW() {
 	sched.ratio = sched.MyData().GetY() / sched.MyData().GetZ()
-	sched.w = sched.ratio*sched.pi - sched.u
+	sched.w = math.Round(sched.ratio*sched.pi - sched.u)
 
 	log.WithFields(log.Fields{
 		"ratio":          sched.ratio,
