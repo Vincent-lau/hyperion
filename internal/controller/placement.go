@@ -36,7 +36,11 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 		v := atomic.AddInt32(&ctl.fetched, 1)
 
 		if atomic.AddInt32(&v, int32(-*config.NumSchedulers)) == 0 {
-			ctl.randPlace()
+			if config.RandomPlaceWhenNoSpace {
+				ctl.randPlace()
+			} else {
+				close(ctl.placed)
+			}
 		}
 		return &pb.JobReply{}, nil
 	}
@@ -117,7 +121,11 @@ func (ctl *Controller) waitForPl() {
 
 	numJobs := len(ctl.jobDemand)
 	for i := 0; i < numJobs; i++ {
-		<-ctl.placed
+		_, ok := <-ctl.placed
+		if !ok {
+			log.Debug("channel close, forget about the rest of the elements");
+			break;
+		}
 	}
 
 	log.Debug("all pods placed")
@@ -155,11 +163,12 @@ func (ctl *Controller) finPl() {
 		"left elements":       elementsLeft,
 		"scheduled elements":  jobSched,
 		"each job fetch time": ctl.tq.Dispose(),
-	}).Debug("all jobs fetched, queue elements left")
+	}).Info("all jobs fetched, queue elements left")
 
 	go ctl.newTrial()
 }
 
+// Randomly place the the rest of the jobs in the queue to nodes
 func (ctl *Controller) randPlace() {
 
 	log.WithFields(log.Fields{
