@@ -39,7 +39,9 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 			if config.RandomPlaceWhenNoSpace {
 				ctl.randPlace()
 			} else {
-				close(ctl.placed)
+				// signal to the goroutine there is no need to wait for pending jobs
+				// to be placed
+				ctl.placed <- -1
 			}
 		}
 		return &pb.JobReply{}, nil
@@ -52,7 +54,7 @@ func (ctl *Controller) GetJob(ctx context.Context, in *pb.JobRequest) (*pb.JobRe
 		"largeQueue":  ctl.jobQueue[0].Len(),
 	}).Debug("got request, current queue status")
 
-	j := ctl.Large2Small(in)
+	j := ctl.heuPlace(config.Heuristic, in)
 
 	ctl.tq.Put(time.Since(t).Microseconds())
 
@@ -83,9 +85,9 @@ func (ctl *Controller) bcastPl() {
 	}
 }
 
-func getQueueIdx(size float64) int {
-	small := config.Mean - config.Std  // x < mu - std
-	medium := config.Mean + config.Std // mu-std < x < mu + std
+func getQueueIdx(size float64, mean float64, std float64) int {
+	small := mean - std  // x < mu - std
+	medium := mean + std // mu-std < x < mu + std
 
 	if size >= medium {
 		return 0
@@ -101,7 +103,7 @@ func getQueueIdx(size float64) int {
 // put jobs into multiple queues
 func (ctl *Controller) populateQueue() {
 	for id, s := range ctl.jobDemand {
-		i := getQueueIdx(s)
+		i := getQueueIdx(s, ctl.dmdMean, ctl.dmdStd)
 		if err := ctl.jobQueue[i].Put(&Job{id: id, size: s}); err != nil {
 			log.WithFields(log.Fields{
 				"error": err,
@@ -121,14 +123,14 @@ func (ctl *Controller) waitForPl() {
 
 	numJobs := len(ctl.jobDemand)
 	for i := 0; i < numJobs; i++ {
-		_, ok := <-ctl.placed
-		if !ok {
-			log.Debug("channel close, forget about the rest of the elements");
-			break;
+		v := <-ctl.placed
+		if v == -1 {
+			log.Debug("some jobs cannot be placed, no need to wait for more jobs")
+			break
 		}
 	}
 
-	log.Debug("all pods placed")
+	log.Debug("no more jobs can be placed")
 	ctl.finPl()
 
 }

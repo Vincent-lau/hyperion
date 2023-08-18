@@ -140,7 +140,7 @@ func (sched *Scheduler) SendConData(stream pb.RatioConsensus_SendConDataServer) 
 			log.WithFields(log.Fields{
 				"in":    in,
 				"error": err,
-			}).Debug("SendConData: failed to receive")
+			}).Info("SendConData: failed to receive")
 			return err
 		}
 

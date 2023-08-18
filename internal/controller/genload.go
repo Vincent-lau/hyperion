@@ -95,8 +95,11 @@ func (ctl *Controller) genLoad() {
 	}
 
 	numJobs := int(*config.JobFactor * float64(*config.NumSchedulers))
-	ctl.genJobs(config.Distribution, numJobs, avail)
-	// ctl.getJobsFromK8s(numJobs, avail)
+	if config.K8sPlace {
+		ctl.getJobsFromK8s(numJobs, avail)
+	} else {
+		ctl.genJobs(config.Distribution, numJobs, avail)
+	}
 	ctl.loadFromJobs()
 }
 
@@ -133,13 +136,13 @@ func (ctl *Controller) getJobsFromK8s(numJobs int, avail float64) {
 		ctl.jobPod = append(ctl.jobPod, p)
 	}
 
-	config.Mean = stat.Mean(ctl.jobDemand, nil)
-	config.Std = stat.StdDev(ctl.jobDemand, nil)
+	ctl.dmdMean = stat.Mean(ctl.jobDemand, nil)
+	ctl.dmdStd = stat.StdDev(ctl.jobDemand, nil)
 
 	log.WithFields(log.Fields{
 		"jobDemand": ctl.jobDemand,
-		"mean":      config.Mean,
-		"std":       config.Std,
+		"mean":      ctl.dmdMean,
+		"std":       ctl.dmdStd,
 	}).Debug("got jobs from actual pod queue")
 }
 
@@ -150,39 +153,47 @@ func (ctl *Controller) genJobs(distribution config.Distr, numJobs int, avail flo
 		"avail": avail,
 	}).Debug("available capacity")
 
-	// TODO tune 0.6 and 0.4
-	var poi distuv.Poisson
-	if distribution == config.Normal {
-		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
-		config.Std = config.Mean * 0.4
-	} else if distribution == config.Poisson {
-		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.3
-		config.Std = math.Sqrt(config.Mean)
-		poi = distuv.Poisson{Lambda: config.Mean}
-	} else if distribution == config.SkewNormal {
-		config.Mean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
-		config.Std = config.Mean * 0.4
-		config.Skew = -4.0 // TODO tune this
+	if config.DistrStatic {
+		ctl.dmdMean = config.Mean
+		ctl.dmdStd = config.Std
+	} else {
+		// set the mean and std of the job demand based on the available capacity and
+		// the total number of jobs requested, so that our total demand is less than
+		// the available capacity
+		// TODO tune 0.6 and 0.4
+		if distribution == config.Normal {
+			ctl.dmdMean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
+			ctl.dmdStd = ctl.dmdMean * 0.4
+		} else if distribution == config.Poisson {
+			ctl.dmdMean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.3
+			ctl.dmdStd = math.Sqrt(config.Mean)
+		} else if distribution == config.SkewNormal {
+			ctl.dmdMean = avail / math.Max(float64(numJobs), float64(*config.NumSchedulers)) * 0.6
+			ctl.dmdStd = config.Mean * 0.4
+		}
 	}
 
 	PlLogger.WithFields(log.Fields{
-		"mean":           config.Mean,
-		"std":            config.Std,
-		"number of jobs": numJobs,
-	}).Info("job mean and std")
+		"configured job mean": config.Mean,
+		"configured job std":  config.Std,
+		"number of jobs":      numJobs,
+	}).Info("job mean and std for random generation")
 
 	generated := 0.0
 	c := 0
+
+	poi := distuv.Poisson{Lambda: ctl.dmdMean}
+
 	for generated+config.Std < avail && c < numJobs {
 		var v float64
 		if distribution == config.Normal {
-			v = rand.NormFloat64()*float64(config.Std) + float64(config.Mean)
+			v = rand.NormFloat64()*float64(ctl.dmdStd) + float64(ctl.dmdMean)
 		} else if distribution == config.Uniform {
 			v = rand.Float64() * float64(config.MaxCap)
 		} else if distribution == config.Poisson {
 			v = poi.Rand()
 		} else if distribution == config.SkewNormal {
-			v = skewNorm(config.Skew)*float64(config.Std) + float64(config.Mean)
+			v = skewNorm(config.Skew)*float64(ctl.dmdStd) + float64(ctl.dmdMean)
 		} else {
 			panic("unknown distribution")
 		}

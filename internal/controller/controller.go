@@ -3,10 +3,11 @@ package controller
 import (
 	"context"
 	"errors"
-	config "github.com/Vincent-lau/hyperion/internal/configs"
-	pb "github.com/Vincent-lau/hyperion/internal/message"
 	"sync"
 	"time"
+
+	config "github.com/Vincent-lau/hyperion/internal/configs"
+	pb "github.com/Vincent-lau/hyperion/internal/message"
 
 	log "github.com/sirupsen/logrus"
 	"google.golang.org/grpc"
@@ -38,10 +39,14 @@ type Controller struct {
 	schedStub  map[string]pb.SchedStartClient
 	network    [][]int
 	rnetwork   [][]int
-	load       []float64
-	used       []float64
-	cap        []float64
-	jobDemand  []float64
+
+	// job demand and scheduler capacity
+	load      []float64
+	used      []float64
+	cap       []float64
+	jobDemand []float64
+	dmdMean   float64
+	dmdStd    float64
 
 	finSched map[int]bool
 	trial    int
