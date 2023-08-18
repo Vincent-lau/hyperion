@@ -104,18 +104,31 @@ def main():
                         nargs='+', help='topology id')
     parser.add_argument('-j', '--jobs', type=int, nargs='+',
                         help='job factor, the job/scheduler ratio, default to 1')
+    parser.add_argument('-w', '--wait', type=int,
+                        help='wait time for job completion in seconds')
+    parser.add_argument('-l', '--logs', action='store_true', default=False,
+                        help='explicitly store logs')
+    parser.add_argument('-n', '--run', type=int, nargs='?',
+                        default=1, help='how many times to run the experiment')
     args = parser.parse_args()
 
     if args.remove:
         remove()
         return
 
-    mode = Mode.DEV if args.dev else Mode.PROD
+    if args.dev:
+        print("running in development mode")
+        mode = Mode.DEV
+    else:
+        print("running in production mode")
+        mode = Mode.PROD
     if args.make:
         if args.dev:
             os.system("make RACE=1")
         else:
             os.system("make")
+
+    os.system('kubectl config set-context --current --namespace=dist-sched')    
 
     start_pods = 500
     end_pods = 1000
@@ -126,29 +139,33 @@ def main():
         start_pods = args.pods[0]
         end_pods = start_pods + 100
 
-    for pods in range(start_pods, end_pods, 100):
-        for jobs in args.jobs if args.jobs else [1]:
-            for top in args.topology if args.topology else [2]:
-                print(
-                    f"Running with {pods} pods and {jobs * pods} jobs {top} topology")
-                remove(pods // 20)
-                render_ctrler(pods, mode, top, jobs, 1)
-                render_sched(pods, mode, top)
-                run_ctrler()
-                print("waiting for controller to start up")
-                time.sleep(10)
-                run_sched()
+    for _ in range(args.run):
+        metrics_getter = None
+        for pods in range(start_pods, end_pods, 100):
+            for jobs in args.jobs if args.jobs else [1]:
+                for top in args.topology if args.topology else [2]:
+                    print(
+                        f"Running with {pods} pods and {jobs * pods} jobs {top} topology")
+                    remove()
+                    render_ctrler(pods, mode, top, jobs, 1)
+                    render_sched(pods, mode, top)
+                    run_ctrler()
+                    print("waiting for controller to start up")
+                    time.sleep(10)
+                    run_sched()
 
-                sleep_time = max(200, pods)
-                try:
-                    for i in range(sleep_time):
-                        print(
-                            f"Sleeping for {sleep_time - i} seconds while waiting for completion", end='\r', flush=True)
-                        time.sleep(1)
-                except KeyboardInterrupt:
-                    print("Keyboard interrupt detected, waking up")
-                if mode.PROD:
-                    getmetrics.getmetrics(pods, jobs)
+                    sleep_time = args.wait if args.wait else max(200, pods)
+                    try:
+                        for i in range(sleep_time):
+                            print(
+                                f"Sleeping for {sleep_time - i} seconds while waiting for completion", end='\r', flush=True)
+                            time.sleep(1)
+                    except KeyboardInterrupt:
+                        print("Keyboard interrupt detected, waking up")
+                    if mode == Mode.PROD or args.logs:
+                        metrics_getter = getmetrics.MetricsGetter(
+                        ) if not metrics_getter else metrics_getter
+                        metrics_getter.getmetrics(pods, jobs, top, args.logs)
 
 
 if __name__ == "__main__":
