@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"github.com/Vincent-lau/hyperion/internal/configs"
 	pb "github.com/Vincent-lau/hyperion/internal/message"
 	"math/rand"
 	"time"
@@ -11,9 +12,19 @@ import (
 
 // This file implements different policies for job assignment
 
+func (ctl *Controller) heuPlace(f config.HeuFunc, in *pb.JobRequest) *Job {
+	if f == config.Random {
+		return ctl.RandomInAvail(in)
+	} else if f == config.Large2small {
+		return ctl.Large2Small(in)
+	} else {
+		panic("unknown heuristic function")
+	}
+}
+
 func (ctl *Controller) RandomInAvail(in *pb.JobRequest) *Job {
 
-	k := getQueueIdx(in.GetSize())
+	k := getQueueIdx(in.GetSize(), ctl.dmdMean, ctl.dmdStd)
 
 	// we only randomly choose from queues that are not empty
 	indices := make([]int, 0)
@@ -60,7 +71,7 @@ We also look at the first two elements of the queue when possilbe
 */
 func (ctl *Controller) Large2Small(in *pb.JobRequest) *Job {
 
-	k := getQueueIdx(in.GetSize())
+	k := getQueueIdx(in.GetSize(), ctl.dmdMean, ctl.dmdStd)
 	r := &Job{id: -1, size: -1}
 
 	for i, q := range ctl.jobQueue {

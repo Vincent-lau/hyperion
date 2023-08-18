@@ -138,8 +138,14 @@ func (sched *Scheduler) sendOne(to int, stream pb.RatioConsensus_SendConDataClie
 				"error":              err,
 				"sending request to": to,
 				"iteration":          sched.k,
+				"host":               sched.hostname,
 			}).Warn("error send conData")
-
+			var m interface{}
+			err2 := stream.RecvMsg(m)
+			log.WithFields(log.Fields{
+				"recv": m,
+				"err":  err2,
+			}).Warn("error recv msg after sending conData")
 			time.Sleep(time.Second)
 		} else {
 			break
@@ -358,7 +364,6 @@ func (sched *Scheduler) Consensus() {
 			}).Fatal("failed to create stream")
 		}
 	}
-
 	for !sched.CheckCvg() && sched.k < *config.MaxIter {
 		t := time.Now()
 
@@ -407,7 +412,7 @@ func (sched *Scheduler) Consensus() {
 	}).Info("consensus done!")
 
 	metrics.ConsensusLatency.Observe(float64(tot))
-	
+
 	MetricsLogger.WithFields(log.Fields{
 		"avg time per iter": float64(tot) / float64(len(ts)),
 		"total time":        tot,
