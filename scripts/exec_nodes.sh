@@ -10,7 +10,7 @@ cmd="sudo mv /etc/cni/net.d/calico-kubeconfig /tmp && sudo mv /etc/cni/net.d/10-
 cmd="ip route flush proto bird; ip link list | grep cali | awk '{print $2}' | cut -c 1-15 | xargs -I {} sudo ip link delete {}; sudo iptables-save | grep -i cali | sudo iptables -F; sudo iptables-save | grep -i cali | sudo iptables -X; sudo systemctl restart kubelet "
 
 #103 214 401 402 601 602 603 604
-for node in 401 402 601 602 603 604
+for node in 103 214 201 401 402 601 602 603 604
 do
   scp ./scripts/todo.sh sl955@caelum-$node.cl.cam.ac.uk:~/
   ssh sl955@caelum-$node.cl.cam.ac.uk -t 'chmod +x todo.sh && ./todo.sh'
