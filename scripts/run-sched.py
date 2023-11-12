@@ -99,7 +99,7 @@ def main():
     parser.add_argument('-r', '--remove', action='store_true',
                         help='remove previous the controller and scheduler')
     parser.add_argument('-p', '--pods', type=int, nargs='+',
-                        help='number of pods to run')
+                        help='number of pods to run', required=True)
     parser.add_argument('-t', '--topology', type=int,
                         nargs='+', help='topology id')
     parser.add_argument('-j', '--jobs', type=int, nargs='+',
@@ -128,7 +128,7 @@ def main():
         else:
             os.system("make")
 
-    os.system('kubectl config set-context --current --namespace=dist-sched')    
+    os.system('kubectl config set-context --current --namespace=dist-sched')
 
     start_pods = 500
     end_pods = 1000
@@ -141,7 +141,7 @@ def main():
 
     for _ in range(args.run):
         metrics_getter = None
-        for pods in range(start_pods, end_pods, 100):
+        for pods in args.pods:
             for jobs in args.jobs if args.jobs else [1]:
                 for top in args.topology if args.topology else [2]:
                     print(

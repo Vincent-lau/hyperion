@@ -1,5 +1,14 @@
 #!/usr/bin/bash
 
+
+sudo docker system prune --all -f
+
+# for i in {0..2..1}
+# do
+#   # sudo mkdir -p /opt/data/om-data-$i
+#   sudo chown -R 2000 /opt/data/om-data-$i
+# done
+
 # ip route flush proto bird
 # ip link list | grep cali | awk '{print $2}' | cut -c 1-15 | xargs -I {} sudo ip link delete {}
 # sudo iptables-save | grep -i cali | sudo iptables -F
@@ -12,11 +21,11 @@
 # sudo sysctl net.ipv4.tcp_tw_recycle=1
 # sudo sysctl net.ipv4.tcp_tw_reuse=1 
 
-cat <<EOF | sudo tee -a /etc/sysctl.conf
-net.ipv4.neigh.default.gc_thresh1 = 4096
-net.ipv4.neigh.default.gc_thresh2 = 8192
-net.ipv4.neigh.default.gc_thresh3 = 8192
-net.ipv4.neigh.default.base_reachable_time = 86400
-net.ipv4.neigh.default.gc_stale_time = 86400
-EOF && \
-sudo sed -i '$d' /etc/sysctl.conf && sudo sysctl -p
+# cat <<EOF | sudo tee -a /etc/sysctl.conf
+# net.ipv4.neigh.default.gc_thresh1 = 4096
+# net.ipv4.neigh.default.gc_thresh2 = 8192
+# net.ipv4.neigh.default.gc_thresh3 = 8192
+# net.ipv4.neigh.default.base_reachable_time = 86400
+# net.ipv4.neigh.default.gc_stale_time = 86400
+# EOF && \
+# sudo sed -i '$d' /etc/sysctl.conf && sudo sysctl -p
